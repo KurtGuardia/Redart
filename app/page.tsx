@@ -6,7 +6,7 @@ import { CreateAccountSection } from "./components/create-account-section"
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen">
       <section className="relative h-[60vh] overflow-hidden">
         <video
           className="absolute top-0 left-0 w-full h-full object-cover opacity-50"

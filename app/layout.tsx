@@ -1,6 +1,7 @@
-import "./globals.css"
 import { Inter } from "next/font/google"
+import "./globals.css"
 import { Navbar } from "./components/navbar"
+import Footer from "./components/Footer"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -15,12 +16,14 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="es">
-      <body className={inter.className}>
+    <html lang="es" className={inter.className}>
+      <body className="min-h-screen flex flex-col bg-background">
         <Navbar />
-        {children}
+        <main className="flex-grow">
+          {children}
+        </main>
+        <Footer />
       </body>
     </html>
   )
 }
-
