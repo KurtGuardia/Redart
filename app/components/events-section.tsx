@@ -1,4 +1,5 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/components/ui/card"
+import Image from 'next/image'
 
 const events = [
   {
@@ -36,10 +37,12 @@ export function EventsSection() {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {events.map((event) => (
         <Card key={event.id} className="overflow-hidden transition-transform hover:scale-105 bg-card">
-          <img
+          <Image
             src={event.image || "/placeholder.svg"}
             alt={event.title}
             className="w-full h-48 object-cover opacity-80"
+            width={400}
+            height={200}
           />
           <CardHeader>
             <CardTitle className="text-foreground">{event.title}</CardTitle>
@@ -57,4 +60,3 @@ export function EventsSection() {
     </div>
   )
 }
-
