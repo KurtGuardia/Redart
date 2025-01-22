@@ -1,8 +1,8 @@
+import Image from "next/image"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs"
 import { MapSection } from "./components/map-section"
 import { EventsSection } from "./components/events-section"
 import { CreateAccountSection } from "./components/create-account-section"
-import Image from 'next/image'
 
 export default function Home() {
   return (
@@ -19,12 +19,12 @@ export default function Home() {
           <source src="/placeholder-video.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
-        <Image 
-            src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExMmkxZnYybWdveXM3cjBuZDNjcjc4N2d0aDAwdmxjc2R6eTZtdHI5OSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oz8xzYgK7lEjm1p0A/giphy.gif" 
-            alt="Theater GIF" 
-            className="theater-gif"
-            width={400}
-            height={300}
+        <Image
+          src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExMmkxZnYybWdveXM3cjBuZDNjcjc4N2d0aDAwdmxjc2R6eTZtdHI5OSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3oz8xzYgK7lEjm1p0A/giphy.gif"
+          alt="Theater GIF"
+          width={500}
+          height={300}
+          className="theater-gif"
         />
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <h1 className="text-4xl md:text-6xl font-bold text-accent text-center">Descubre el Arte en Cochabamba</h1>

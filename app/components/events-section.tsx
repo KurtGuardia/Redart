@@ -6,7 +6,7 @@ const events = [
     id: 1,
     title: "Concierto de Jazz",
     description: "Una noche de jazz con los mejores músicos locales",
-    image: "/placeholder.svg",
+    image: "/images/jazz-concert.jpg",
     price: "50 Bs",
     time: "20:00",
     place: "link al sitio"
@@ -15,7 +15,7 @@ const events = [
     id: 2,
     title: "Teatro: 'La Casa de Bernarda Alba'",
     description: "Obra clásica de Federico García Lorca",
-    image: "/placeholder.svg",
+    image: "/images/teatro-bernarda.jpeg",
     price: "75 Bs",
     time: "19:30",
     place: "link al sitio"
@@ -24,7 +24,7 @@ const events = [
     id: 3,
     title: "Exposición de Arte Contemporáneo",
     description: "Muestra de artistas emergentes de Cochabamba",
-    image: "/placeholder.svg",
+    image: "/images/arte-expo.jpg",
     price: "Entrada libre",
     time: "10:00 - 18:00",
     place: "link al sitio"
