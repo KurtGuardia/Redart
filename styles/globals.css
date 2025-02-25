@@ -1,6 +1,10 @@
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+html {
+  color-scheme: normal !important;
+}
 
 @keyframes fadeInUp {
   from {
@@ -26,9 +30,9 @@
 }
 
 body {
-  background-color: #f7f7f7;
+  /* background-color: #f7f7f7; */
   color: #333;
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 .bg-gradient-spot {
@@ -36,7 +40,11 @@ body {
   width: 300px;
   height: 300px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 128, 128, 0.1) 0%, rgba(0, 128, 128, 0) 70%);
+  background: radial-gradient(
+    circle,
+    rgba(0, 128, 128, 0.1) 0%,
+    rgba(0, 128, 128, 0) 70%
+  );
   z-index: -1;
 }
 
@@ -50,3 +58,98 @@ body {
   right: 10%;
 }
 
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 222.1 83.2% 9.9%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+
+    --ring: 222.2 84% 4.9%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222.2 84% 4.9%;
+    --sidebar-primary: 222.1 83.2% 9.9%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 210 40% 96.1%;
+    --sidebar-accent-foreground: 222.2 47.4% 11.2%;
+    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-ring: 222.2 84% 4.9%;
+
+    --chart-1: 230 75% 68%;
+    --chart-2: 349 71% 53%;
+    --chart-3: 47 87% 63%;
+    --chart-4: 176 57% 55%;
+    --chart-5: 272 67% 75%;
+  }
+
+  .dark {
+    --background: 230 25% 18%; /* Darker background */
+    --foreground: 50 10% 20%; /* Lighter foreground */
+
+    --card: 230 25% 18%;
+    --card-foreground: 50 10% 20%;
+
+    --popover: 230 25% 18%;
+    --popover-foreground: 50 10% 20%;
+
+    --primary: 100 50% 50%; /* Teal primary */
+    --primary-foreground: 0 0% 95%; /* Near white */
+
+    --secondary: 200 40% 30%; /* Different secondary */
+    --secondary-foreground: 0 0% 95%;
+
+    --muted: 200 40% 30%;
+    --muted-foreground: 210 10% 70%;
+
+    --accent: 200 40% 30%;
+    --accent-foreground: 0 0% 95%;
+
+    --destructive: 0 70% 40%; /* Reddish destructive */
+    --destructive-foreground: 0 0% 95%;
+
+    --border: 210 20% 30%;
+    --input: 210 20% 30%;
+
+    --ring: 220 30% 40%;
+
+    --sidebar-background: 230 25% 18%;
+    --sidebar-foreground: 50 10% 20%;
+    --sidebar-primary: 100 50% 50%;
+    --sidebar-primary-foreground: 0 0% 95%;
+    --sidebar-accent: 200 40% 30%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 210 20% 30%;
+    --sidebar-ring: 220 30% 40%;
+
+    --chart-1: 10 45% 48%;
+    --chart-2: 159 51% 23%;
+    --chart-3: 237 37% 33%;
+    --chart-4: 316 7% 25%;
+    --chart-5: 37 17% 45%;
+  }
+}
