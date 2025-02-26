@@ -24,6 +24,12 @@
 body {
   color: #333;
   font-family: 'Poppins', sans-serif;
+  background-image: linear-gradient(
+    to bottom,
+    #f3e7e9 0%,
+    #e3eeff 99%,
+    #e3eeff 100%
+  );
 }
 
 .bg-gradient-spot {
@@ -50,15 +56,18 @@ body {
 }
 
 @layer base {
+  #_next {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
   :root {
     --background: #ffffff;
     --foreground: #ffffff;
 
     --card: #2c2c2c;
     --card-foreground: #ffffff;
-
-    --popover: #2c2c2c;
-    --popover-foreground: #ffffff;
 
     --primary: #7928ca;
     --primary-foreground: #ffffff;
