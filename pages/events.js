@@ -99,7 +99,7 @@ export default function Events() {
           </select>
           <button
             type='submit'
-            className='bg-[var(--color-teal-600)] text-[var(--color-white)] px-6 py-2 rounded-lg hover:bg-teal-700 transition duration-300'
+            className='bg-[var(--color-teal-500)] text-[var(--color-white)] px-6 py-2 rounded-lg hover:bg-teal-700 transition duration-300'
           >
             Buscar
           </button>
@@ -148,7 +148,7 @@ export default function Events() {
                   onClick={() =>
                     fetchEvents(searchTerm, filter)
                   }
-                  className='bg-[var(--color-teal-600)] text-[var(--color-white)] px-6 py-2 rounded-lg hover:bg-teal-700 transition duration-300'
+                  className='bg-[var(--color-teal-500)] text-[var(--color-white)] px-6 py-2 rounded-lg hover:bg-teal-700 transition duration-300'
                   disabled={loading}
                 >
                   {loading ? 'Cargando...' : 'Cargar más'}

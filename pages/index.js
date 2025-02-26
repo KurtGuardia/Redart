@@ -5,7 +5,7 @@ import Image from 'next/image'
 export default function Home() {
   return (
     <Layout>
-      <section className='hero bg-gradient-to-r from-[var(--teal-500)] to-[var(--blue-500)] text-white h-[80vh] flex items-center'>
+      <section className='hero bg-gradient-to-r from-[var(--color-teal-500)] to-[var(--color-blue-500)] text-white h-[80vh] flex items-center'>
         <div className='container mx-auto px-4 text-center flex flex-col justify-between gap-4'>
           <h1 className='text-4xl md:text-6xl font-bold mb-4 animate-fade-in-up'>
             Descubre la vibrante escena artística de Bolivia
@@ -17,14 +17,14 @@ export default function Home() {
           </p>
           <Link
             href='/events'
-            className='bg-[var(--color-white)] text-[var(--color-teal-600)] px-8 py-3 rounded-full text-lg font-semibold hover:bg-teal-100 transition duration-300 animate-fade-in-up w-fit mx-auto'
+            className='bg-[var(--color-white)] text-[var(--color-teal-500)] px-8 py-3 rounded-xl shadow-md text-lg font-semibold hover:bg-[#7928ca80] transition duration-300 animate-fade-in-up w-fit mx-auto'
           >
             Explorar eventos
           </Link>
         </div>
       </section>
 
-      <section className='intro bg-[var(--color-gray-100)] py-16'>
+      <section className='intro py-16'>
         <div className='container mx-auto px-4 text-center'>
           <p className='text-lg text-[var(--color-gray-700)] max-w-3xl mx-auto'>
             ¡Estamos dando vida a una herramienta para
@@ -76,7 +76,7 @@ export default function Home() {
           <div className='text-center mt-8'>
             <Link
               href='/campaigns'
-              className='bg-[var(--color-teal-600)] text-[var(--color-white)] px-6 py-2 rounded-full text-lg font-semibold hover:bg-teal-700 transition duration-300'
+              className='bg-[var(--color-teal-500)] text-[var(--color-white)] px-6 py-2 rounded-full text-lg font-semibold hover:bg-teal-700 transition duration-300'
             >
               Ver todas las campañas
             </Link>
@@ -84,12 +84,12 @@ export default function Home() {
         </div>
       </section>
 
-      <section className='about-us bg-[var(--color-gray-100)] py-16'>
+      <section className='about-us py-16'>
         <div className='container mx-auto px-4 text-center'>
           <h2 className='text-3xl font-bold mb-4'>
             Sobre nosotros
           </h2>
-          <p className='text-lg text-[var(--color-gray-700)] max-w-3xl mx-auto mb-8'>
+          <p className='text-lg text-[var(--color-gray-700)] max-w-3xl mx-auto mb-8 leading-relaxed px-8 text-center'>
             Radarte conecta artistas, espacios y amantes del
             arte en Bolivia. Nuestra misión es visibilizar
             la cultura y crear una comunidad que celebre la
@@ -98,7 +98,7 @@ export default function Home() {
           </p>
           <Link
             href='/faq'
-            className='bg-[var(--color-teal-600)] text-[var(--color-white)] px-6 py-2 rounded-full text-lg font-semibold hover:bg-teal-700 transition duration-300'
+            className='bg-[var(--color-teal-500)] text-[var(--color-white)] px-6 py-2 rounded-full text-lg font-semibold hover:bg-teal-700 transition duration-300'
           >
             Preguntas frecuentes
           </Link>
@@ -111,14 +111,14 @@ export default function Home() {
             Explora los espacios culturales
           </h2>
           <div className='aspect-w-16 aspect-h-9 mb-8'>
-            <div className='bg-[var(--color-gray-300)] w-full h-full flex items-center justify-center text-[var(--color-gray-600)]'>
+            <div className='w-full h-full flex items-center justify-center text-[var(--color-gray-600)]'>
               Mapa interactivo aquí
             </div>
           </div>
           <div className='text-center'>
             <Link
               href='/register'
-              className='bg-[var(--color-teal-600)] text-[var(--color-white)] px-6 py-2 rounded-full text-lg font-semibold hover:bg-teal-700 transition duration-300'
+              className='bg-[var(--color-teal-500)] text-[var(--color-white)] px-6 py-2 rounded-full text-lg font-semibold hover:bg-teal-700 transition duration-300'
             >
               Crear cuenta
             </Link>

@@ -51,61 +51,43 @@ body {
 
 @layer base {
   :root {
-    --background: rgba(255, 255, 255, 1);
-    --foreground: rgba(13, 11, 12, 1);
+    --background: #ffffff;
+    --foreground: #ffffff;
 
-    --card: rgba(255, 255, 255, 1);
-    --card-foreground: rgba(13, 11, 12, 1);
+    --card: #2c2c2c;
+    --card-foreground: #ffffff;
 
-    --popover: rgba(255, 255, 255, 1);
-    --popover-foreground: rgba(13, 11, 12, 1);
+    --popover: #2c2c2c;
+    --popover-foreground: #ffffff;
 
-    --primary: rgba(25, 22, 24, 1);
-    --primary-foreground: rgba(249, 250, 251, 1);
+    --primary: #7928ca;
+    --primary-foreground: #ffffff;
 
-    --secondary: rgba(242, 244, 245, 1);
-    --secondary-foreground: rgba(29, 27, 28, 1);
+    --secondary: #ff498b;
+    --secondary-foreground: #000000;
 
-    --muted: rgba(242, 244, 245, 1);
-    --muted-foreground: rgba(115, 119, 122, 1);
+    --muted: #333333;
+    --muted-foreground: #ffffff;
 
-    --accent: rgba(242, 244, 245, 1);
-    --accent-foreground: rgba(29, 27, 28, 1);
+    --accent: #00f5a0;
+    --accent-foreground: #000000;
 
-    --destructive: rgba(154, 27, 27, 1);
-    --destructive-foreground: rgba(249, 250, 251, 1);
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
 
-    --border: rgba(227, 229, 230, 1);
-    --input: rgba(227, 229, 230, 1);
-
-    --ring: rgba(13, 11, 12, 1);
+    --border: #444444;
+    --input: #444444;
 
     --radius: 0.5rem;
 
-    --sidebar-background: rgba(255, 255, 255, 1);
-    --sidebar-foreground: rgba(13, 11, 12, 1);
-    --sidebar-primary: rgba(25, 22, 24, 1);
-    --sidebar-primary-foreground: rgba(249, 250, 251, 1);
-    --sidebar-accent: rgba(242, 244, 245, 1);
-    --sidebar-accent-foreground: rgba(29, 27, 28, 1);
-    --sidebar-border: rgba(227, 229, 230, 1);
-    --sidebar-ring: rgba(13, 11, 12, 1);
-
-    --chart-1: rgba(173, 99, 82, 1);
-    --chart-2: rgba(135, 44, 61, 1);
-    --chart-3: rgba(160, 101, 32, 1);
-    --chart-4: rgba(70, 112, 117, 1);
-    --chart-5: rgba(144, 154, 191, 1);
-
-    --teal-500: #14b8a6;
-    --blue-500: #3b82f6;
-
     --color-white: #ffffff;
-    --color-teal-600: #0f766e;
-    --color-gray-100: #f3f4f6;
-    --color-gray-700: #4b5563;
-    --color-gray-600: #52606f;
-    --color-gray-500: #6b7280;
-    --color-gray-300: #d1d5db;
+    --color-teal-600: #ff498b;
+    --color-teal-500: #00f5a0;
+    --color-blue-500: #7928ca;
+    --color-gray-100: #2c2c2c;
+    --color-gray-700: #444444;
+    --color-gray-600: #555555;
+    --color-gray-500: #666666;
+    --color-gray-300: #777777;
   }
 }

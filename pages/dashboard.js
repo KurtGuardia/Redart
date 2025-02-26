@@ -101,7 +101,7 @@ export default function Dashboard() {
               </ul>
             )}
             <Link
-              className='mt-4 inline-block bg-[var(--color-teal-600)] text-[var(--color-white)] py-2 px-4 rounded-md hover:bg-teal-700 transition duration-300'
+              className='mt-4 inline-block bg-[var(--color-teal-500)] text-[var(--color-white)] py-2 px-4 rounded-md hover:bg-teal-700 transition duration-300'
               href='/add-space'
             >
               Agregar espacio
@@ -132,7 +132,7 @@ export default function Dashboard() {
               </ul>
             )}
             <Link
-              className='mt-4 inline-block bg-[var(--color-teal-600)] text-[var(--color-white)] py-2 px-4 rounded-md hover:bg-teal-700 transition duration-300'
+              className='mt-4 inline-block bg-[var(--color-teal-500)] text-[var(--color-white)] py-2 px-4 rounded-md hover:bg-teal-700 transition duration-300'
               href='/add-event'
             >
               Agregar evento

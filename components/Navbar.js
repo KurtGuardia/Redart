@@ -1,14 +1,38 @@
 import Link from 'next/link'
+import { useState, useEffect } from 'react'
 import {
   Avatar,
   AvatarImage,
   AvatarFallback,
 } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
 
 export default function Navbar() {
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 0) {
+        setScrolled(true)
+      } else {
+        setScrolled(false)
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
+
   return (
-    <nav className='fixed top-0 left-0 right-0 bg-[var(--background)] shadow-md z-50 h-16'>
+    <nav
+      className={`fixed top-0 left-0 right-0 shadow-md z-50 h-16 ${
+        scrolled
+          ? 'bg-white/80 backdrop-blur-sm shadow-md'
+          : ''
+      }`}
+    >
       <div className='container mx-auto px-4 py-3 flex justify-between items-center h-full'>
         <Link
           className='text-2xl font-bold text-primary'
@@ -18,25 +42,25 @@ export default function Navbar() {
         </Link>
         <div className='space-x-4 flex items-center'>
           <Link
-            className='text-foreground hover:text-primary'
+            className='text-lg text-foreground hover:text-primary hover:underline underline-offset-2'
             href='/events'
           >
             Eventos
           </Link>
           <Link
-            className='text-foreground hover:text-primary'
+            className='text-lg text-foreground hover:text-primary hover:underline underline-offset-2'
             href='/faq'
           >
             FAQ
           </Link>
           <Link
-            className='text-foreground hover:text-primary'
+            className='text-lg text-foreground hover:text-primary hover:underline underline-offset-2'
             href='/map'
           >
             Mapa
           </Link>
           <Link
-            className='text-foreground hover:text-primary'
+            className='text-lg text-foreground hover:text-primary hover:underline underline-offset-2'
             href='/login'
           >
             Iniciar sesión
