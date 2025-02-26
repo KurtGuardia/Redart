@@ -2,35 +2,26 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-html {
-  color-scheme: normal !important;
-}
-
 @keyframes fadeInUp {
-  from {
+  0% {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(70px);
   }
-  to {
+  60% {
+    opacity: 0.6;
+    transform: translateY(-20px);
+  }
+  100% {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
 .animate-fade-in-up {
-  animation: fadeInUp 0.5s ease-out;
-}
-
-.delay-200 {
-  animation-delay: 0.2s;
-}
-
-.delay-400 {
-  animation-delay: 0.4s;
+  animation: fadeInUp 1s ease-out;
 }
 
 body {
-  /* background-color: #f7f7f7; */
   color: #333;
   font-family: 'Poppins', sans-serif;
 }
@@ -60,96 +51,61 @@ body {
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: rgba(255, 255, 255, 1);
+    --foreground: rgba(13, 11, 12, 1);
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: rgba(255, 255, 255, 1);
+    --card-foreground: rgba(13, 11, 12, 1);
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: rgba(255, 255, 255, 1);
+    --popover-foreground: rgba(13, 11, 12, 1);
 
-    --primary: 222.1 83.2% 9.9%;
-    --primary-foreground: 210 40% 98%;
+    --primary: rgba(25, 22, 24, 1);
+    --primary-foreground: rgba(249, 250, 251, 1);
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: rgba(242, 244, 245, 1);
+    --secondary-foreground: rgba(29, 27, 28, 1);
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: rgba(242, 244, 245, 1);
+    --muted-foreground: rgba(115, 119, 122, 1);
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: rgba(242, 244, 245, 1);
+    --accent-foreground: rgba(29, 27, 28, 1);
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: rgba(154, 27, 27, 1);
+    --destructive-foreground: rgba(249, 250, 251, 1);
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --border: rgba(227, 229, 230, 1);
+    --input: rgba(227, 229, 230, 1);
 
-    --ring: 222.2 84% 4.9%;
+    --ring: rgba(13, 11, 12, 1);
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 222.2 84% 4.9%;
-    --sidebar-primary: 222.1 83.2% 9.9%;
-    --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 210 40% 96.1%;
-    --sidebar-accent-foreground: 222.2 47.4% 11.2%;
-    --sidebar-border: 214.3 31.8% 91.4%;
-    --sidebar-ring: 222.2 84% 4.9%;
+    --sidebar-background: rgba(255, 255, 255, 1);
+    --sidebar-foreground: rgba(13, 11, 12, 1);
+    --sidebar-primary: rgba(25, 22, 24, 1);
+    --sidebar-primary-foreground: rgba(249, 250, 251, 1);
+    --sidebar-accent: rgba(242, 244, 245, 1);
+    --sidebar-accent-foreground: rgba(29, 27, 28, 1);
+    --sidebar-border: rgba(227, 229, 230, 1);
+    --sidebar-ring: rgba(13, 11, 12, 1);
 
-    --chart-1: 230 75% 68%;
-    --chart-2: 349 71% 53%;
-    --chart-3: 47 87% 63%;
-    --chart-4: 176 57% 55%;
-    --chart-5: 272 67% 75%;
-  }
+    --chart-1: rgba(173, 99, 82, 1);
+    --chart-2: rgba(135, 44, 61, 1);
+    --chart-3: rgba(160, 101, 32, 1);
+    --chart-4: rgba(70, 112, 117, 1);
+    --chart-5: rgba(144, 154, 191, 1);
 
-  .dark {
-    --background: 230 25% 18%; /* Darker background */
-    --foreground: 50 10% 20%; /* Lighter foreground */
+    --teal-500: #14b8a6;
+    --blue-500: #3b82f6;
 
-    --card: 230 25% 18%;
-    --card-foreground: 50 10% 20%;
-
-    --popover: 230 25% 18%;
-    --popover-foreground: 50 10% 20%;
-
-    --primary: 100 50% 50%; /* Teal primary */
-    --primary-foreground: 0 0% 95%; /* Near white */
-
-    --secondary: 200 40% 30%; /* Different secondary */
-    --secondary-foreground: 0 0% 95%;
-
-    --muted: 200 40% 30%;
-    --muted-foreground: 210 10% 70%;
-
-    --accent: 200 40% 30%;
-    --accent-foreground: 0 0% 95%;
-
-    --destructive: 0 70% 40%; /* Reddish destructive */
-    --destructive-foreground: 0 0% 95%;
-
-    --border: 210 20% 30%;
-    --input: 210 20% 30%;
-
-    --ring: 220 30% 40%;
-
-    --sidebar-background: 230 25% 18%;
-    --sidebar-foreground: 50 10% 20%;
-    --sidebar-primary: 100 50% 50%;
-    --sidebar-primary-foreground: 0 0% 95%;
-    --sidebar-accent: 200 40% 30%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 210 20% 30%;
-    --sidebar-ring: 220 30% 40%;
-
-    --chart-1: 10 45% 48%;
-    --chart-2: 159 51% 23%;
-    --chart-3: 237 37% 33%;
-    --chart-4: 316 7% 25%;
-    --chart-5: 37 17% 45%;
+    --color-white: #ffffff;
+    --color-teal-600: #0f766e;
+    --color-gray-100: #f3f4f6;
+    --color-gray-700: #4b5563;
+    --color-gray-600: #52606f;
+    --color-gray-500: #6b7280;
+    --color-gray-300: #d1d5db;
   }
 }

@@ -8,35 +8,35 @@ import { Button } from '@/components/ui/button'
 
 export default function Navbar() {
   return (
-    <nav className='fixed top-0 left-0 right-0 bg-white shadow-md z-50'>
-      <div className='container mx-auto px-4 py-3 flex justify-between items-center'>
+    <nav className='fixed top-0 left-0 right-0 bg-[var(--background)] shadow-md z-50 h-16'>
+      <div className='container mx-auto px-4 py-3 flex justify-between items-center h-full'>
         <Link
-          className='text-2xl font-bold text-teal-600'
+          className='text-2xl font-bold text-primary'
           href='/'
         >
           Radarte
         </Link>
         <div className='space-x-4 flex items-center'>
           <Link
-            className='text-gray-600 hover:text-teal-600'
-            href='/campaigns'
+            className='text-foreground hover:text-primary'
+            href='/events'
           >
-            Campañas
+            Eventos
           </Link>
           <Link
-            className='text-gray-600 hover:text-teal-600'
+            className='text-foreground hover:text-primary'
             href='/faq'
           >
             FAQ
           </Link>
           <Link
-            className='text-gray-600 hover:text-teal-600'
+            className='text-foreground hover:text-primary'
             href='/map'
           >
             Mapa
           </Link>
           <Link
-            className='text-gray-600 hover:text-teal-600'
+            className='text-foreground hover:text-primary'
             href='/login'
           >
             Iniciar sesión
@@ -47,7 +47,7 @@ export default function Navbar() {
               alt='@shadcn'
               className='h-full w-full object-cover rounded-full'
             />
-            <AvatarFallback className='h-full w-full flex items-center justify-center rounded-full bg-gray-500 text-white'>
+            <AvatarFallback className='h-full w-full flex items-center justify-center rounded-full bg-muted text-white'>
               CN
             </AvatarFallback>
           </Avatar>
