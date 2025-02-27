@@ -2,6 +2,7 @@
 
 import Layout from "../components/Layout"
 import { useState } from "react"
+import Spot from "../components/Spot"
 
 const faqs = [
   {
@@ -22,21 +23,27 @@ const faqs = [
   // Add more FAQs as needed
 ]
 
-export default function FAQ() {
-  const [openIndex, setOpenIndex] = useState(null)
+export default function FAQ () {
+  const [openIndex, setOpenIndex] = useState( null )
 
-  const toggleFAQ = (index) => {
-    setOpenIndex(openIndex === index ? null : index)
+  const toggleFAQ = ( index ) => {
+    setOpenIndex( openIndex === index ? null : index )
   }
 
   return (
     <Layout>
+      <Spot colorName={'SlateBlue'} />
+      <Spot colorName={'Magenta'} />
+      <Spot colorName={'red'} />
+      <Spot colorName={'Indigo'} />
+      <Spot colorName={'red'} />
+      <Spot colorName={'Indigo'} />
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8">Preguntas frecuentes</h1>
         <div className="space-y-4">
-          {faqs.map((faq, index) => (
+          {faqs.map( ( faq, index ) => (
             <div key={index} className="border-b border-gray-200 pb-4">
-              <button className="flex justify-between items-center w-full text-left" onClick={() => toggleFAQ(index)}>
+              <button className="flex justify-between items-center w-full text-left" onClick={() => toggleFAQ( index )}>
                 <span className="text-lg font-semibold">{faq.question}</span>
                 <svg
                   className={`w-6 h-6 transition-transform ${openIndex === index ? "transform rotate-180" : ""}`}
@@ -50,7 +57,7 @@ export default function FAQ() {
               </button>
               {openIndex === index && <p className="mt-2 text-gray-600">{faq.answer}</p>}
             </div>
-          ))}
+          ) )}
         </div>
       </div>
     </Layout>

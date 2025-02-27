@@ -6,14 +6,15 @@ import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from './_app'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
+import Spot from '../components/Spot'
 
-export default function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState(null)
+export default function Login () {
+  const [email, setEmail] = useState( '' )
+  const [password, setPassword] = useState( '' )
+  const [error, setError] = useState( null )
   const router = useRouter()
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async ( e ) => {
     e.preventDefault()
     try {
       await signInWithEmailAndPassword(
@@ -21,14 +22,18 @@ export default function Login() {
         email,
         password,
       )
-      router.push('/dashboard')
-    } catch (error) {
-      setError(error.message)
+      router.push( '/dashboard' )
+    } catch ( error ) {
+      setError( error.message )
     }
   }
 
   return (
     <Layout>
+      <Spot colorName={'red'} />
+      <Spot colorName={'Indigo'} />
+      <Spot colorName={'GoldenRod'} />
+      <Spot colorName={'MediumVioletRed'} />
       <div className=' my-40container px-4 py-8'>
         <div className='max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden'>
           <div className='p-6'>
@@ -50,7 +55,7 @@ export default function Login() {
                   type='email'
                   id='email'
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={( e ) => setEmail( e.target.value )}
                   className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500'
                   required
                 />
@@ -66,8 +71,8 @@ export default function Login() {
                   type='password'
                   id='password'
                   value={password}
-                  onChange={(e) =>
-                    setPassword(e.target.value)
+                  onChange={( e ) =>
+                    setPassword( e.target.value )
                   }
                   className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500'
                   required

@@ -1,6 +1,7 @@
 'use client'
 
 import Layout from '../components/Layout'
+import Spot from '../components/Spot'
 import { useState, useEffect } from 'react'
 import {
   collection,
@@ -15,13 +16,13 @@ import Link from 'next/link'
 
 const ITEMS_PER_PAGE = 9
 
-export default function Events() {
-  const [eventsList, setEventsList] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [lastVisible, setLastVisible] = useState(null)
-  const [hasMore, setHasMore] = useState(true)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [filter, setFilter] = useState('all')
+export default function Events () {
+  const [eventsList, setEventsList] = useState( [] )
+  const [loading, setLoading] = useState( true )
+  const [lastVisible, setLastVisible] = useState( null )
+  const [hasMore, setHasMore] = useState( true )
+  const [searchTerm, setSearchTerm] = useState( '' )
+  const [filter, setFilter] = useState( 'all' )
 
   // useEffect(() => {
   //   fetchEvents()
@@ -53,23 +54,28 @@ export default function Events() {
   //   setLoading( false )
   // }
 
-  const handleSearch = (e) => {
+  const handleSearch = ( e ) => {
     e.preventDefault()
-    setEventsList([])
-    setLastVisible(null)
-    fetchEvents(searchTerm, filter)
+    setEventsList( [] )
+    setLastVisible( null )
+    fetchEvents( searchTerm, filter )
   }
 
-  const handleFilterChange = (e) => {
-    setFilter(e.target.value)
-    setEventsList([])
-    setLastVisible(null)
-    fetchEvents(searchTerm, e.target.value)
+  const handleFilterChange = ( e ) => {
+    setFilter( e.target.value )
+    setEventsList( [] )
+    setLastVisible( null )
+    fetchEvents( searchTerm, e.target.value )
   }
 
   return (
     <Layout>
-      <div className='container mx-auto px-4 py-8'>
+      <div className='relative container mx-auto px-4 py-8'>
+        <Spot colorName={'SlateBlue'} />
+        <Spot colorName={'Magenta'} />
+        <Spot colorName={'red'} />
+        <Spot colorName={'red'} />
+        <Spot colorName={'Indigo'} />
         <h1 className='text-3xl font-bold mb-8'>
           Todos los eventos
         </h1>
@@ -80,7 +86,7 @@ export default function Events() {
           <input
             type='text'
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={( e ) => setSearchTerm( e.target.value )}
             placeholder='Buscar eventos...'
             className='flex-grow px-4 py-2 rounded-lg border border-[var(--color-gray-300)] focus:outline-none focus:ring-2 focus:ring-[var(--color-teal-500)]'
           />
@@ -109,7 +115,7 @@ export default function Events() {
         ) : (
           <>
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
-              {eventsList.map((event) => (
+              {eventsList.map( ( event ) => (
                 <Link
                   className='bg-[var(--color-white)] rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300'
                   href={`/events/${event.id}`}
@@ -127,7 +133,7 @@ export default function Events() {
                       {event.title}
                     </h3>
                     <p className='text-[var(--color-gray-600)] mb-2'>
-                      {event.description.substring(0, 100)}
+                      {event.description.substring( 0, 100 )}
                       ...
                     </p>
                     <div className='flex justify-between text-sm text-[var(--color-gray-500)]'>
@@ -140,13 +146,13 @@ export default function Events() {
                     </Link>
                   </div>
                 </Link>
-              ))}
+              ) )}
             </div>
             {hasMore && (
               <div className='mt-8 text-center'>
                 <button
                   onClick={() =>
-                    fetchEvents(searchTerm, filter)
+                    fetchEvents( searchTerm, filter )
                   }
                   className='bg-[var(--color-teal-500)] text-[var(--color-white)] px-6 py-2 rounded-lg hover:bg-teal-700 transition duration-300'
                   disabled={loading}
