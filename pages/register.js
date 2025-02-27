@@ -10,15 +10,16 @@ import { auth, db } from './_app'
 import { doc, setDoc } from 'firebase/firestore'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
+import Spot from '../components/Spot'
 
-export default function Register() {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState(null)
+export default function Register () {
+  const [name, setName] = useState( '' )
+  const [email, setEmail] = useState( '' )
+  const [password, setPassword] = useState( '' )
+  const [error, setError] = useState( null )
   const router = useRouter()
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async ( e ) => {
     e.preventDefault()
     try {
       const userCredential =
@@ -27,13 +28,13 @@ export default function Register() {
           email,
           password,
         )
-      await updateProfile(userCredential.user, {
+      await updateProfile( userCredential.user, {
         displayName: name,
-      })
+      } )
 
       // Create a user document in Firestore
       await setDoc(
-        doc(db, 'users', userCredential.user.uid),
+        doc( db, 'users', userCredential.user.uid ),
         {
           name,
           email,
@@ -41,14 +42,18 @@ export default function Register() {
         },
       )
 
-      router.push('/dashboard')
-    } catch (error) {
-      setError(error.message)
+      router.push( '/dashboard' )
+    } catch ( error ) {
+      setError( error.message )
     }
   }
 
   return (
     <Layout>
+      <Spot colorName={'GoldenRod'} />
+      <Spot colorName={'MediumVioletRed'} />
+      <Spot colorName={'DarkKhaki'} />
+      <Spot colorName={'DarkOrchid'} />
       <div className='my-40 container px-4 py-8'>
         <div className='max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden'>
           <div className='p-6'>
@@ -70,7 +75,7 @@ export default function Register() {
                   type='text'
                   id='name'
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={( e ) => setName( e.target.value )}
                   className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500'
                   required
                 />
@@ -86,7 +91,7 @@ export default function Register() {
                   type='email'
                   id='email'
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={( e ) => setEmail( e.target.value )}
                   className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500'
                   required
                 />
@@ -102,8 +107,8 @@ export default function Register() {
                   type='password'
                   id='password'
                   value={password}
-                  onChange={(e) =>
-                    setPassword(e.target.value)
+                  onChange={( e ) =>
+                    setPassword( e.target.value )
                   }
                   className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500'
                   required

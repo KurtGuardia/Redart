@@ -26,9 +26,9 @@ body {
   font-family: 'Poppins', sans-serif;
   background-image: linear-gradient(
     to bottom,
-    #f3e7e9 0%,
-    #e3eeff 99%,
-    #e3eeff 100%
+    #e4ffdf 0%,
+    #c8eeff 85%,
+    #aecaff 100%
   );
 }
 
@@ -62,7 +62,41 @@ body {
     flex-direction: column;
   }
 
-  :root {
+  :root{
+    /* Gray scale */
+    --color-white: #ffffff;
+    --color-gray-100: #f3f4f6;
+    --color-gray-200: #e5e7eb;
+    --color-gray-300: #d1d5db;
+    --color-gray-400: #9ca3af;
+    --color-gray-500: #6b7280;
+    --color-gray-600: #4b5563;
+    --color-gray-700: #374151;
+    --color-gray-800: #1f2937;
+    --color-gray-900: #111827;
+
+    /* Teal scale */
+    --color-teal-100: #ccfbf1;
+    --color-teal-200: #99f6e4;
+    --color-teal-300: #5eead4;
+    --color-teal-400: #2dd4bf;
+    --color-teal-500: #14b8a6;
+    --color-teal-700: #0d9488;
+
+    /* Pink */
+    --color-pink-600: #ec4899;
+
+    /* Blue scale */
+    --color-blue-100: #dbeafe;
+    --color-blue-200: #bfdbfe;
+    --color-blue-300: #93c5fd;
+    --color-blue-400: #60a5fa;
+    --color-blue-500: #3b82f6;
+    --color-blue-600: #2563eb;
+    --color-blue-700: #1d4ed8;
+    --color-blue-800: #1e40af;
+    --color-blue-900: #1e3a8a;
+
     --background: #ffffff;
     --foreground: #ffffff;
 
@@ -72,14 +106,14 @@ body {
     --primary: #7928ca;
     --primary-foreground: #ffffff;
 
-    --secondary: #ff498b;
+    --secondary: #ec4899;
     --secondary-foreground: #000000;
 
     --muted: #333333;
     --muted-foreground: #ffffff;
 
     --accent: #00f5a0;
-    --accent-foreground: #000000;
+    --accent-foreground: #4B0082;
 
     --destructive: #ef4444;
     --destructive-foreground: #ffffff;
@@ -88,15 +122,9 @@ body {
     --input: #444444;
 
     --radius: 0.5rem;
+  }
 
-    --color-white: #ffffff;
-    --color-teal-600: #ff498b;
-    --color-teal-500: #00f5a0;
-    --color-blue-500: #7928ca;
-    --color-gray-100: #2c2c2c;
-    --color-gray-700: #444444;
-    --color-gray-600: #555555;
-    --color-gray-500: #666666;
-    --color-gray-300: #777777;
+  .intro {
+    min-height: 200px; /* Adjust based on your text size */
   }
 }

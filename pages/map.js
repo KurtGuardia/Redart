@@ -2,14 +2,15 @@ import Layout from '../components/Layout'
 import Link from 'next/link'
 import Spot from '../components/Spot'
 
-export default function MapPage() {
+export default function MapPage () {
   return (
     <Layout>
       <section className='map py-16'>
-        <div className='container mx-auto px-4'>
+        <div className='relative container mx-auto px-4'>
           <Spot colorName={'chartreuse'} />
           <Spot colorName={'magenta'} />
-          <Spot colorName={'crimson'} />
+          <Spot colorName={'red'} />
+          <Spot colorName={'Indigo'} />
           <Spot colorName={'indigo'} />
           <h2 className='text-3xl font-bold text-center mb-8'>
             Mapa de Cochabamba

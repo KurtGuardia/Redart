@@ -7,35 +7,34 @@ import {
   AvatarFallback,
 } from '@/components/ui/avatar'
 
-export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false)
+export default function Navbar () {
+  const [scrolled, setScrolled] = useState( false )
   const isIndexPage = useIsIndexPage()
 
-  useEffect(() => {
+  useEffect( () => {
     const handleScroll = () => {
-      if (window.scrollY > 0) {
-        setScrolled(true)
+      if ( window.scrollY > 0 ) {
+        setScrolled( true )
       } else {
-        setScrolled(false)
+        setScrolled( false )
       }
     }
 
-    window.addEventListener('scroll', handleScroll)
+    window.addEventListener( 'scroll', handleScroll )
 
     return () => {
-      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener( 'scroll', handleScroll )
     }
-  }, [])
+  }, [] )
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 shadow-md z-50 h-16 ${
-        isIndexPage
+      className={`fixed top-0 left-0 right-0 shadow-md z-50 h-16 ${isIndexPage
           ? scrolled
             ? 'bg-white/80 backdrop-blur-sm shadow-md'
             : ''
           : 'bg-[var(--background)] text-foreground'
-      }`}
+        }`}
     >
       <div className='container mx-auto px-4 py-3 flex justify-between items-center h-full'>
         <Link
@@ -46,57 +45,60 @@ export default function Navbar() {
         </Link>
         <div className='space-x-4 flex items-center'>
           <Link
-            className={`text-lg ${
-              isIndexPage && !scrolled
+            className={`text-lg ${isIndexPage && !scrolled
                 ? 'text-white'
                 : 'text-foreground'
-            } ${
-              isIndexPage && !scrolled
+              } ${isIndexPage && !scrolled
                 ? 'hover:text-white'
                 : 'hover:text-primary'
-            } hover:underline underline-offset-8 font-bold`}
+              } hover:underline underline-offset-8 font-bold`}
+            href='/'
+          >
+            Inicio
+          </Link> <Link
+            className={`text-lg ${isIndexPage && !scrolled
+                ? 'text-white'
+                : 'text-foreground'
+              } ${isIndexPage && !scrolled
+                ? 'hover:text-white'
+                : 'hover:text-primary'
+              } hover:underline underline-offset-8 font-bold`}
             href='/events'
           >
             Eventos
           </Link>
           <Link
-            className={`text-lg ${
-              isIndexPage && !scrolled
+            className={`text-lg ${isIndexPage && !scrolled
                 ? 'text-white'
                 : 'text-foreground'
-            } ${
-              isIndexPage && !scrolled
+              } ${isIndexPage && !scrolled
                 ? 'hover:text-white'
                 : 'hover:text-primary'
-            } hover:underline underline-offset-8 font-bold`}
-            href='/faq'
-          >
-            FAQ
-          </Link>
-          <Link
-            className={`text-lg ${
-              isIndexPage && !scrolled
-                ? 'text-white'
-                : 'text-foreground'
-            } ${
-              isIndexPage && !scrolled
-                ? 'hover:text-white'
-                : 'hover:text-primary'
-            } hover:underline underline-offset-8 font-bold`}
+              } hover:underline underline-offset-8 font-bold`}
             href='/map'
           >
-            Mapa
+            Locaciones
           </Link>
           <Link
-            className={`text-lg ${
-              isIndexPage && !scrolled
+            className={`text-lg ${isIndexPage && !scrolled
                 ? 'text-white'
                 : 'text-foreground'
-            } ${
-              isIndexPage && !scrolled
+              } ${isIndexPage && !scrolled
                 ? 'hover:text-white'
                 : 'hover:text-primary'
-            } hover:underline underline-offset-8 font-bold`}
+              } hover:underline underline-offset-8 font-bold`}
+            href='/faq'
+          >
+            ¿Qué es Radarte?
+          </Link>
+          <Link
+            className={`text-lg ${isIndexPage && !scrolled
+                ? 'text-white'
+                : 'text-foreground'
+              } ${isIndexPage && !scrolled
+                ? 'hover:text-white'
+                : 'hover:text-primary'
+              } hover:underline underline-offset-8 font-bold`}
             href='/login'
           >
             Iniciar sesión
