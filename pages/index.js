@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import Layout from '../components/Layout'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -5,19 +6,34 @@ import TypingAnimation from '../components/TypingAnimation'
 import Spot from '../components/Spot'
 
 export default function Home () {
+  const [bgIndex, setBgIndex] = useState( 0 )
+  const images = ['/theater.jpg', '/carnival.jpg', '/guitarist.jpg']
+
+  useEffect( () => {
+    const interval = setInterval( () => {
+      setBgIndex( ( prev ) => ( prev + 1 ) % images.length )
+    }, 2000 )
+
+    return () => clearInterval( interval )
+  }, [] )
+
   return (
     <Layout>
-      <section className='hero bg-gradient-to-r from-[var(--accent)] to-[var(--primary)] text-white h-[80vh] flex items-center'>
-        <div className='container mx-auto px-4 text-center flex flex-col justify-between gap-4'>
+      <div
+        className='absolute top-0 left-0 right-0 opacity-80 bg-gradient-to-r from-[var(--accent)] to-[var(--primary)] h-[80vh]'
+      />
+      <section className='hero img text-white h-[80vh] flex items-center'
+        style={{ backgroundImage: `url(${images[bgIndex]})` }}>
+        <div className='container mx-auto px-4 z-10 text-center flex flex-col justify-between gap-4 bg-white bg-opacity-25 rounded-3xl py-10'>
           <h1 className='text-4xl md:text-6xl font-bold mb-4 animate-fade-in-up'>
             Descubre la vibrante escena artística de Bolivia
           </h1>
-          <p className='text-xl max-w-2xl mx-auto mb-8 animate-fade-in-up'>
+          <p className='font-semibold text-2xl max-w-2xl mx-auto mb-8 animate-fade-in-up'>
             Encuentra eventos, espacios y artistas en tu ciudad
           </p>
           <Link
             href='/events'
-            className='bg-[var(--color-white)] text-[var(--color-blue-500)] px-8 py-3 rounded-xl shadow-md text-lg font-semibold hover:bg-[#7928ca80] hover:text-[var(--accent)] transition duration-300 animate-fade-in-up w-fit mx-auto'
+            className='bg-[var(--color-white)] text-[var(--color-blue-500)] px-8 py-3 rounded-xl shadow-md text-lg font-semibold hover:bg-[#7928ca] hover:text-[var(--accent)] transition duration-300 animate-fade-in-up w-fit mx-auto'
           >
             Explorar eventos
           </Link>
@@ -83,12 +99,13 @@ export default function Home () {
         </div>
       </section>
 
-      <section className='about-us py-28 my-24 bg-[var(--color-teal-700)]'>
-        <div className='container mx-auto px-4 text-center text-white'>
+      <section className='about-us img relative my-24' style={{ backgroundImage: `url(${'/crowd.jpg'})` }}>
+
+        <div className='relative z-10 py-28 mx-auto px-4 text-center text-white h-[500px]'>
           <h2 className='text-5xl font-bold mb-12'>
             Sobre nosotros
           </h2>
-          <p className='text-2xl max-w-5xl mx-auto mb-14 leading-relaxed px-8 text-center'>
+          <p className='text-2xl font-semibold max-w-5xl mx-auto mb-14 leading-relaxed px-8 text-center'>
             Radarte conecta artistas, espacios y amantes del
             arte en Bolivia. Nuestra misión es visibilizar
             la cultura y crear una comunidad que celebre la
@@ -104,6 +121,7 @@ export default function Home () {
             </Link>
           </div>
         </div>
+        <div className='w-full absolute top-0 left-0 bg-[var(--color-teal-700)] opacity-70  h-[500px]' />
       </section>
 
       <section className='map py-16 my-24'>
@@ -130,7 +148,7 @@ export default function Home () {
       </section>
 
       <div className='text-center mb-24'>
-        <p className='text-center text-xl text-[var(--color-blue-700)] font-semibold max-w-2xl mx-auto mb-8 animate-fade-in-up'>¡Únete a la movida cultural! ¿Eres un espacios artistico? Crea tu cuenta y conecta con artistas, espacios y eventos</p>
+        <p className='text-center text-xl text-[var(--color-blue-900)] font-semibold max-w-2xl mx-auto mb-8 animate-fade-in-up'>¡Únete a la movida cultural y muestra tus actividades!<br /> ¿Eres un espacio artistico? Crea tu cuenta y conecta con tu potencial audiencia mostrando tus eventos.</p>
         <Link
           href='/register'
           className='bg-[var(--accent)] text-[var(--accent-foreground)] hover:text-white px-6 py-2 rounded-full text-lg font-semibold hover:bg-teal-700 transition duration-300'
