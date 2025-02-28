@@ -125,6 +125,12 @@ body {
   }
 
   .intro {
-    min-height: 200px; /* Adjust based on your text size */
+    min-height: 200px;
+  }
+
+  .img {
+    background-size: cover;
+    background-position: center;
+    transition: background-image 1s ease-in-out;
   }
 }
