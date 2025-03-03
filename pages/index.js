@@ -165,18 +165,18 @@ export default function Home () {
         </div>
       </section>
 
-      <div className='join text-center mb-24'>
+      <section className='join text-center container mx-auto mb-48'>
         <h2 className='text-3xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--blue-600)] to-[var(--blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg backface-visibility-hidden transform-gpu hover:scale-105 transition-transform'>
           ¿Quieres unirte a la comunidad de Radarte?
         </h2>
         <p className='text-center text-xl text-[var(--blue-900)] font-semibold max-w-2xl mx-auto mb-8 animate-fade-in-up'>¡Únete a la movida cultural y muestra tus actividades!<br /> ¿Eres un espacio artistico? Crea tu cuenta y conecta con tu potencial audiencia mostrando tus eventos.</p>
         <Link
           href='/register'
-          className='bg-[var(--secondary-color)] text-[var(--secondary-color-foreground)] hover:text-white px-6 py-2 rounded-full text-lg font-semibold hover:bg-teal-700 transition duration-300'
+          className='shadow-[var(--shadow)] bg-[var(--secondary-color)] text-[var(--secondary-color-foreground)] hover:text-white px-6 py-2 rounded-full text-lg font-semibold hover:bg-teal-700 transition duration-300'
         >
           Crear cuenta
         </Link>
-      </div>
+      </section>
     </Layout>
   )
 }
