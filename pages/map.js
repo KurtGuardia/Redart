@@ -25,7 +25,6 @@ export default function MapPage () {
                 margin: 'auto',
                 borderRadius: '10px',
               }}
-              allowFullScreen=''
               loading='lazy'
               referrerPolicy='no-referrer-when-downgrade'
             />
