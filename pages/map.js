@@ -32,7 +32,7 @@ export default function MapPage () {
           <div className='text-center mt-32'>
             <Link
               href='/'
-              className='bg-[var(--color-teal-500)] text-[var(--color-white)] px-6 py-2 rounded-full text-lg font-semibold hover:bg-teal-700 hover:text-white transition duration-300 '
+              className='bg-[var(--teal-500)] text-[var(--white)] px-6 py-2 rounded-full text-lg font-semibold hover:bg-teal-700 hover:text-white transition duration-300 '
             >
               Volver al inicio
             </Link>

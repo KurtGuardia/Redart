@@ -88,12 +88,12 @@ export default function Events () {
             value={searchTerm}
             onChange={( e ) => setSearchTerm( e.target.value )}
             placeholder='Buscar eventos...'
-            className='flex-grow px-4 py-2 rounded-lg border border-[var(--color-gray-300)] focus:outline-none focus:ring-2 focus:ring-[var(--color-teal-500)]'
+            className='flex-grow px-4 py-2 rounded-lg border border-[var(--gray-300)] focus:outline-none focus:ring-2 focus:ring-[var(--teal-500)]'
           />
           <select
             value={filter}
             onChange={handleFilterChange}
-            className='px-4 py-2 rounded-lg border border-[var(--color-gray-300)] focus:outline-none focus:ring-2 focus:ring-[var(--color-teal-500)]'
+            className='px-4 py-2 rounded-lg border border-[var(--gray-300)] focus:outline-none focus:ring-2 focus:ring-[var(--teal-500)]'
           >
             <option value='all'>
               Todas las categorías
@@ -105,7 +105,7 @@ export default function Events () {
           </select>
           <button
             type='submit'
-            className='bg-[var(--color-teal-500)] text-[var(--color-white)] px-6 py-2 rounded-lg hover:bg-teal-700 transition duration-300'
+            className='bg-[var(--teal-500)] text-[var(--white)] px-6 py-2 rounded-lg hover:bg-teal-700 transition duration-300'
           >
             Buscar
           </button>
@@ -117,7 +117,7 @@ export default function Events () {
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
               {eventsList.map( ( event ) => (
                 <Link
-                  className='bg-[var(--color-white)] rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300'
+                  className='bg-[var(--white)] rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300'
                   href={`/events/${event.id}`}
                   key={event.id}
                 >
@@ -132,11 +132,11 @@ export default function Events () {
                     <h3 className='text-xl font-semibold mb-2'>
                       {event.title}
                     </h3>
-                    <p className='text-[var(--color-gray-600)] mb-2'>
+                    <p className='text-[var(--gray-600)] mb-2'>
                       {event.description.substring( 0, 100 )}
                       ...
                     </p>
-                    <div className='flex justify-between text-sm text-[var(--color-gray-500)]'>
+                    <div className='flex justify-between text-sm text-[var(--gray-500)]'>
                       <span>{event.date}</span>
                       <span>{event.location}</span>
                       <span>{event.price}</span>
@@ -154,7 +154,7 @@ export default function Events () {
                   onClick={() =>
                     fetchEvents( searchTerm, filter )
                   }
-                  className='bg-[var(--color-teal-500)] text-[var(--color-white)] px-6 py-2 rounded-lg hover:bg-teal-700 transition duration-300'
+                  className='bg-[var(--teal-500)] text-[var(--white)] px-6 py-2 rounded-lg hover:bg-teal-700 transition duration-300'
                   disabled={loading}
                 >
                   {loading ? 'Cargando...' : 'Cargar más'}
