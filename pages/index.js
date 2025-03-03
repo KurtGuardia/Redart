@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import TypingAnimation from '../components/TypingAnimation'
 import Spot from '../components/Spot'
+import EventCard from '../components/EventCard'
 
 export default function Home () {
   const [bgIndex, setBgIndex] = useState( 0 )
@@ -16,6 +17,33 @@ export default function Home () {
 
     return () => clearInterval( interval )
   }, [] )
+
+  const featuredEvents = [
+    {
+      id: 1,
+      title: 'Concierto Nocturno',
+      description: 'Una noche de música en vivo con artistas locales, donde podrás disfrutar de una gran variedad de estilos y ritmos. La noche estará llena de energía y pasión, con performances en vivo que te dejarán sin aliento.',
+      date: '25 Feb 2025',
+      location: 'La Paz',
+      image: '/placeholder.svg?height=200&width=400',
+    },
+    {
+      id: 2,
+      title: 'Concierto Nocturno',
+      description: 'Una noche de música en vivo con artistas locales...',
+      date: '25 Feb 2025',
+      location: 'La Paz',
+      image: '/placeholder.svg?height=200&width=400',
+    },
+    {
+      id: 3,
+      title: 'Concierto Nocturno',
+      description: 'Una noche de música en vivo con artistas locales...',
+      date: '25 Feb 2025',
+      location: 'La Paz',
+      image: '/placeholder.svg?height=200&width=400',
+    },
+  ]
 
   return (
     <Layout>
@@ -59,33 +87,15 @@ export default function Home () {
             Eventos destacados
           </h2>
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-14 justify-items-center'>
-            {[1, 2, 3].map( ( event ) => (
-              <div
-                key={event}
-                className='bg-[var(--color-white)] rounded-lg shadow-md overflow-hidden max-w-xs'
-              >
-                <Image
-                  src={`/placeholder.svg?height=200&width=400`}
-                  alt='Event poster'
-                  width={400}
-                  height={200}
-                  className='w-full h-48 object-cover'
-                />
-                <div className='p-4'>
-                  <h3 className='text-xl font-semibold mb-2'>
-                    Concierto Nocturno
-                  </h3>
-                  <p className='text-[var(--color-gray-600)] mb-2'>
-                    Una noche de música en vivo con artistas
-                    locales...
-                  </p>
-                  <div className='flex justify-between text-sm text-[var(--accent-foreground)]'>
-                    <span>25 Feb 2025</span>
-                    <span>La Paz</span>
-                    <span>Bs 50</span>
-                  </div>
-                </div>
-              </div>
+            {featuredEvents.map( ( event ) => (
+              <EventCard
+                key={event.id}
+                title={event.title}
+                description={event.description}
+                date={event.date}
+                location={event.location}
+                image={event.image}
+              />
             ) )}
           </div>
           <div className='text-center'>
