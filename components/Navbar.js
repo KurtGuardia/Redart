@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
 import useIsIndexPage from '@/hooks/use-is-index-page'
+import useHasScrolled from '../hooks/useHasScrolled'
 import {
   Avatar,
   AvatarImage,
@@ -8,32 +8,16 @@ import {
 } from '@/components/ui/avatar'
 
 export default function Navbar () {
-  const [scrolled, setScrolled] = useState( false )
   const isIndexPage = useIsIndexPage()
-
-  useEffect( () => {
-    const handleScroll = () => {
-      if ( window.scrollY > 0 ) {
-        setScrolled( true )
-      } else {
-        setScrolled( false )
-      }
-    }
-
-    window.addEventListener( 'scroll', handleScroll )
-
-    return () => {
-      window.removeEventListener( 'scroll', handleScroll )
-    }
-  }, [] )
+  const hasScrolled = useHasScrolled()
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 shadow-md z-50 h-16 ${isIndexPage
-          ? scrolled
-            ? 'bg-white/80 backdrop-blur-sm shadow-md'
-            : ''
-          : 'bg-[var(--background)] text-foreground'
+      className={`fixed top-0 left-0 right-0 shadow-md z-50 h-16 transition-all duration-300 ${hasScrolled ? 'bg-white shadow-md' : 'bg-transparent'} ${isIndexPage
+        ? hasScrolled
+          ? 'bg-white/80 backdrop-blur-sm shadow-md'
+          : ''
+        : 'bg-[var(--background)] text-foreground'
         }`}
     >
       <div className='container mx-auto px-4 py-3 flex justify-between items-center h-full'>
@@ -43,12 +27,12 @@ export default function Navbar () {
         >
           Radarte
         </Link>
-        <div className='space-x-4 flex items-center'>
+        <div className='space-x-6 flex items-center'>
           <Link
-            className={`text-lg ${isIndexPage && !scrolled
-                ? 'text-white'
-                : 'text-foreground'
-              } ${isIndexPage && !scrolled
+            className={`text-lg ${isIndexPage && !hasScrolled
+              ? 'text-white'
+              : 'text-foreground'
+              } ${isIndexPage && !hasScrolled
                 ? 'hover:text-white'
                 : 'hover:text-primary'
               } hover:underline underline-offset-8 font-bold`}
@@ -56,10 +40,10 @@ export default function Navbar () {
           >
             Inicio
           </Link> <Link
-            className={`text-lg ${isIndexPage && !scrolled
-                ? 'text-white'
-                : 'text-foreground'
-              } ${isIndexPage && !scrolled
+            className={`text-lg ${isIndexPage && !hasScrolled
+              ? 'text-white'
+              : 'text-foreground'
+              } ${isIndexPage && !hasScrolled
                 ? 'hover:text-white'
                 : 'hover:text-primary'
               } hover:underline underline-offset-8 font-bold`}
@@ -68,10 +52,10 @@ export default function Navbar () {
             Eventos
           </Link>
           <Link
-            className={`text-lg ${isIndexPage && !scrolled
-                ? 'text-white'
-                : 'text-foreground'
-              } ${isIndexPage && !scrolled
+            className={`text-lg ${isIndexPage && !hasScrolled
+              ? 'text-white'
+              : 'text-foreground'
+              } ${isIndexPage && !hasScrolled
                 ? 'hover:text-white'
                 : 'hover:text-primary'
               } hover:underline underline-offset-8 font-bold`}
@@ -80,10 +64,10 @@ export default function Navbar () {
             Locaciones
           </Link>
           <Link
-            className={`text-lg ${isIndexPage && !scrolled
-                ? 'text-white'
-                : 'text-foreground'
-              } ${isIndexPage && !scrolled
+            className={`text-lg ${isIndexPage && !hasScrolled
+              ? 'text-white'
+              : 'text-foreground'
+              } ${isIndexPage && !hasScrolled
                 ? 'hover:text-white'
                 : 'hover:text-primary'
               } hover:underline underline-offset-8 font-bold`}
@@ -92,10 +76,10 @@ export default function Navbar () {
             ¿Qué es Radarte?
           </Link>
           <Link
-            className={`text-lg ${isIndexPage && !scrolled
-                ? 'text-white'
-                : 'text-foreground'
-              } ${isIndexPage && !scrolled
+            className={`text-lg ${isIndexPage && !hasScrolled
+              ? 'text-white'
+              : 'text-foreground'
+              } ${isIndexPage && !hasScrolled
                 ? 'hover:text-white'
                 : 'hover:text-primary'
               } hover:underline underline-offset-8 font-bold`}

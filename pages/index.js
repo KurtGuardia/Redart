@@ -46,7 +46,7 @@ export default function Home () {
         <Spot colorName={'peru'} />
 
         <div className='container mx-auto px-4 text-center min-h-[250px] flex items-center justify-center bg-[rgba(255,255,255,0.5)] rounded-3xl'>
-          <TypingAnimation text='¡¡Estamos dando vida a una herramienta para impulsar la cultura! Ya estamos registrando espacios en todo el país. Si tu espacio acoge obras, conciertos, exposiciones o cualquier expresión artística, y está abierto al público, crea tu cuenta y sé parte de esta red cultural en crecimiento.' />
+          <TypingAnimation text='¡Estamos dando vida a una herramienta para impulsar la cultura! Ya estamos registrando espacios en todo el país. Si tu espacio acoge obras, conciertos, exposiciones o cualquier expresión artística, y está  abierto al público, crea tu cuenta y sé parte de esta red cultural en crecimiento.' />
         </div>
       </section>
 
@@ -133,13 +133,17 @@ export default function Home () {
           <h2 className='text-3xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--color-blue-600)] to-[var(--color-blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg backface-visibility-hidden transform-gpu hover:scale-105 transition-transform'>
             Explora los espacios culturales
           </h2>
+          <p className='text-center text-xl font-light mb-12'>
+            En Radarte te damos la oportunidad de explorar los
+            espacios culturales de Bolivia. Encuentra el tuyo
+            preferido y conoce la programación de eventos.
+          </p>
           <div className='aspect-w-16 aspect-h-9 mb-14'>
             <iframe
               width='70%'
-              height='400px'
+              height='500px'
               style={{ margin: 'auto', display: 'block' }}
               src='https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3820.123456789012!2d-66.156123!3d-17.389499!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTfCsDIzJzIyLjIiUyA2NsKwMDknMjIuMCJX!5e0!3m2!1sen!2sbo!4v1234567890123!5m2!1sen!2sbo'
-              allowfullscreen
               loading='lazy'
             >
             </iframe>
@@ -147,7 +151,10 @@ export default function Home () {
         </div>
       </section>
 
-      <div className='text-center mb-24'>
+      <div className='join text-center mb-24'>
+        <h2 className='text-3xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--color-blue-600)] to-[var(--color-blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg backface-visibility-hidden transform-gpu hover:scale-105 transition-transform'>
+          ¿Quieres unirte a la comunidad de Radarte?
+        </h2>
         <p className='text-center text-xl text-[var(--color-blue-900)] font-semibold max-w-2xl mx-auto mb-8 animate-fade-in-up'>¡Únete a la movida cultural y muestra tus actividades!<br /> ¿Eres un espacio artistico? Crea tu cuenta y conecta con tu potencial audiencia mostrando tus eventos.</p>
         <Link
           href='/register'
