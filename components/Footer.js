@@ -1,21 +1,31 @@
 import Link from 'next/link'
 
-export default function Footer() {
-  return (
-    <footer className='bg-background border-t border-border mt-16'>
-      <div className='container mx-auto px-4 py-8 flex flex-col md:flex-row justify-between items-center'>
-        <div className='mb-4 md:mb-0'>
-          <Link
-            href='/'
-            className='text-2xl font-bold text-primary'
-          >
-            Radarte
-          </Link>
-        </div>
-        <div className='flex space-x-4'>
+const Footer = () => (
+  <footer className="bg-[var(--teal-500)] rounded-t-[5rem] mx-20 p-5 sm:px-20">
+    <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+      {/* Contact Section */}
+      <div className="flex flex-col items-center md:items-start space-y-4">
+        <h3 className="underline underline-offset-4 text-white text-lg font-semibold mb-2">Contacto</h3>
+        <a
+          href="mailto:info@radarte.com?subject=Consulta%20sobre%20Radarte&body=Hola%20equipo%20Radarte%2C%0A%0AMe%20gustar%C3%ADa%20obtener%20m%C3%A1s%20informaci%C3%B3n%20sobre..."
+          className="text-white hover:text-[var(--secondary-color)] transition-colors"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          info@radarte.com
+        </a>
+        <a
+          href="https://wa.me/5911234567?text=Hola%20Radarte%2C%20me%20gustar%C3%ADa%20obtener%20m%C3%A1s%20informaci%C3%B3n%20sobre..."
+          className="text-white hover:text-[var(--secondary-color)] transition-colors"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          +591 123 4567
+        </a>
+        <div className="flex space-x-4">
           <a
-            href='#'
-            className='text-foreground hover:text-primary'
+            href='https://www.facebook.com/Radarte-105795649568595'
+            className='text-[var(--facebook)] hover:text-[var(--primary)] transition-all duration-300'
           >
             <span className='sr-only'>Facebook</span>
             <svg
@@ -32,8 +42,8 @@ export default function Footer() {
             </svg>
           </a>
           <a
-            href='#'
-            className='text-foreground hover:text-primary'
+            href='https://www.instagram.com/radarte/'
+            className='text-[var(--instagram)] hover:text-[var(--primary)] transition-all duration-300'
           >
             <span className='sr-only'>Instagram</span>
             <svg
@@ -50,8 +60,8 @@ export default function Footer() {
             </svg>
           </a>
           <a
-            href='#'
-            className='text-foreground hover:text-primary'
+            href='https://twitter.com/radarte'
+            className='text-[var(--twitter)] hover:text-[var(--primary)] transition-all duration-300'
           >
             <span className='sr-only'>Twitter</span>
             <svg
@@ -64,11 +74,48 @@ export default function Footer() {
             </svg>
           </a>
         </div>
-        <p className='text-gray-500 text-sm mt-4 md:mt-0'>
-          © {new Date().getFullYear()} Radarte. Todos los
-          derechos reservados.
+      </div>
+
+      {/* Logo Section */}
+      <div className="flex flex-col items-center">
+        <div className="w-32 h-32 bg-white/20 rounded-full mb-4 flex items-center justify-center">
+          <span className="text-white text-2xl font-bold">Radarte</span>
+        </div>
+        <p className="text-white text-sm text-center">
+          Conectando la cultura y el arte en Bolivia
         </p>
       </div>
-    </footer>
-  )
-}
+
+      {/* Links Section */}
+      <div className="flex flex-col items-center md:items-end space-y-4">
+        <h3 className="underline underline-offset-4 text-white text-lg font-semibold mb-2">Enlaces Rápidos</h3>
+        <Link href="/about" className="text-white hover:text-[var(--secondary-color)] transition-colors">
+          Sobre Nosotros
+        </Link>
+        <Link href="/events" className="text-white hover:text-[var(--secondary-color)] transition-colors">
+          Eventos
+        </Link>
+        <Link href="/map" className="text-white hover:text-[var(--secondary-color)] transition-colors">
+          Locaciones
+        </Link>
+      </div>
+    </div>
+
+    {/* Copyright Section */}
+    <div className="mt-8 border-t border-white/20 pt-6 text-center">
+      <p className="text-white">
+        &copy; {new Date().getFullYear()} Developed by{' '}
+        <Link
+          href="https://github.com/KurtGuardia"
+          className="text-[var(--teal-300)] font-bold hover:text-[var(--blue-600)] transition-all duration-300"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Kurt Guardia
+        </Link>
+      </p>
+    </div>
+  </footer>
+)
+
+export default Footer

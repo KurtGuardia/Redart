@@ -13,59 +13,59 @@ import {
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 
-export default function Dashboard() {
-  const [user, setUser] = useState(null)
-  const [spaces, setSpaces] = useState([])
-  const [events, setEvents] = useState([])
+export default function Dashboard () {
+  const [user, setUser] = useState( null )
+  const [spaces, setSpaces] = useState( [] )
+  const [events, setEvents] = useState( [] )
   const router = useRouter()
 
-  useEffect(() => {
+  useEffect( () => {
     const unsubscribe = onAuthStateChanged(
       auth,
-      (currentUser) => {
-        if (currentUser) {
-          setUser(currentUser)
-          fetchUserData(currentUser.uid)
+      ( currentUser ) => {
+        if ( currentUser ) {
+          setUser( currentUser )
+          fetchUserData( currentUser.uid )
         } else {
-          router.push('/login')
+          router.push( '/login' )
         }
       },
     )
 
     return () => unsubscribe()
-  }, [router])
+  }, [router] )
 
-  const fetchUserData = async (userId) => {
+  const fetchUserData = async ( userId ) => {
     const spacesQuery = query(
-      collection(db, 'spaces'),
-      where('userId', '==', userId),
+      collection( db, 'spaces' ),
+      where( 'userId', '==', userId ),
     )
     const eventsQuery = query(
-      collection(db, 'events'),
-      where('userId', '==', userId),
+      collection( db, 'events' ),
+      where( 'userId', '==', userId ),
     )
 
     const [spacesSnapshot, eventsSnapshot] =
-      await Promise.all([
-        getDocs(spacesQuery),
-        getDocs(eventsQuery),
-      ])
+      await Promise.all( [
+        getDocs( spacesQuery ),
+        getDocs( eventsQuery ),
+      ] )
 
     setSpaces(
-      spacesSnapshot.docs.map((doc) => ({
+      spacesSnapshot.docs.map( ( doc ) => ( {
         id: doc.id,
         ...doc.data(),
-      })),
+      } ) ),
     )
     setEvents(
-      eventsSnapshot.docs.map((doc) => ({
+      eventsSnapshot.docs.map( ( doc ) => ( {
         id: doc.id,
         ...doc.data(),
-      })),
+      } ) ),
     )
   }
 
-  if (!user) {
+  if ( !user ) {
     return <div>Loading...</div>
   }
 
@@ -85,23 +85,23 @@ export default function Dashboard() {
               <p>No tienes espacios registrados.</p>
             ) : (
               <ul className='space-y-2'>
-                {spaces.map((space) => (
+                {spaces.map( ( space ) => (
                   <li
                     key={space.id}
-                    className='bg-[var(--color-white)] p-4 rounded-lg shadow'
+                    className='bg-[var(--white)] p-4 rounded-lg shadow'
                   >
                     <h3 className='font-semibold'>
                       {space.name}
                     </h3>
-                    <p className='text-sm text-[var(--color-gray-600)]'>
+                    <p className='text-sm text-[var(--gray-600)]'>
                       {space.address}
                     </p>
                   </li>
-                ))}
+                ) )}
               </ul>
             )}
             <Link
-              className='mt-4 inline-block bg-[var(--color-teal-500)] text-[var(--color-white)] py-2 px-4 rounded-md hover:bg-teal-700 transition duration-300'
+              className='mt-4 inline-block bg-[var(--teal-500)] text-[var(--white)] py-2 px-4 rounded-md hover:bg-teal-700 transition duration-300'
               href='/add-space'
             >
               Agregar espacio
@@ -116,23 +116,23 @@ export default function Dashboard() {
               <p>No tienes eventos registrados.</p>
             ) : (
               <ul className='space-y-2'>
-                {events.map((event) => (
+                {events.map( ( event ) => (
                   <li
                     key={event.id}
-                    className='bg-[var(--color-white)] p-4 rounded-lg shadow'
+                    className='bg-[var(--white)] p-4 rounded-lg shadow'
                   >
                     <h3 className='font-semibold'>
                       {event.title}
                     </h3>
-                    <p className='text-sm text-[var(--color-gray-600)]'>
+                    <p className='text-sm text-[var(--gray-600)]'>
                       {event.date}
                     </p>
                   </li>
-                ))}
+                ) )}
               </ul>
             )}
             <Link
-              className='mt-4 inline-block bg-[var(--color-teal-500)] text-[var(--color-white)] py-2 px-4 rounded-md hover:bg-teal-700 transition duration-300'
+              className='mt-4 inline-block bg-[var(--teal-500)] text-[var(--white)] py-2 px-4 rounded-md hover:bg-teal-700 transition duration-300'
               href='/add-event'
             >
               Agregar evento

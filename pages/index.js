@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import TypingAnimation from '../components/TypingAnimation'
 import Spot from '../components/Spot'
+import EventCard from '../components/EventCard'
 
 export default function Home () {
   const [bgIndex, setBgIndex] = useState( 0 )
@@ -17,10 +18,40 @@ export default function Home () {
     return () => clearInterval( interval )
   }, [] )
 
+  const featuredEvents = [
+    {
+      id: 1,
+      title: 'Concierto Nocturno',
+      description: 'Una noche de música en vivo con artistas locales, donde podrás disfrutar de una gran variedad de estilos y ritmos. La noche estará llena de energía y pasión, con performances en vivo que te dejarán sin aliento.',
+      date: '3 Mar 2025',
+      location: 'Cochabamba',
+      image: '/placeholder.svg?height=200&width=400',
+      type: 'primary'
+    },
+    {
+      id: 2,
+      title: 'Musica en Vivo',
+      description: 'Una noche de música en vivo con artistas locales...',
+      date: '25 Feb 2025',
+      location: 'La Paz',
+      image: '/placeholder.svg?height=200&width=400',
+      type: 'secondary-color'
+    },
+    {
+      id: 3,
+      title: 'Festival de Jazz',
+      description: 'Una noche de música en vivo con artistas locales...',
+      date: '24 Sept 2025',
+      location: 'Sta. Cruz',
+      image: '/placeholder.svg?height=200&width=400',
+      type: 'destructive'
+    },
+  ]
+
   return (
     <Layout>
       <div
-        className='absolute top-0 left-0 right-0 opacity-80 bg-gradient-to-r from-[var(--accent)] to-[var(--primary)] h-[80vh]'
+        className='absolute top-0 left-0 right-0 opacity-80 bg-gradient-to-r from-[var(--secondary-color)] to-[var(--primary)] h-[80vh]'
       />
       <section className='hero img text-white h-[80vh] flex items-center'
         style={{ backgroundImage: `url(${images[bgIndex]})` }}>
@@ -33,7 +64,7 @@ export default function Home () {
           </p>
           <Link
             href='/events'
-            className='bg-[var(--color-white)] text-[var(--color-blue-500)] px-8 py-3 rounded-xl shadow-md text-lg font-semibold hover:bg-[#7928ca] hover:text-[var(--accent)] transition duration-300 animate-fade-in-up w-fit mx-auto'
+            className='bg-[var(--white)] text-[var(--blue-500)] px-8 py-3 rounded-xl shadow-md text-lg font-semibold hover:bg-[#7928ca] hover:text-[var(--secondary-color)] transition duration-300 animate-fade-in-up w-fit mx-auto'
           >
             Explorar eventos
           </Link>
@@ -55,43 +86,26 @@ export default function Home () {
           <Spot colorName={'FireBrick'} />
           <Spot colorName={'Magenta'} />
           <Spot colorName={'Peru'} />
-          <h2 className='text-3xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--color-blue-600)] to-[var(--color-blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg backface-visibility-hidden transform-gpu hover:scale-105 transition-transform'>
+          <h2 className='text-3xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--blue-600)] to-[var(--blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg backface-visibility-hidden transform-gpu hover:scale-105 transition-transform'>
             Eventos destacados
           </h2>
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-14 justify-items-center'>
-            {[1, 2, 3].map( ( event ) => (
-              <div
-                key={event}
-                className='bg-[var(--color-white)] rounded-lg shadow-md overflow-hidden max-w-xs'
-              >
-                <Image
-                  src={`/placeholder.svg?height=200&width=400`}
-                  alt='Event poster'
-                  width={400}
-                  height={200}
-                  className='w-full h-48 object-cover'
-                />
-                <div className='p-4'>
-                  <h3 className='text-xl font-semibold mb-2'>
-                    Concierto Nocturno
-                  </h3>
-                  <p className='text-[var(--color-gray-600)] mb-2'>
-                    Una noche de música en vivo con artistas
-                    locales...
-                  </p>
-                  <div className='flex justify-between text-sm text-[var(--accent-foreground)]'>
-                    <span>25 Feb 2025</span>
-                    <span>La Paz</span>
-                    <span>Bs 50</span>
-                  </div>
-                </div>
-              </div>
+            {featuredEvents.map( ( event ) => (
+              <EventCard
+                key={event.id}
+                title={event.title}
+                description={event.description}
+                date={event.date}
+                location={event.location}
+                image={event.image}
+                type={event.type}
+              />
             ) )}
           </div>
           <div className='text-center'>
             <Link
               href='/events'
-              className='bg-[var(--accent)] text-[var(--accent-foreground)] hover:text-white px-6 py-2 rounded-full text-lg font-semibold hover:bg-teal-700 hover:text-[var(--color-white)] transition duration-300'
+              className='bg-[var(--secondary-color)] text-[var(--secondary-color-foreground)] hover:text-white px-6 py-2 rounded-full text-lg font-semibold hover:bg-teal-700 hover:text-[var(--white)] transition duration-300'
             >
               Ver todos los eventos
             </Link>
@@ -115,13 +129,13 @@ export default function Home () {
           <div className='text-center'>
             <Link
               href='/faq'
-              className='bg-[var(--accent)] text-[var(--accent-foreground)] px-6 py-2 rounded-full text-lg font-semibold hover:bg-white hover:text-[var(--color-blue-500)] transition duration-300'
+              className='bg-[var(--secondary-color)] text-[var(--secondary-color-foreground)] px-6 py-2 rounded-full text-lg font-semibold hover:bg-white hover:text-[var(--blue-500)] transition duration-300'
             >
               Preguntas frecuentes
             </Link>
           </div>
         </div>
-        <div className='w-full absolute top-0 left-0 bg-[var(--color-teal-700)] opacity-70  h-[500px]' />
+        <div className='w-full absolute top-0 left-0 bg-[var(--teal-700)] opacity-70  h-[500px]' />
       </section>
 
       <section className='map py-16 my-24'>
@@ -130,7 +144,7 @@ export default function Home () {
           <Spot colorName={'Teal'} />
           <Spot colorName={'Chartreuse'} />
           <Spot colorName={'Coral'} />
-          <h2 className='text-3xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--color-blue-600)] to-[var(--color-blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg backface-visibility-hidden transform-gpu hover:scale-105 transition-transform'>
+          <h2 className='text-3xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--blue-600)] to-[var(--blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg backface-visibility-hidden transform-gpu hover:scale-105 transition-transform'>
             Explora los espacios culturales
           </h2>
           <p className='text-center text-xl font-light mb-12'>
@@ -151,18 +165,18 @@ export default function Home () {
         </div>
       </section>
 
-      <div className='join text-center mb-24'>
-        <h2 className='text-3xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--color-blue-600)] to-[var(--color-blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg backface-visibility-hidden transform-gpu hover:scale-105 transition-transform'>
+      <section className='join text-center container mx-auto mb-48'>
+        <h2 className='text-3xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--blue-600)] to-[var(--blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg backface-visibility-hidden transform-gpu hover:scale-105 transition-transform'>
           ¿Quieres unirte a la comunidad de Radarte?
         </h2>
-        <p className='text-center text-xl text-[var(--color-blue-900)] font-semibold max-w-2xl mx-auto mb-8 animate-fade-in-up'>¡Únete a la movida cultural y muestra tus actividades!<br /> ¿Eres un espacio artistico? Crea tu cuenta y conecta con tu potencial audiencia mostrando tus eventos.</p>
+        <p className='text-center text-xl text-[var(--blue-900)] font-semibold max-w-2xl mx-auto mb-8 animate-fade-in-up'>¡Únete a la movida cultural y muestra tus actividades!<br /> ¿Eres un espacio artistico? Crea tu cuenta y conecta con tu potencial audiencia mostrando tus eventos.</p>
         <Link
           href='/register'
-          className='bg-[var(--accent)] text-[var(--accent-foreground)] hover:text-white px-6 py-2 rounded-full text-lg font-semibold hover:bg-teal-700 transition duration-300'
+          className='shadow-[var(--shadow)] bg-[var(--secondary-color)] text-[var(--secondary-color-foreground)] hover:text-white px-6 py-2 rounded-full text-lg font-semibold hover:bg-teal-700 transition duration-300'
         >
           Crear cuenta
         </Link>
-      </div>
+      </section>
     </Layout>
   )
 }
