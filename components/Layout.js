@@ -8,7 +8,7 @@ export default function Layout ( { children } ) {
     <div className='flex flex-col min-h-screen'>
       <Navbar />
       <main
-        className={`relative flex-grow ${isIndexPage ? '' : 'my-20'
+        className={`relative flex flex-col justify-between items-center flex-grow ${isIndexPage ? '' : 'my-20'
           }`}
       >
         {children}

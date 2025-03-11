@@ -3,7 +3,7 @@
 import Layout from '../components/Layout'
 import { useState } from 'react'
 import { signInWithEmailAndPassword } from 'firebase/auth'
-import { auth } from './_app'
+import { auth } from '../lib/firebase-client'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import Spot from '../components/Spot'
@@ -22,9 +22,12 @@ export default function Login () {
         email,
         password,
       )
-      router.push( '/dashboard' )
+      await auth.authStateReady() // Wait for state propagation
+      const redirect = router.query.redirect || '/dashboard'
+      router.push( redirect )
     } catch ( error ) {
       setError( error.message )
+      console.error( 'Login error:', error )
     }
   }
 

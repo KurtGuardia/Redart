@@ -2,8 +2,7 @@
 
 import Layout from '../components/Layout'
 import { useState, useEffect } from 'react'
-import { auth, db } from './_app'
-import { onAuthStateChanged } from 'firebase/auth'
+import { auth, db } from '../lib/firebase-client'
 import {
   collection,
   query,
@@ -13,24 +12,23 @@ import {
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 
-export default function Dashboard () {
-  const [user, setUser] = useState( null )
+export default function Dashboard() {
+  const router = useRouter()
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
   const [spaces, setSpaces] = useState( [] )
   const [events, setEvents] = useState( [] )
-  const router = useRouter()
 
   useEffect( () => {
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      ( currentUser ) => {
-        if ( currentUser ) {
-          setUser( currentUser )
-          fetchUserData( currentUser.uid )
-        } else {
-          router.push( '/login' )
-        }
-      },
-    )
+    const unsubscribe = auth.onAuthStateChanged( ( currentUser ) => {
+      if ( currentUser ) {
+        setUser( currentUser )
+        fetchUserData( currentUser.uid )
+      } else {
+        router.replace( '/login' )
+      }
+      setLoading( false )
+    } )
 
     return () => unsubscribe()
   }, [router] )
@@ -65,8 +63,12 @@ export default function Dashboard () {
     )
   }
 
-  if ( !user ) {
+  if ( loading ) {
     return <div>Loading...</div>
+  }
+
+  if ( !user ) {
+    return null // Will redirect in useEffect
   }
 
   return (
@@ -139,6 +141,21 @@ export default function Dashboard () {
             </Link>
           </div>
         </div>
+      </div>
+      <div className='w-fit mx-auto p-4'>
+        <button
+          onClick={async () => {
+            try {
+              await auth.signOut()
+              router.push('/login')
+            } catch (error) {
+              console.error('Error signing out:', error)
+            }
+          }}
+          className='w-full py-2 px-4 bg-red-500 text-white font-medium rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2'
+        >
+          Cerrar sesión
+        </button>
       </div>
     </Layout>
   )

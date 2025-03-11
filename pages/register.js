@@ -2,11 +2,8 @@
 
 import Layout from '../components/Layout'
 import { useState } from 'react'
-import {
-  createUserWithEmailAndPassword,
-  updateProfile,
-} from 'firebase/auth'
-import { auth, db } from './_app'
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
+import { auth, db } from '../lib/firebase-client'
 import { doc, setDoc } from 'firebase/firestore'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
@@ -21,7 +18,9 @@ export default function Register () {
 
   const handleSubmit = async ( e ) => {
     e.preventDefault()
+    console.log( 'Registering user...' )
     try {
+      console.log( 'Registering user 2...' )
       const userCredential =
         await createUserWithEmailAndPassword(
           auth,
@@ -45,6 +44,7 @@ export default function Register () {
       router.push( '/dashboard' )
     } catch ( error ) {
       setError( error.message )
+      console.error( 'Registration error:', error )
     }
   }
 
