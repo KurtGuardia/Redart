@@ -11,6 +11,7 @@ import {
 } from 'firebase/firestore'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
+import Spot from '../components/Spot'
 
 export default function Dashboard () {
   const router = useRouter()
@@ -56,7 +57,10 @@ export default function Dashboard () {
 
   return (
     <Layout>
-      <div className='container mx-auto px-4 py-8'>
+      <div className='relative container mx-auto px-4 py-8'>
+        <Spot colorName={'red'} />
+        <Spot colorName={'indigo'} />
+        <Spot colorName={'peru'} />
         <h1 className='text-3xl font-bold mb-8'>
           Bienvenido administrador de: {user.displayName}
         </h1>
@@ -66,27 +70,7 @@ export default function Dashboard () {
             <h2 className='text-2xl font-semibold mb-4'>
               Mi espacio
             </h2>
-            <ul className='space-y-2'>
-              {spaces.map( ( space ) => (
-                <li
-                  key={space.id}
-                  className='bg-[var(--white)] p-4 rounded-lg shadow'
-                >
-                  <h3 className='font-semibold'>
-                    {space.name}
-                  </h3>
-                  <p className='text-sm text-[var(--gray-600)]'>
-                    {space.address}
-                  </p>
-                </li>
-              ) )}
-            </ul>
-            <Link
-              className='mt-4 inline-block bg-[var(--teal-500)] text-[var(--white)] py-2 px-4 rounded-md hover:bg-teal-700 transition duration-300'
-              href='/add-space'
-            >
-              Agregar espacio
-            </Link>
+            {/* {Add map with point mark here} */}
           </div>
 
           <div>

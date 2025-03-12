@@ -106,7 +106,7 @@ const Footer = () => (
       <p className="text-white">
         &copy; {new Date().getFullYear()} Developed by{' '}
         <Link
-          href="https://github.com/KurtGuardia"
+          href="https://kurtguardia.com"
           className="text-[var(--teal-300)] font-bold hover:text-[var(--blue-600)] transition-all duration-300"
           target="_blank"
           rel="noopener noreferrer"

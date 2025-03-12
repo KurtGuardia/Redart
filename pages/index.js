@@ -53,7 +53,7 @@ export default function Home () {
       <div
         className='absolute top-0 left-0 right-0 opacity-80 bg-gradient-to-r from-[var(--secondary-color)] to-[var(--primary)] h-[80vh]'
       />
-      <section className='hero img text-white h-[80vh] flex items-center'
+      <section className='hero img text-white h-[80vh] flex items-center w-full'
         style={{ backgroundImage: `url(${images[bgIndex]})` }}>
         <div className='container mx-auto px-4 z-10 text-center flex flex-col justify-between gap-4 bg-white bg-opacity-25 rounded-3xl py-10'>
           <h1 className='text-4xl md:text-6xl font-bold mb-4 animate-fade-in-up'>
@@ -82,7 +82,7 @@ export default function Home () {
       </section>
 
       <section className='featured-events py-16 my-24'>
-        <div className='relative container mx-auto px-4'>
+        <div className='relative mx-auto px-4'>
           <Spot colorName={'FireBrick'} />
           <Spot colorName={'Magenta'} />
           <Spot colorName={'Peru'} />
@@ -114,7 +114,6 @@ export default function Home () {
       </section>
 
       <section className='about-us img relative my-24' style={{ backgroundImage: `url(${'/crowd.jpg'})` }}>
-
         <div className='relative z-10 py-28 mx-auto px-4 text-center text-white h-[500px]'>
           <h2 className='text-5xl font-bold mb-12'>
             Sobre nosotros
