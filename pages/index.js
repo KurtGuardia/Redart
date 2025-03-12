@@ -119,7 +119,7 @@ export default function Home () {
           <h2 className='text-5xl font-bold mb-12'>
             Sobre nosotros
           </h2>
-          <p className='text-2xl font-semibold max-w-5xl mx-auto mb-14 leading-relaxed px-8 text-center'>
+          <p className='text-2xl font-semibold mx-auto mb-14 leading-relaxed px-8 text-center'>
             Radarte conecta artistas, espacios y amantes del
             arte en Bolivia. Nuestra misión es visibilizar
             la cultura y crear una comunidad que celebre la

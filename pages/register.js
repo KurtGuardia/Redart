@@ -18,9 +18,7 @@ export default function Register () {
 
   const handleSubmit = async ( e ) => {
     e.preventDefault()
-    console.log( 'Registering user...' )
     try {
-      console.log( 'Registering user 2...' )
       const userCredential =
         await createUserWithEmailAndPassword(
           auth,
@@ -40,11 +38,9 @@ export default function Register () {
           createdAt: new Date().toISOString(),
         },
       )
-
       router.push( '/dashboard' )
     } catch ( error ) {
       setError( error.message )
-      console.error( 'Registration error:', error )
     }
   }
 
