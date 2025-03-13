@@ -37,7 +37,7 @@ export default function Login () {
       <Spot colorName={'Indigo'} />
       <Spot colorName={'GoldenRod'} />
       <Spot colorName={'MediumVioletRed'} />
-      <div className=' my-40container px-4 py-8'>
+      <div className='mx-auto mt-14 container'>
         <div className='max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden'>
           <div className='p-6'>
             <h2 className='text-2xl font-bold mb-6 text-center'>
@@ -89,7 +89,7 @@ export default function Login () {
               </button>
             </form>
             <p className='mt-4 text-center'>
-              ¿No tienes una cuenta?
+              ¿No tienes una cuenta? | {''}
               <Link
                 className='text-teal-600 hover:underline'
                 href='/register'

@@ -11,8 +11,6 @@ const MapWithNoSSR = dynamic(
 
 export default function MapComponent ( props ) {
   return (
-    <div className="w-full h-full relative">
-      <MapWithNoSSR {...props} />
-    </div>
+    <MapWithNoSSR {...props} />
   )
 }

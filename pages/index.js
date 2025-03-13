@@ -155,7 +155,6 @@ export default function Home () {
           <div className='w-[70%] h-[60vh] mx-auto'>
             <MapComponent
               center={[-17.389499, -66.156123]}
-              zoom={13}
             />
           </div>
         </div>

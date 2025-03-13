@@ -3,6 +3,7 @@
 import Layout from '../components/Layout'
 import { useState, useEffect } from 'react'
 import { auth, db } from '../lib/firebase-client'
+
 import {
   collection,
   query,
@@ -15,6 +16,7 @@ import {
 import { useRouter } from 'next/router'
 import Spot from '../components/Spot'
 import dynamic from 'next/dynamic'
+import { useVenueData } from '../hooks/useVenueData'
 
 const MapComponent = dynamic( () => import( '../components/MapComponent' ), {
   ssr: false
@@ -24,9 +26,11 @@ export default function Dashboard () {
   const [eventTitle, setEventTitle] = useState( '' );
   const [eventDate, setEventDate] = useState( '' );
   const router = useRouter()
-  const [venue, setVenue] = useState( null )
   const [loading, setLoading] = useState( true )
   const [events, setEvents] = useState( [] )
+  const [venueId, setVenueId] = useState( null )
+  const { venue, loading: venueLoading, error: venueError } = useVenueData( venueId );
+  console.log( venue )
 
   const handleAddEvent = async ( e ) => {
     e.preventDefault();
@@ -34,7 +38,7 @@ export default function Dashboard () {
     const newEventData = {
       title: eventTitle,
       date: Timestamp.fromDate( new Date( eventDate ) ),
-      venueId: user.uid, // Assuming the user's UID is the venue ID
+      venueId: venueId,
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
     };
@@ -50,63 +54,25 @@ export default function Dashboard () {
     }
   };
 
-  const fetchVenueData = async ( uid ) => {
-    try {
-      setLoading( true );
-      // Get venue document directly using the uid
-      const venueRef = doc( db, 'venues', uid );
-      // const venueSnapshot = await getDoc( venueRef );
-
-      // if ( venueSnapshot.exists() ) {
-      //   const venueData = {
-      //     id: venueSnapshot.id,
-      //     ...venueSnapshot.data()
-      //   };
-      //   setVenue( venueData );
-      // }
-
-      // Fetch user's events
-      // const eventsQuery = query(
-      //   collection( db, 'events' ),
-      //   where( 'venueId', '==', uid )
-      // );
-      // const eventsSnapshot = await getDocs( eventsQuery );
-      // const eventsData = eventsSnapshot.docs.map( doc => ( {
-      //   id: doc.id,
-      //   ...doc.data(),
-      //   date: doc.data().date.toDate() // Convert Firestore timestamp to JS Date
-      // } ) );
-
-      // // Update state with fetched data
-      // setEvents( eventsData );
-    } catch ( error ) {
-      console.error( 'Error fetching user data:', error );
-      setVenue( null );
-    } finally {
-      setLoading( false );
-    }
-  };
-
   useEffect( () => {
     const unsubscribe = auth.onAuthStateChanged( ( currentVenue ) => {
-      if ( currentVenue ) {
-        setVenue( currentVenue )
-        fetchVenueData( currentVenue.uid )
+      if ( !currentVenue ) {
+        router.replace( '/login' );
       } else {
-        router.replace( '/login' )
+        setVenueId( currentVenue.uid );
       }
-      setLoading( false )
-    } )
+      setLoading( false );
+    } );
 
     return () => unsubscribe()
   }, [router] )
 
-  if ( loading ) {
-    return <div>Loading...</div>
+  if ( loading || venueLoading ) {
+    return <div>Loading...</div>;
   }
 
-  if ( !venue ) {
-    return null // Will redirect in useEffect
+  if ( venueError ) {
+    return <div>Error: {venueError}</div>
   }
 
   return (
@@ -131,8 +97,8 @@ export default function Dashboard () {
             </h2>
             <div className='h-[90%] rounded-lg overflow-hidden'>
               <MapComponent
-                venue={venue}
-                center={[-17.3938, -66.1570]} // Cochabamba coordinates
+                venues={[venue]}
+                center={[venue.location.latitude, venue.location.longitude]}
                 zoom={15}
               />
             </div>
@@ -144,37 +110,6 @@ export default function Dashboard () {
               </svg>
               Mis eventos
             </h2>
-            {events.length === 0 ? (
-              <div className='text-center py-8 text-gray-500'>
-                <svg className='w-16 h-16 mx-auto mb-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' />
-                </svg>
-                <p>No tienes eventos registrados.</p>
-              </div>
-            ) : (
-              <ul className='space-y-3 mb-6'>
-                {events.map( ( event ) => (
-                  <li
-                    key={event.id}
-                    className='bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200'
-                  >
-                    <h3 className='font-semibold text-gray-800'>
-                      {event.title}
-                    </h3>
-                    <p className='text-sm text-gray-600 mt-1'>
-                      {new Date( event.date.seconds * 1000 ).toLocaleDateString( 'es-ES', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      } )}
-                    </p>
-                  </li>
-                ) )}
-              </ul>
-            )}
             <form onSubmit={handleAddEvent} className='space-y-4 mt-6 bg-gray-50 p-4 rounded-lg'>
               <div>
                 <label htmlFor='eventTitle' className='block text-sm font-medium text-gray-700 mb-1'>Título del evento</label>
@@ -211,6 +146,37 @@ export default function Dashboard () {
                 </span>
               </button>
             </form>
+            {events.length === 0 ? (
+              <div className='text-center py-8 text-gray-500'>
+                <svg className='w-16 h-16 mx-auto mb-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' />
+                </svg>
+                <p>No tienes eventos registrados.</p>
+              </div>
+            ) : (
+              <ul className='space-y-3 mb-6'>
+                {events.map( ( event ) => (
+                  <li
+                    key={event.id}
+                    className='bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200'
+                  >
+                    <h3 className='font-semibold text-gray-800'>
+                      {event.title}
+                    </h3>
+                    <p className='text-sm text-gray-600 mt-1'>
+                      {new Date( event.date.seconds * 1000 ).toLocaleDateString( 'es-ES', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      } )}
+                    </p>
+                  </li>
+                ) )}
+              </ul>
+            )}
           </div>
         </div>
       </div>
