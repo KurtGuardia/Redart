@@ -5,6 +5,7 @@ import Image from 'next/image'
 import TypingAnimation from '../components/TypingAnimation'
 import Spot from '../components/Spot'
 import EventCard from '../components/EventCard'
+import MapComponent from '../components/MapComponent'
 
 export default function Home () {
   const [bgIndex, setBgIndex] = useState( 0 )
@@ -56,7 +57,7 @@ export default function Home () {
       <section className='hero img text-white h-[80vh] flex items-center w-full'
         style={{ backgroundImage: `url(${images[bgIndex]})` }}>
         <div className='container mx-auto px-4 z-10 text-center flex flex-col justify-between gap-4 bg-white bg-opacity-25 rounded-3xl py-10'>
-          <h1 className='text-4xl md:text-6xl font-bold mb-4 animate-fade-in-up'>
+          <h1 className='text-4xl md:text-6xl font-bold md:leading-[150%] mb-4 animate-fade-in-up '>
             Descubre la vibrante escena artística de Bolivia
           </h1>
           <p className='font-semibold text-2xl max-w-2xl mx-auto mb-8 animate-fade-in-up'>
@@ -151,15 +152,11 @@ export default function Home () {
             espacios culturales de Bolivia. Encuentra el tuyo
             preferido y conoce la programación de eventos.
           </p>
-          <div className='aspect-w-16 aspect-h-9 mb-14'>
-            <iframe
-              width='70%'
-              height='500px'
-              style={{ margin: 'auto', display: 'block' }}
-              src='https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3820.123456789012!2d-66.156123!3d-17.389499!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTfCsDIzJzIyLjIiUyA2NsKwMDknMjIuMCJX!5e0!3m2!1sen!2sbo!4v1234567890123!5m2!1sen!2sbo'
-              loading='lazy'
-            >
-            </iframe>
+          <div className='w-[70%] h-[60vh] mx-auto'>
+            <MapComponent
+              center={[-17.389499, -66.156123]}
+              zoom={13}
+            />
           </div>
         </div>
       </section>

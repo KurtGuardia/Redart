@@ -8,7 +8,7 @@ const TypingAnimation = ( { text = '', speed = 50 } ) => {
 
   useEffect( () => {
     if ( !hasScrolled ) return
-    
+
     let currentIndex = 0
     intervalRef.current = setInterval( () => {
       if ( currentIndex < text.length ) {

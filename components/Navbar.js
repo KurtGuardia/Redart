@@ -29,7 +29,7 @@ export default function Navbar () {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 shadow-md z-50 h-16 transition-all duration-300 ${hasScrolled ? 'bg-white shadow-md' : 'bg-transparent'} ${isIndexPage
+      className={`fixed top-0 left-0 right-0 shadow-md z-[1001] h-16 transition-all duration-300 ${hasScrolled ? 'bg-white shadow-md' : 'bg-transparent'} ${isIndexPage
         ? hasScrolled
           ? 'bg-white/80 backdrop-blur-sm'
           : ''

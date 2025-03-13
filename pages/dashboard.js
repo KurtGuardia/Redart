@@ -9,6 +9,8 @@ import {
   where,
   getDocs,
   Timestamp,
+  doc,
+  getDoc,
 } from 'firebase/firestore'
 import { useRouter } from 'next/router'
 import Spot from '../components/Spot'
@@ -21,6 +23,10 @@ const MapComponent = dynamic( () => import( '../components/MapComponent' ), {
 export default function Dashboard () {
   const [eventTitle, setEventTitle] = useState( '' );
   const [eventDate, setEventDate] = useState( '' );
+  const router = useRouter()
+  const [venue, setVenue] = useState( null )
+  const [loading, setLoading] = useState( true )
+  const [events, setEvents] = useState( [] )
 
   const handleAddEvent = async ( e ) => {
     e.preventDefault();
@@ -43,38 +49,49 @@ export default function Dashboard () {
       console.error( 'Error adding event:', error );
     }
   };
-  const router = useRouter()
-  const [user, setUser] = useState( null )
-  const [loading, setLoading] = useState( true )
-  const [events, setEvents] = useState( [] )
 
-  const fetchUserData = async ( uid ) => {
+  const fetchVenueData = async ( uid ) => {
     try {
-      // Fetch user's events
-      const eventsQuery = query(
-        collection( db, 'events' ),
-        where( 'venueId', '==', uid )
-      );
-      const eventsSnapshot = await getDocs( eventsQuery );
-      const eventsData = eventsSnapshot.docs.map( doc => ( {
-        id: doc.id,
-        ...doc.data(),
-        date: doc.data().date.toDate() // Convert Firestore timestamp to JS Date
-      } ) );
+      setLoading( true );
+      // Get venue document directly using the uid
+      const venueRef = doc( db, 'venues', uid );
+      // const venueSnapshot = await getDoc( venueRef );
 
-      // Update state with fetched data
-      setEvents( eventsData );
+      // if ( venueSnapshot.exists() ) {
+      //   const venueData = {
+      //     id: venueSnapshot.id,
+      //     ...venueSnapshot.data()
+      //   };
+      //   setVenue( venueData );
+      // }
+
+      // Fetch user's events
+      // const eventsQuery = query(
+      //   collection( db, 'events' ),
+      //   where( 'venueId', '==', uid )
+      // );
+      // const eventsSnapshot = await getDocs( eventsQuery );
+      // const eventsData = eventsSnapshot.docs.map( doc => ( {
+      //   id: doc.id,
+      //   ...doc.data(),
+      //   date: doc.data().date.toDate() // Convert Firestore timestamp to JS Date
+      // } ) );
+
+      // // Update state with fetched data
+      // setEvents( eventsData );
     } catch ( error ) {
       console.error( 'Error fetching user data:', error );
-      // Handle error appropriately
+      setVenue( null );
+    } finally {
+      setLoading( false );
     }
   };
 
   useEffect( () => {
-    const unsubscribe = auth.onAuthStateChanged( ( currentUser ) => {
-      if ( currentUser ) {
-        setUser( currentUser )
-        fetchUserData( currentUser.uid )
+    const unsubscribe = auth.onAuthStateChanged( ( currentVenue ) => {
+      if ( currentVenue ) {
+        setVenue( currentVenue )
+        fetchVenueData( currentVenue.uid )
       } else {
         router.replace( '/login' )
       }
@@ -88,7 +105,7 @@ export default function Dashboard () {
     return <div>Loading...</div>
   }
 
-  if ( !user ) {
+  if ( !venue ) {
     return null // Will redirect in useEffect
   }
 
@@ -100,10 +117,9 @@ export default function Dashboard () {
         <Spot colorName={'peru'} />
         <div className='bg-gradient-to-r from-teal-500 to-blue-500 rounded-lg shadow-lg p-6 mb-8'>
           <h1 className='text-3xl font-bold text-white'>
-            Bienvenido administrador de: {user.displayName}
+            Bienvenido administrador de: {venue.displayName}
           </h1>
         </div>
-
         <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
           <div className='bg-white rounded-lg shadow-lg p-6'>
             <h2 className='text-2xl font-semibold mb-4 text-gray-800 flex items-center'>
@@ -113,15 +129,14 @@ export default function Dashboard () {
               </svg>
               Mi espacio
             </h2>
-            <div className='rounded-lg overflow-hidden shadow-md'>
+            <div className='h-[90%] rounded-lg overflow-hidden'>
               <MapComponent
-                user={user}
+                venue={venue}
                 center={[-17.3938, -66.1570]} // Cochabamba coordinates
-                zoom={13}
+                zoom={15}
               />
             </div>
           </div>
-
           <div className='bg-white rounded-lg shadow-lg p-6'>
             <h2 className='text-2xl font-semibold mb-4 text-gray-800 flex items-center'>
               <svg className='w-6 h-6 mr-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
