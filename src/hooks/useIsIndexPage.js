@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 
-export default function useIsIndexPage() {
+export function useIsIndexPage() {
   const pathname = usePathname()
   return pathname === '/'
 }

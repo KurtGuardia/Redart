@@ -1,16 +1,21 @@
 'use client'
 
 import Link from 'next/link'
-import useIsIndexPage from '@/hooks/use-is-index-page'
-import useHasScrolled from '../hooks/useHasScrolled'
 import { useEffect, useState } from 'react'
-import { auth } from '../lib/firebase-client'
-import { useRouter } from 'next/router'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   Avatar,
   AvatarImage,
   AvatarFallback,
 } from '@/components/ui/avatar'
+import useHasScrolled from '@/src/hooks/useHasScrolled'
+import { auth } from '@/src/lib/firebase-client'
+// import { useIsIndexPage } from '@/src/hooks/useIsIndexPage'
+
+function useIsIndexPage() {
+  const pathname = usePathname()
+  return pathname === '/'
+}
 
 export default function Navbar() {
   const isIndexPage = useIsIndexPage()
