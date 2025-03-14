@@ -20,7 +20,7 @@ export default function Layout({ children }) {
         <div className='flex flex-col min-h-screen'>
           <Navbar />
           <main
-            className={`relative flex flex-col justify-between items-center flex-grow ${
+            className={`relative flex flex-col justify-between items-center ${
               isIndexPage ? '' : 'my-20'
             }`}
           >
