@@ -7,7 +7,7 @@ import Spot from '../components/Spot'
 import EventCard from '../components/EventCard'
 import MapComponent from '../components/MapComponent'
 
-export default function Page() {
+export default function HomePage() {
   const [bgIndex, setBgIndex] = useState(0)
   const images = [
     '/theater.jpg',

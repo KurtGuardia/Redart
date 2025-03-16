@@ -16,18 +16,16 @@ export default function Layout({ children }) {
 
   return (
     <html lang='en'>
-      <body>
-        <div className='flex flex-col min-h-screen'>
-          <Navbar />
-          <main
-            className={`relative flex flex-col justify-between items-center ${
-              isIndexPage ? '' : 'my-20'
-            }`}
-          >
-            {children}
-          </main>
-          <Footer />
-        </div>
+      <body className='flex flex-col min-h-screen'>
+        <Navbar />
+        <main
+          className={`relative flex flex-col justify-between items-center flex-grow ${
+            isIndexPage ? '' : 'my-20'
+          }`}
+        >
+          {children}
+        </main>
+        <Footer />
       </body>
     </html>
   )
