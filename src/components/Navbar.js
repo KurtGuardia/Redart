@@ -3,14 +3,13 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-} from '@/components/ui/avatar'
 import useHasScrolled from '@/src/hooks/useHasScrolled'
 import { auth } from '@/src/lib/firebase-client'
-// import { useIsIndexPage } from '@/src/hooks/useIsIndexPage'
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@radix-ui/react-avatar'
 
 function useIsIndexPage() {
   const pathname = usePathname()

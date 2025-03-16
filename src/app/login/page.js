@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '../../lib/firebase-client'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Spot from '../../components/Spot'
 
@@ -12,6 +12,7 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -22,11 +23,17 @@ export default function Login() {
         password,
       )
       await auth.authStateReady() // Wait for state propagation
-      const redirect = router.query.redirect || '/dashboard'
+      const redirect =
+        searchParams.get('redirect') || '/dashboard'
+      console.log('Redirecting to:', redirect)
       router.push(redirect)
     } catch (error) {
       setError(error.message)
-      console.error('Login error:', error)
+      console.error(
+        'Login error:',
+        error.code,
+        error.message,
+      )
     }
   }
 

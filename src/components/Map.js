@@ -8,7 +8,6 @@ import {
 import { Icon } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
-// Create icon outside component to avoid recreation on every render
 const customIcon = new Icon({
   iconUrl:
     'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
@@ -36,7 +35,7 @@ function LocationMarker({ onLocationSelect }) {
 export default function Map({
   center,
   zoom = 13,
-  venues,
+  venues = [],
   onLocationSelect,
 }) {
   if (
@@ -55,7 +54,6 @@ export default function Map({
       style={{ height: '100%', width: '100%' }}
       scrollWheelZoom={false}
       onClick={(e) => {
-        console.log(e)
         const { lat, lng } = e.latlng
         onLocationSelect({ lat, lng })
       }}
@@ -70,8 +68,8 @@ export default function Map({
           <Marker
             key={index}
             position={[
-              venue?.location?.latitude,
-              venue?.location?.longitude,
+              venue?.geopoint?.lat || center[0],
+              venue?.geopoint?.lng || center[1],
             ]}
             icon={customIcon}
           >
