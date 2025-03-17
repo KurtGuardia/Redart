@@ -49,6 +49,7 @@ export default function Register() {
   const [repeatPassword, setRepeatPassword] = useState('')
   const [photos, setPhotos] = useState([])
   const [error, setError] = useState('')
+  const [message, setMessage] = useState('')
   const router = useRouter()
   const geoNamesUsername =
     process.env.NEXT_PUBLIC_GEONAMES_USERNAME
@@ -466,7 +467,7 @@ export default function Register() {
               >
                 Imágenes{' '}
                 <span className='text-gray-500 text-sm'>
-                  (máximo 3)
+                  (máximo 5)
                 </span>
               </label>
               <input
@@ -475,13 +476,25 @@ export default function Register() {
                 accept='image/*'
                 multiple
                 onChange={(e) => {
-                  const files = Array.from(
-                    e.target.files,
-                  ).slice(0, 3)
+                  const files = Array.from(e.target.files)
+
+                  if (files.length > 5) {
+                    setMessage(
+                      'Solo puedes subir hasta 5 fotos.',
+                    )
+                    e.target.value = ''
+                    return
+                  }
+
                   setPhotos(files)
+                  setMessage('')
                 }}
                 className='appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
               />
+
+              {message && (
+                <p className='text-red-500'>{message}</p>
+              )}
             </div>
             <div className='mb-4'>
               <label

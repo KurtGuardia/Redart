@@ -10,6 +10,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from '@radix-ui/react-avatar'
+import { useVenueData } from '../hooks/useVenueData'
 
 function useIsIndexPage() {
   const pathname = usePathname()
@@ -21,6 +22,11 @@ export default function Navbar() {
   const hasScrolled = useHasScrolled()
   const router = useRouter()
   const [user, setUser] = useState(null)
+  const {
+    venue,
+    loading: venueLoading,
+    error: venueError,
+  } = useVenueData(user?.uid)
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(
@@ -121,14 +127,14 @@ export default function Navbar() {
               <Avatar className=''>
                 <AvatarImage
                   src={
-                    user.photoURL ||
-                    'https://github.com/shadcn.png'
+                    venue?.logo ||
+                    'https://img.icons8.com/ios/50/000000/user--v1.png'
                   }
-                  alt={user.displayName || user.email}
+                  alt={venue?.name || user.email}
                   className='h-full w-full object-cover rounded-full'
                 />
                 <AvatarFallback className='h-full w-full flex items-center justify-center rounded-full bg-muted text-white'>
-                  {user.email?.[0]?.toUpperCase() || 'U'}
+                  {venue?.name?.[0]?.toUpperCase() || 'U'}
                 </AvatarFallback>
               </Avatar>
             </div>
