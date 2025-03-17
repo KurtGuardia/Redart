@@ -20,6 +20,7 @@ import {
   ref,
   uploadBytes,
 } from 'firebase/storage'
+import Image from 'next/image'
 
 const AMENITIES_OPTIONS = [
   'Parking',
@@ -34,6 +35,7 @@ const AMENITIES_OPTIONS = [
 export default function Register() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [logo, setLogo] = useState(null)
   const [description, setDescription] = useState('')
   const [address, setAddress] = useState('')
   const [capacity, setCapacity] = useState('')
@@ -45,7 +47,7 @@ export default function Register() {
     useState([])
   const [password, setPassword] = useState('')
   const [repeatPassword, setRepeatPassword] = useState('')
-  const [images, setImages] = useState([])
+  const [photos, setPhotos] = useState([])
   const [error, setError] = useState('')
   const router = useRouter()
   const geoNamesUsername =
@@ -108,18 +110,29 @@ export default function Register() {
     return ''
   }
 
-  const uploadImages = async (images, venueId) => {
+  const uploadPhotos = async (photos, venueId) => {
     const urls = []
-    for (const image of images) {
+    for (const photo of photos) {
       const storageRef = ref(
         storage,
-        `venues/${venueId}/${image.name}`,
+        `venues/${venueId}/photos/${photo.name}`,
       )
-      await uploadBytes(storageRef, image)
+      await uploadBytes(storageRef, photo)
       const url = await getDownloadURL(storageRef)
       urls.push(url)
     }
     return urls
+  }
+
+  const uploadLogo = async (logo, venueId) => {
+    if (!logo) return null
+    const storageRef = ref(
+      storage,
+      `venues/${venueId}/logo/${logo.name}`,
+    )
+    await uploadBytes(storageRef, logo)
+    const url = await getDownloadURL(storageRef)
+    return url
   }
 
   const handleSubmit = async (e) => {
@@ -148,6 +161,10 @@ export default function Register() {
         doc(db, 'venues', userCredential.user.uid),
         {
           name,
+          logo: await uploadLogo(
+            logo,
+            userCredential.user.uid,
+          ),
           email,
           description,
           country: selectedCountry,
@@ -159,8 +176,8 @@ export default function Register() {
             geoPoint.lng,
           ),
           amenities: selectedAmenities,
-          images: await uploadImages(
-            images,
+          photos: await uploadPhotos(
+            photos,
             userCredential.user.uid,
           ),
           createdAt: new Date().toISOString(),
@@ -168,8 +185,11 @@ export default function Register() {
         },
       )
 
-      // Upload images to Storage
-      await uploadImages(images, userCredential.user.uid)
+      // Upload logo to Storage
+      await uploadLogo(logo, userCredential.user.uid)
+
+      // Upload photos to Storage
+      await uploadPhotos(photos, userCredential.user.uid)
 
       router.push('/dashboard')
     } catch (error) {
@@ -210,6 +230,37 @@ export default function Register() {
                 onChange={(e) => setName(e.target.value)}
                 required
               />
+            </div>
+            <div className='mb-4'>
+              <label
+                htmlFor='logo'
+                className='block text-gray-700 font-bold mb-2'
+              >
+                Logo
+              </label>
+              <div className='flex items-center gap-2'>
+                <input
+                  type='file'
+                  id='logo'
+                  accept='image/*'
+                  onChange={(e) => {
+                    const file = e.target.files[0]
+                    if (file) {
+                      setLogo(file)
+                    }
+                  }}
+                  className='appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+                />
+                {logo && (
+                  <Image
+                    src={URL.createObjectURL(logo)}
+                    alt='Logo'
+                    className='w-12 h-12 rounded-full'
+                    width={64}
+                    height={64}
+                  />
+                )}
+              </div>
             </div>
             <div className='mb-4'>
               <label
@@ -410,7 +461,7 @@ export default function Register() {
             </div>
             <div className='mb-4'>
               <label
-                htmlFor='images'
+                htmlFor='photos'
                 className='block text-gray-700 font-bold mb-2'
               >
                 Imágenes{' '}
@@ -420,16 +471,16 @@ export default function Register() {
               </label>
               <input
                 type='file'
-                id='images'
+                id='photos'
                 accept='image/*'
                 multiple
                 onChange={(e) => {
                   const files = Array.from(
                     e.target.files,
                   ).slice(0, 3)
-                  setImages(files)
+                  setPhotos(files)
                 }}
-                className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+                className='appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
               />
             </div>
             <div className='mb-4'>
