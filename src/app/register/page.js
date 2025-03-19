@@ -180,6 +180,7 @@ export default function Register() {
             </div>
           )}
           <form onSubmit={handleSubmit}>
+            {/* Name */}
             <div className='mb-4'>
               <label
                 htmlFor='name'
@@ -196,6 +197,7 @@ export default function Register() {
                 required
               />
             </div>
+            {/* Logo */}
             <div className='mb-4'>
               <label
                 htmlFor='logo'
@@ -227,22 +229,7 @@ export default function Register() {
                 )}
               </div>
             </div>
-            <div className='mb-4'>
-              <label
-                htmlFor='email'
-                className='block text-gray-700 font-bold mb-2'
-              >
-                Correo electrónico
-              </label>
-              <input
-                type='email'
-                id='email'
-                className='w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
+            {/* Description */}
             <div className='mb-4'>
               <label
                 htmlFor='description'
@@ -261,6 +248,7 @@ export default function Register() {
                 rows='3'
               />
             </div>
+            {/* Country Selection */}
             <div className='mb-4'>
               <label
                 htmlFor='country'
@@ -284,6 +272,7 @@ export default function Register() {
                 )}
               </select>
             </div>
+            {/* City Selection */}
             {selectedCountry && (
               <div className='mb-4'>
                 <label
@@ -311,6 +300,7 @@ export default function Register() {
                 </select>
               </div>
             )}
+            {/* Address */}
             <div className='mb-4'>
               <label
                 htmlFor='address'
@@ -325,9 +315,10 @@ export default function Register() {
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 required
-                placeholder='Ej. Calle 123, zona 1, a lado del parque'
+                placeholder='Ej. Calle ABC, #123, zona 1'
               />
             </div>
+            {/* Capacity */}
             <div className='mb-4'>
               <label
                 htmlFor='capacity'
@@ -349,6 +340,7 @@ export default function Register() {
                 autoComplete='off'
               />
             </div>
+            {/* Amenities */}
             <div className='mb-4'>
               <label className='block text-gray-700 font-bold mb-2'>
                 Servicios y comodidades (opcional)
@@ -392,17 +384,20 @@ export default function Register() {
                 ))}
               </div>
             </div>
-            <div className='mb-4 h-[200px]'>
+            {/* Map Location */}
+            <div className='mb-4 h-[300px]'>
               <label className='block text-gray-700 font-bold mb-2'>
                 Ubicación{' '}
                 <span className='text-gray-500 text-sm'>
-                  (selecciona el punto exacto)
+                  (selecciona el punto exacto de entrada)
                 </span>
               </label>
               <div className='h-full pb-8'>
                 <MapComponent
                   center={[-17.389499, -66.156123]}
-                  zoom={14}
+                  zoom={12}
+                  registrationAddress={address}
+                  registrationCity={selectedCity}
                   onLocationSelect={(location) =>
                     setGeoPoint(location)
                   }
@@ -415,6 +410,7 @@ export default function Register() {
                 />
               </div>
             </div>
+            {/* Photos Upload */}
             <div className='mb-4'>
               <label
                 htmlFor='photos'
@@ -451,6 +447,24 @@ export default function Register() {
                 <p className='text-red-500'>{message}</p>
               )}
             </div>
+            {/* Email */}
+            <div className='mb-4'>
+              <label
+                htmlFor='email'
+                className='block text-gray-700 font-bold mb-2'
+              >
+                Correo electrónico
+              </label>
+              <input
+                type='email'
+                id='email'
+                className='w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            {/* Password */}
             <div className='mb-4'>
               <label
                 htmlFor='password'
@@ -473,6 +487,7 @@ export default function Register() {
                 caracteres y una letra mayúscula
               </p>
             </div>
+            {/* Repeat Password */}
             <div className='mb-6'>
               <label
                 htmlFor='repeatPassword'
