@@ -21,6 +21,7 @@ import {
   uploadBytes,
 } from 'firebase/storage'
 import Image from 'next/image'
+import { countriesAndCities } from './countriesAndCities'
 
 const AMENITIES_OPTIONS = [
   'Parking',
@@ -53,53 +54,16 @@ export default function Register() {
   const router = useRouter()
   const geoNamesUsername =
     process.env.NEXT_PUBLIC_GEONAMES_USERNAME
-  const [countries, setCountries] = useState([])
   const [selectedCountry, setSelectedCountry] = useState('')
   const [cities, setCities] = useState([])
   const [selectedCity, setSelectedCity] = useState('')
 
-  const fetchCountries = async () => {
-    const res = await fetch(
-      `http://api.geonames.org/countryInfoJSON?username=${geoNamesUsername}`,
-    )
-    const data = await res.json()
-    return data.geonames.map((country) => ({
-      name: country.countryName,
-      code: country.countryCode,
-    }))
+  const handleCountryChange = (e) => {
+    const country = e.target.value
+    setSelectedCountry(country)
+    setCities(countriesAndCities[country] || [])
+    setSelectedCity('')
   }
-
-  useEffect(() => {
-    const loadCountries = async () => {
-      try {
-        const countries = await fetchCountries()
-        setCountries(countries)
-      } catch (error) {
-        setError(error.message)
-      }
-    }
-    loadCountries()
-  }, [])
-
-  useEffect(() => {
-    if (!selectedCountry) return
-
-    const fetchCities = async () => {
-      try {
-        const res = await fetch(
-          `http://api.geonames.org/searchJSON?country=${selectedCountry}&featureCode=ADM1&username=${geoNamesUsername}`,
-        )
-        const data = await res.json()
-        setCities(
-          data.geonames.map((city) => city.toponymName),
-        )
-      } catch (error) {
-        setError(error.message)
-      }
-    }
-
-    fetchCities()
-  }, [selectedCountry])
 
   const validatePassword = (password) => {
     if (password.length < 6) {
@@ -308,25 +272,16 @@ export default function Register() {
                 id='country'
                 className='w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--teal-500)] bg-[--white]'
                 value={selectedCountry}
-                onChange={(e) =>
-                  setSelectedCountry(e.target.value)
-                }
+                onChange={handleCountryChange}
               >
-                <option
-                  value=''
-                  className='text-[var(--gray-300)]'
-                >
-                  Selecciona un país
-                </option>
-                {countries.map((country) => (
-                  <option
-                    key={country.code}
-                    value={country.code}
-                    className='text-[var(--gray-700)]'
-                  >
-                    {country.name}
-                  </option>
-                ))}
+                <option value=''>Selecciona un país</option>
+                {Object.keys(countriesAndCities).map(
+                  (country) => (
+                    <option key={country} value={country}>
+                      {country}
+                    </option>
+                  ),
+                )}
               </select>
             </div>
             {selectedCountry && (
