@@ -75,9 +75,7 @@ export default function EventsPage() {
       <Spot colorName={'red'} />
       <Spot colorName={'red'} />
       <Spot colorName={'Indigo'} />
-      <h1 className='text-3xl font-bold mb-8'>
-        Todos los eventos
-      </h1>
+      <h1>Todos los eventos</h1>
       <form
         onSubmit={handleSearch}
         className='mb-8 flex gap-4'

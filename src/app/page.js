@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import TypingAnimation from '../components/TypingAnimation'
 import Spot from '../components/Spot'
@@ -8,7 +8,7 @@ import EventCard from '../components/EventCard'
 import MapComponent from '../components/MapComponent'
 
 export default function HomePage() {
-  const [bgIndex, setBgIndex] = useState(0)
+  const heroRef = useRef(null)
   const images = [
     '/theater.jpg',
     '/carnival.jpg',
@@ -16,8 +16,12 @@ export default function HomePage() {
   ]
 
   useEffect(() => {
+    let bgIndex = 0
     const interval = setInterval(() => {
-      setBgIndex((prev) => (prev + 1) % images.length)
+      bgIndex = (bgIndex + 1) % images.length
+      if (heroRef.current) {
+        heroRef.current.style.backgroundImage = `url(${images[bgIndex]})`
+      }
     }, 2000)
 
     return () => clearInterval(interval)
@@ -60,9 +64,10 @@ export default function HomePage() {
     <div className='flex flex-col min-h-screen'>
       <div className='absolute top-0 left-0 right-0 opacity-80 bg-gradient-to-r from-[var(--secondary-color)] to-[var(--primary)] h-[80vh]' />
       <section
+        ref={heroRef}
         className='hero img text-white h-[80vh] flex items-center w-full'
         style={{
-          backgroundImage: `url(${images[bgIndex]})`,
+          backgroundImage: `url(${images[0]})`,
         }}
       >
         <div className='container mx-auto px-4 z-10 text-center flex flex-col justify-between gap-4 bg-white bg-opacity-25 rounded-3xl py-10'>
@@ -116,7 +121,7 @@ export default function HomePage() {
           <div className='text-center'>
             <Link
               href='/events'
-              className='bg-[var(--secondary-color)] text-[var(--secondary-color-foreground)] hover:text-white px-6 py-2 rounded-full text-lg font-semibold hover:bg-teal-700 hover:text-[var(--white)] transition duration-300'
+              className='bg-[var(--secondary-color)] text-[var(--secondary-color-foreground)] px-6 py-2 rounded-full text-lg font-semibold hover:bg-teal-700 hover:text-[var(--white)] transition duration-300'
             >
               Ver todos los eventos
             </Link>
@@ -178,7 +183,7 @@ export default function HomePage() {
         <h2 className='text-3xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--blue-600)] to-[var(--blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg backface-visibility-hidden transform-gpu hover:scale-105 transition-transform'>
           ¿Quieres unirte a la comunidad de Radarte?
         </h2>
-        <p className='text-center text-xl text-[var(--blue-900)] font-semibold max-w-2xl mx-auto mb-8 animate-fade-in-up'>
+        <p className='text-center text-xl font-semibold max-w-2xl mx-auto mb-8 animate-fade-in-up'>
           ¡Únete a la movida cultural y muestra tus
           actividades!
           <br /> ¿Eres un espacio artistico? Crea tu cuenta

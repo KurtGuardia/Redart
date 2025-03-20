@@ -247,38 +247,44 @@ export default function Map({
         </div>
       )}
 
-      <MapContainer
-        center={center}
-        zoom={zoom}
-        style={{ height: '100%', width: '100%' }}
-        scrollWheelZoom={false}
-      >
-        <TileLayer
-          url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-        />
-        <LocationMarker
-          onLocationSelect={onLocationSelect}
-        />
-        <MapController searchResult={searchResult} />
+      <div className='w-full h-[60vh] mx-auto map-container'>
+        <MapContainer
+          center={center}
+          zoom={zoom}
+          style={{
+            height: '100%',
+            width: '100%',
+            borderRadius: '15px',
+          }}
+          scrollWheelZoom={false}
+        >
+          <TileLayer
+            url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+          />
+          <LocationMarker
+            onLocationSelect={onLocationSelect}
+          />
+          <MapController searchResult={searchResult} />
 
-        {venues.map((venue, index) => (
-          <Marker
-            key={index}
-            position={[
-              venue?.geopoint?.lat || center[0],
-              venue?.geopoint?.lng || center[1],
-            ]}
-            icon={customIcon}
-          >
-            <Popup>
-              <div className='font-semibold'>
-                {venue.displayName || 'Unknown User'}
-              </div>
-            </Popup>
-          </Marker>
-        ))}
-      </MapContainer>
+          {venues.map((venue, index) => (
+            <Marker
+              key={index}
+              position={[
+                venue?.geopoint?.lat || center[0],
+                venue?.geopoint?.lng || center[1],
+              ]}
+              icon={customIcon}
+            >
+              <Popup>
+                <div className='font-semibold'>
+                  {venue.displayName || 'Unknown User'}
+                </div>
+              </Popup>
+            </Marker>
+          ))}
+        </MapContainer>
+      </div>
     </div>
   )
 }

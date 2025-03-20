@@ -13,9 +13,9 @@ export default function MapPage() {
         <Spot colorName={'red'} />
         <Spot colorName={'Indigo'} />
         <Spot colorName={'indigo'} />
-        <h2 className='text-3xl font-bold text-center mb-8'>
-          Mapa de Cochabamba
-        </h2>
+        <h1>
+          Descubre la movida cultural que tengas cerca!
+        </h1>
         <div className='w-[700px] h-[50vh] mx-auto'>
           <MapComponent
             center={[-17.389499, -66.156123]}

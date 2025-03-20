@@ -16,9 +16,54 @@
     transform: translateY(0);
   }
 }
+
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes borderAnimation {
+  0% {
+    border-image: linear-gradient(
+        45deg,
+        var(--primary) 0%,
+        var(--secondary-color) 25%,
+        var(--primary) 50%,
+        var(--secondary-color) 75%,
+        var(--primary) 100%
+      )
+      1;
+    background-position: 0% 0;
+  }
+  100% {
+    border-image: linear-gradient(
+        45deg,
+        var(--secondary-color) 0%,
+        var(--primary) 25%,
+        var(--secondary-color) 50%,
+        var(--primary) 75%,
+        var(--secondary-color) 100%
+      )
+      1;
+    background-position: 100% 100%;
+  }
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .animate-fade-in-up {
@@ -27,6 +72,40 @@
 
 .animate-blink {
   animation: blink 1s infinite;
+}
+
+.map-container {
+  position: relative;
+  padding: 8px;
+  overflow: hidden;
+  border-radius: 14px;
+}
+
+.map-container:after {
+  border: 8px solid transparent;
+  border-radius: 12px;
+  animation: borderAnimation 3s linear infinite;
+  background-clip: padding-box;
+}
+
+.map-container::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  z-index: -1;
+  border-radius: 12px;
+  background: linear-gradient(
+    45deg,
+    var(--primary),
+    var(--secondary-color),
+    var(--primary),
+    var(--secondary-color)
+  );
+  background-size: 400% 400%;
+  animation: gradientAnimation 3s linear infinite;
 }
 
 body {
@@ -38,6 +117,19 @@ body {
     #c8eeff 85%,
     #aecaff 100%
   );
+
+  h1 {
+    font-size: 2rem;
+    @media (min-width: 768px) {
+      font-size: 2.25rem;
+    }
+    font-weight: 700;
+    text-align: center;
+    color: var(--teal-800);
+    letter-spacing: -0.01562em;
+    padding-top: 0.75rem;
+    padding-bottom: 1.5rem;
+  }
 }
 
 @layer base {
@@ -47,7 +139,7 @@ body {
     flex-direction: column;
   }
 
-  :root{
+  :root {
     /* Gray scale */
     --white: #ffffff;
     --gray-100: #f3f4f6;
@@ -68,6 +160,7 @@ body {
     --teal-500: #14b8a6;
     --teal-700: #0d9488;
     --teal-700-transparent: #0d948880;
+    --teal-800: #0f766e;
 
     /* Pink */
     --pink-600: #ec4899;
@@ -92,14 +185,14 @@ body {
     --primary-foreground: #ffffff;
 
     --secondary-color: #00f5a0;
-    --secondary-foreground: #000000;
+    --secondary-color-foreground: #4b0082;
     --secondary-color-transparent: #00f5a080;
 
     --muted: #333333;
     --muted-foreground: #ffffff;
 
     --accent: #00f5a0;
-    --accent-foreground: #4B0082;
+    --accent-foreground: #4b0082;
 
     --destructive: #ef4444;
     --destructive-foreground: #ffffff;
@@ -109,8 +202,8 @@ body {
 
     --radius: 0.5rem;
 
-    --facebook: #4267B2;
-    --instagram: #E1306C;
+    --facebook: #4267b2;
+    --instagram: #e1306c;
     --twitter: #1a93df;
   }
 
