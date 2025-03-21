@@ -1,12 +1,17 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { auth } from '../../lib/firebase-client'
-import { Timestamp } from 'firebase/firestore'
+import { auth, db } from '../../lib/firebase-client'
+import {
+  Timestamp,
+  doc,
+  updateDoc,
+} from 'firebase/firestore'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { useVenueData } from '@/src/hooks/useVenueData'
 import Spot from '@/src/components/Spot'
+import EditModal from '@/src/components/EditModal'
 
 const MapComponent = dynamic(
   () => import('../../components/MapComponent'),
@@ -22,10 +27,16 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [events, setEvents] = useState([])
   const [venueId, setVenueId] = useState(null)
+  const [isEditModalOpen, setIsEditModalOpen] =
+    useState(false)
+  const [isEventEditModalOpen, setIsEventEditModalOpen] =
+    useState(false)
+  const [currentEvent, setCurrentEvent] = useState(null)
   const {
     venue,
     loading: venueLoading,
     error: venueError,
+    refreshVenue,
   } = useVenueData(venueId)
 
   const handleAddEvent = async (e) => {
@@ -51,6 +62,144 @@ export default function Dashboard() {
     } catch (error) {
       console.error('Error adding event:', error)
     }
+  }
+
+  const handleEditVenue = async (updatedData) => {
+    try {
+      setLoading(true)
+      const venueRef = doc(db, 'venues', venueId)
+
+      const formattedData = {
+        ...updatedData,
+        updatedAt: Timestamp.now(),
+      }
+
+      await updateDoc(venueRef, formattedData)
+
+      setIsEditModalOpen(false)
+
+      if (refreshVenue) {
+        refreshVenue()
+      }
+    } catch (error) {
+      console.error('Error updating venue:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleEditEvent = async (updatedData) => {
+    try {
+      setLoading(true)
+
+      // Format the date properly for Firestore
+      const formattedData = {
+        ...updatedData,
+        date: updatedData.date
+          ? Timestamp.fromDate(new Date(updatedData.date))
+          : currentEvent.date,
+        updatedAt: Timestamp.now(),
+      }
+
+      // Update the event in Firestore
+      const eventRef = doc(db, 'events', currentEvent.id)
+      await updateDoc(eventRef, formattedData)
+
+      // Update the local state
+      setEvents(
+        events.map((event) =>
+          event.id === currentEvent.id
+            ? { ...event, ...formattedData }
+            : event,
+        ),
+      )
+
+      // Close the modal and reset current event
+      setIsEventEditModalOpen(false)
+      setCurrentEvent(null)
+    } catch (error) {
+      console.error('Error updating event:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const venueFormFields = {
+    name: {
+      type: 'text',
+      label: 'Nombre del espacio',
+      required: true,
+    },
+    description: {
+      type: 'textarea',
+      label: 'Descripción',
+      rows: 4,
+      required: true,
+    },
+    address: {
+      type: 'text',
+      label: 'Dirección',
+      required: true,
+    },
+    city: {
+      type: 'text',
+      label: 'Ciudad',
+      required: true,
+    },
+    country: {
+      type: 'text',
+      label: 'País',
+      required: true,
+    },
+    capacity: {
+      type: 'number',
+      label: 'Capacidad (personas)',
+      required: true,
+      min: 1,
+    },
+    email: {
+      type: 'email',
+      label: 'Email de contacto',
+      required: true,
+    },
+    amenities: {
+      type: 'array',
+      label: 'Comodidades',
+      itemLabel: 'comodidad',
+    },
+  }
+
+  const eventFormFields = {
+    title: {
+      type: 'text',
+      label: 'Título del evento',
+      required: true,
+    },
+    date: {
+      type: 'datetime-local',
+      label: 'Fecha y hora',
+      required: true,
+    },
+    description: {
+      type: 'textarea',
+      label: 'Descripción',
+      rows: 3,
+    },
+  }
+
+  const openEventEditModal = (event) => {
+    // Format date from Timestamp to string for datetime-local input
+    let formattedEvent = { ...event }
+
+    if (event.date && event.date.seconds) {
+      const date = new Date(event.date.seconds * 1000)
+      // Format to YYYY-MM-DDThh:mm
+      const formattedDate = date.toISOString().slice(0, 16)
+      formattedEvent.date = formattedDate
+    }
+
+    setCurrentEvent(formattedEvent)
+    setIsEventEditModalOpen(true)
   }
 
   useEffect(() => {
@@ -110,7 +259,10 @@ export default function Dashboard() {
                 </svg>
                 Mi espacio
               </div>
-              <button className='text-teal-600 hover:text-teal-800'>
+              <button
+                className='text-teal-600 hover:text-teal-800'
+                onClick={() => setIsEditModalOpen(true)}
+              >
                 <svg
                   className='w-5 h-5'
                   fill='none'
@@ -494,21 +646,45 @@ export default function Dashboard() {
                     key={event.id}
                     className='bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200'
                   >
-                    <h3 className='font-semibold text-gray-800'>
-                      {event.title}
-                    </h3>
-                    <p className='text-sm text-gray-600 mt-1'>
-                      {new Date(
-                        event.date.seconds * 1000,
-                      ).toLocaleDateString('es-ES', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </p>
+                    <div className='flex justify-between items-start'>
+                      <div>
+                        <h3 className='font-semibold text-gray-800'>
+                          {event.title}
+                        </h3>
+                        <p className='text-sm text-gray-600 mt-1'>
+                          {new Date(
+                            event.date.seconds * 1000,
+                          ).toLocaleDateString('es-ES', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() =>
+                          openEventEditModal(event)
+                        }
+                        className='text-teal-600 hover:text-teal-800'
+                      >
+                        <svg
+                          className='w-5 h-5'
+                          fill='none'
+                          stroke='currentColor'
+                          viewBox='0 0 24 24'
+                        >
+                          <path
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                            strokeWidth={2}
+                            d='M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z'
+                          />
+                        </svg>
+                      </button>
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -516,6 +692,29 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      <EditModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        title='Editar información del espacio'
+        data={venue}
+        fields={venueFormFields}
+        onSave={handleEditVenue}
+      />
+
+      <EditModal
+        isOpen={isEventEditModalOpen}
+        onClose={() => {
+          setIsEventEditModalOpen(false)
+          setCurrentEvent(null)
+        }}
+        title='Editar evento'
+        data={currentEvent}
+        fields={eventFormFields}
+        onSave={handleEditEvent}
+        saveButtonText='Actualizar Evento'
+      />
+
       <div className='w-fit mx-auto p-4'>
         <button
           onClick={async () => {
