@@ -108,7 +108,7 @@ export const countriesAndCities = {
     'Osorno',
     'Valdivia',
   ],
-  Spain: [
+  España: [
     'Madrid',
     'Barcelona',
     'Valencia',
@@ -169,7 +169,7 @@ export const countriesAndCities = {
     'Santo Domingo',
     'Milagro',
   ],
-  Mexico: [
+  México: [
     'Ciudad de México',
     'Guadalajara',
     'Monterrey',

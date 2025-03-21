@@ -109,7 +109,22 @@ export default function Dashboard() {
               </svg>
               Mi espacio
             </h2>
-            <div className='h-[90%] rounded-lg overflow-hidden'>
+
+            {/* Logo and venue name */}
+            {venue.logo && (
+              <div className='flex items-center mb-4'>
+                <img
+                  src={venue.logo}
+                  alt={`Logo de ${venue.name}`}
+                  className='w-20 h-20 object-cover rounded-full border-2 border-teal-500 shadow-md mr-4'
+                />
+                <h3 className='text-xl font-bold text-gray-800'>
+                  {venue.name}
+                </h3>
+              </div>
+            )}
+
+            <div className='rounded-lg overflow-hidden mb-4'>
               <MapComponent
                 venues={[venue]}
                 center={[
@@ -119,8 +134,13 @@ export default function Dashboard() {
                 zoom={15}
               />
             </div>
-            <div className='h-[10%]'>
-              <p className='text-sm text-gray-500 flex items-center gap-2 mt-4 bg-gray-50 p-3 rounded-lg'>
+
+            {/* Location info */}
+            <div className='bg-gray-50 p-4 rounded-lg mb-4'>
+              <h3 className='font-semibold text-gray-700 mb-2'>
+                Ubicación
+              </h3>
+              <p className='text-sm text-gray-500 flex items-center gap-2 mb-2'>
                 <svg
                   className='w-4 h-4'
                   fill='none'
@@ -142,7 +162,181 @@ export default function Dashboard() {
                 </svg>
                 {venue.address}
               </p>
+              {venue.city && venue.country && (
+                <p className='text-sm text-gray-500 flex items-center gap-2'>
+                  <svg
+                    className='w-4 h-4'
+                    fill='none'
+                    stroke='currentColor'
+                    viewBox='0 0 24 24'
+                  >
+                    <path
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      strokeWidth={2}
+                      d='M3 21l18 0M3 10l18 0M5 6l0 -3l14 0l0 3M7 21l0 -4M17 21l0 -4M14 10l0 -7M10 10l0 -7M8 3L8 7M16 3L16 7'
+                    />
+                  </svg>
+                  {venue.city}, {venue.country}
+                </p>
+              )}
             </div>
+
+            {/* Description */}
+            <div className='bg-gray-50 p-4 rounded-lg mb-4'>
+              <h3 className='font-semibold text-gray-700 mb-2'>
+                Descripción
+              </h3>
+              <p className='text-sm text-gray-500 flex items-start gap-2'>
+                <svg
+                  className='w-4 h-4 mt-1 flex-shrink-0'
+                  fill='none'
+                  stroke='currentColor'
+                  viewBox='0 0 24 24'
+                >
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M4 4h16v16H4z'
+                  />
+                  <line
+                    x1='8'
+                    y1='8'
+                    x2='16'
+                    y2='8'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                  />
+                  <line
+                    x1='8'
+                    y1='12'
+                    x2='16'
+                    y2='12'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                  />
+                  <line
+                    x1='8'
+                    y1='16'
+                    x2='12'
+                    y2='16'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                  />
+                </svg>
+                <span>{venue.description}</span>
+              </p>
+            </div>
+
+            {/* Capacity */}
+            {venue.capacity && (
+              <div className='bg-gray-50 p-4 rounded-lg mb-4'>
+                <h3 className='font-semibold text-gray-700 mb-2'>
+                  Capacidad
+                </h3>
+                <p className='text-sm text-gray-500 flex items-center gap-2'>
+                  <svg
+                    className='w-4 h-4'
+                    fill='none'
+                    stroke='currentColor'
+                    viewBox='0 0 24 24'
+                  >
+                    <path
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      strokeWidth={2}
+                      d='M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z'
+                    />
+                  </svg>
+                  {venue.capacity} personas
+                </p>
+              </div>
+            )}
+
+            {/* Amenities */}
+            {venue.amenities &&
+              venue.amenities.length > 0 && (
+                <div className='bg-gray-50 p-4 rounded-lg mb-4'>
+                  <h3 className='font-semibold text-gray-700 mb-2'>
+                    Comodidades
+                  </h3>
+                  <div className='flex flex-wrap gap-2'>
+                    {venue.amenities.map(
+                      (amenity, index) => (
+                        <span
+                          key={index}
+                          className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800'
+                        >
+                          <svg
+                            className='w-3 h-3 mr-1'
+                            fill='none'
+                            stroke='currentColor'
+                            viewBox='0 0 24 24'
+                          >
+                            <path
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
+                              strokeWidth={2}
+                              d='M5 13l4 4L19 7'
+                            />
+                          </svg>
+                          {amenity}
+                        </span>
+                      ),
+                    )}
+                  </div>
+                </div>
+              )}
+
+            {/* Contact */}
+            {venue.email && (
+              <div className='bg-gray-50 p-4 rounded-lg mb-4'>
+                <h3 className='font-semibold text-gray-700 mb-2'>
+                  Contacto
+                </h3>
+                <p className='text-sm text-gray-500 flex items-center gap-2'>
+                  <svg
+                    className='w-4 h-4'
+                    fill='none'
+                    stroke='currentColor'
+                    viewBox='0 0 24 24'
+                  >
+                    <path
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      strokeWidth={2}
+                      d='M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'
+                    />
+                  </svg>
+                  {venue.email}
+                </p>
+              </div>
+            )}
+
+            {/* Photos gallery */}
+            {venue.photos && venue.photos.length > 0 && (
+              <div className='mt-4'>
+                <h3 className='font-semibold text-gray-700 mb-2'>
+                  Fotos
+                </h3>
+                <div className='grid grid-cols-3 gap-2'>
+                  {venue.photos.map((photo, index) => (
+                    <img
+                      key={index}
+                      src={photo}
+                      alt={`Foto ${index + 1} de ${
+                        venue.name
+                      }`}
+                      className='w-full h-20 object-cover rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer'
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
           <div className='bg-white rounded-lg shadow-lg p-6'>
             <h2 className='text-2xl font-semibold mb-4 text-gray-800 flex items-center'>

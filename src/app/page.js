@@ -71,7 +71,7 @@ export default function HomePage() {
         }}
       >
         <div className='container mx-auto px-4 z-10 text-center flex flex-col justify-between gap-4 bg-white bg-opacity-25 rounded-3xl py-10'>
-          <h1 className='text-4xl md:text-6xl font-bold md:leading-[150%] mb-4 animate-fade-in-up '>
+          <h1 className='text-4xl text-[var(--white)] md:text-6xl font-bold md:leading-[150%] mb-4 animate-fade-in-up'>
             Descubre la vibrante escena artística de Bolivia
           </h1>
           <p className='font-semibold text-2xl max-w-2xl mx-auto mb-8 animate-fade-in-up'>
