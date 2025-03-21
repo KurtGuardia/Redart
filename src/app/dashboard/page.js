@@ -87,44 +87,64 @@ export default function Dashboard() {
         </div>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
           <div className='bg-white rounded-lg shadow-lg p-6'>
-            <h2 className='text-2xl font-semibold mb-4 text-gray-800 flex items-center'>
-              <svg
-                className='w-6 h-6 mr-2'
-                fill='none'
-                stroke='currentColor'
-                viewBox='0 0 24 24'
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth={2}
-                  d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z'
-                />
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth={2}
-                  d='M15 11a3 3 0 11-6 0 3 3 0 016 0z'
-                />
-              </svg>
-              Mi espacio
+            <h2 className='text-2xl font-semibold mb-4 text-gray-800 flex items-center justify-between'>
+              <div className='flex items-center'>
+                <svg
+                  className='w-6 h-6 mr-2'
+                  fill='none'
+                  stroke='currentColor'
+                  viewBox='0 0 24 24'
+                >
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z'
+                  />
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M15 11a3 3 0 11-6 0 3 3 0 016 0z'
+                  />
+                </svg>
+                Mi espacio
+              </div>
+              <button className='text-teal-600 hover:text-teal-800'>
+                <svg
+                  className='w-5 h-5'
+                  fill='none'
+                  stroke='currentColor'
+                  viewBox='0 0 24 24'
+                >
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z'
+                  />
+                </svg>
+              </button>
             </h2>
 
             {/* Logo and venue name */}
             {venue.logo && (
               <div className='flex items-center mb-4'>
-                <img
-                  src={venue.logo}
-                  alt={`Logo de ${venue.name}`}
-                  className='w-20 h-20 object-cover rounded-full border-2 border-teal-500 shadow-md mr-4'
-                />
-                <h3 className='text-xl font-bold text-gray-800'>
-                  {venue.name}
-                </h3>
+                <div className='flex items-center'>
+                  <img
+                    src={venue.logo}
+                    alt={`Logo de ${venue.name}`}
+                    className='w-20 h-20 object-cover rounded-full border-2 border-teal-500 shadow-md mr-4'
+                  />
+                  <h3 className='text-xl font-bold text-gray-800'>
+                    {venue.name}
+                  </h3>
+                </div>
               </div>
             )}
 
-            <div className='rounded-lg overflow-hidden mb-4'>
+            {/* Map */}
+            <div className='rounded-lg overflow-hidden mb-4 relative'>
               <MapComponent
                 venues={[venue]}
                 center={[
@@ -132,13 +152,15 @@ export default function Dashboard() {
                   venue.location.longitude,
                 ]}
                 zoom={15}
+                small={true}
+                isDashboard={true}
               />
             </div>
 
             {/* Location info */}
             <div className='bg-gray-50 p-4 rounded-lg mb-4'>
               <h3 className='font-semibold text-gray-700 mb-2'>
-                Ubicación
+                <span>Ubicación</span>
               </h3>
               <p className='text-sm text-gray-500 flex items-center gap-2 mb-2'>
                 <svg
@@ -170,11 +192,19 @@ export default function Dashboard() {
                     stroke='currentColor'
                     viewBox='0 0 24 24'
                   >
+                    <circle
+                      cx='12'
+                      cy='12'
+                      r='10'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      strokeWidth={2}
+                    />
                     <path
                       strokeLinecap='round'
                       strokeLinejoin='round'
                       strokeWidth={2}
-                      d='M3 21l18 0M3 10l18 0M5 6l0 -3l14 0l0 3M7 21l0 -4M17 21l0 -4M14 10l0 -7M10 10l0 -7M8 3L8 7M16 3L16 7'
+                      d='M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z'
                     />
                   </svg>
                   {venue.city}, {venue.country}
@@ -185,7 +215,7 @@ export default function Dashboard() {
             {/* Description */}
             <div className='bg-gray-50 p-4 rounded-lg mb-4'>
               <h3 className='font-semibold text-gray-700 mb-2'>
-                Descripción
+                <span>Descripción</span>
               </h3>
               <p className='text-sm text-gray-500 flex items-start gap-2'>
                 <svg
@@ -236,7 +266,7 @@ export default function Dashboard() {
             {venue.capacity && (
               <div className='bg-gray-50 p-4 rounded-lg mb-4'>
                 <h3 className='font-semibold text-gray-700 mb-2'>
-                  Capacidad
+                  <span>Capacidad</span>
                 </h3>
                 <p className='text-sm text-gray-500 flex items-center gap-2'>
                   <svg
@@ -262,7 +292,7 @@ export default function Dashboard() {
               venue.amenities.length > 0 && (
                 <div className='bg-gray-50 p-4 rounded-lg mb-4'>
                   <h3 className='font-semibold text-gray-700 mb-2'>
-                    Comodidades
+                    <span>Comodidades</span>
                   </h3>
                   <div className='flex flex-wrap gap-2'>
                     {venue.amenities.map(
@@ -296,7 +326,7 @@ export default function Dashboard() {
             {venue.email && (
               <div className='bg-gray-50 p-4 rounded-lg mb-4'>
                 <h3 className='font-semibold text-gray-700 mb-2'>
-                  Contacto
+                  <span>Contacto</span>
                 </h3>
                 <p className='text-sm text-gray-500 flex items-center gap-2'>
                   <svg
@@ -309,7 +339,7 @@ export default function Dashboard() {
                       strokeLinecap='round'
                       strokeLinejoin='round'
                       strokeWidth={2}
-                      d='M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'
+                      d='M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2z'
                     />
                   </svg>
                   {venue.email}
@@ -321,19 +351,41 @@ export default function Dashboard() {
             {venue.photos && venue.photos.length > 0 && (
               <div className='mt-4'>
                 <h3 className='font-semibold text-gray-700 mb-2'>
-                  Fotos
+                  <span>Fotos</span>
                 </h3>
-                <div className='grid grid-cols-3 gap-2'>
-                  {venue.photos.map((photo, index) => (
-                    <img
-                      key={index}
-                      src={photo}
-                      alt={`Foto ${index + 1} de ${
-                        venue.name
-                      }`}
-                      className='w-full h-20 object-cover rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer'
-                    />
-                  ))}
+                <div className='flex flex-col gap-2'>
+                  {/* First row - first 3 photos */}
+                  <div className='grid grid-cols-3 gap-2'>
+                    {venue.photos
+                      .slice(0, 3)
+                      .map((photo, index) => (
+                        <img
+                          key={index}
+                          src={photo}
+                          alt={`Foto ${index + 1} de ${
+                            venue.name
+                          }`}
+                          className='w-full h-36 object-cover rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer'
+                        />
+                      ))}
+                  </div>
+                  {/* Second row - next 2 photos */}
+                  {venue.photos.length > 3 && (
+                    <div className='grid grid-cols-2 gap-2 m-auto'>
+                      {venue.photos
+                        .slice(3, 5)
+                        .map((photo, index) => (
+                          <img
+                            key={index + 3}
+                            src={photo}
+                            alt={`Foto ${index + 4} de ${
+                              venue.name
+                            }`}
+                            className='w-full h-36 object-cover rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer'
+                          />
+                        ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )}

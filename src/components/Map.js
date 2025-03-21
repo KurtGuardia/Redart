@@ -54,6 +54,8 @@ export default function Map({
   onLocationSelect = () => {},
   registrationAddress = '',
   registrationCity = '',
+  isDashboard = false,
+  small = false,
 }) {
   const [address, setAddress] = useState(
     registrationAddress,
@@ -196,50 +198,52 @@ export default function Map({
 
   return (
     <div className='flex flex-col gap-4 h-full'>
-      <div className='relative' ref={suggestionsRef}>
-        <div className='flex gap-2'>
-          <input
-            type='text'
-            value={address}
-            onChange={handleInputChange}
-            onFocus={() => setShowSuggestions(true)}
-            placeholder='Busca una ubicación...'
-            className='flex-grow px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
-            disabled={isSearching}
-          />
-          <button
-            type='button'
-            onClick={handleSearchClick}
-            className='px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition duration-300 disabled:opacity-50'
-            disabled={isSearching}
-          >
-            {isSearching ? 'Buscando...' : 'Buscar'}
-          </button>
-        </div>
-
-        {/* Suggestions dropdown */}
-        {showSuggestions && suggestions.length > 0 && (
-          <div className='absolute z-[1010] w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto'>
-            {suggestions.map((suggestion) => (
-              <button
-                key={suggestion.id}
-                type='button'
-                className='w-full px-4 py-2 text-left hover:bg-gray-100 focus:bg-gray-100 focus:outline-none'
-                onClick={() =>
-                  handleSuggestionClick(suggestion)
-                }
-              >
-                <div className='font-medium'>
-                  {suggestion.text}
-                </div>
-                <div className='text-sm text-gray-600'>
-                  {suggestion.place_name}
-                </div>
-              </button>
-            ))}
+      {!isDashboard && (
+        <div className='relative' ref={suggestionsRef}>
+          <div className='flex gap-2'>
+            <input
+              type='text'
+              value={address}
+              onChange={handleInputChange}
+              onFocus={() => setShowSuggestions(true)}
+              placeholder='Busca una ubicación...'
+              className='flex-grow px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
+              disabled={isSearching}
+            />
+            <button
+              type='button'
+              onClick={handleSearchClick}
+              className='px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition duration-300 disabled:opacity-50'
+              disabled={isSearching}
+            >
+              {isSearching ? 'Buscando...' : 'Buscar'}
+            </button>
           </div>
-        )}
-      </div>
+
+          {/* Suggestions dropdown */}
+          {showSuggestions && suggestions.length > 0 && (
+            <div className='absolute z-[1010] w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto'>
+              {suggestions.map((suggestion) => (
+                <button
+                  key={suggestion.id}
+                  type='button'
+                  className='w-full px-4 py-2 text-left hover:bg-gray-100 focus:bg-gray-100 focus:outline-none'
+                  onClick={() =>
+                    handleSuggestionClick(suggestion)
+                  }
+                >
+                  <div className='font-medium'>
+                    {suggestion.text}
+                  </div>
+                  <div className='text-sm text-gray-600'>
+                    {suggestion.place_name}
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {searchError && (
         <div className='text-red-500 text-sm'>
@@ -247,7 +251,11 @@ export default function Map({
         </div>
       )}
 
-      <div className='w-full h-[60vh] mx-auto map-container'>
+      <div
+        className={`w-full ${
+          small ? 'h-[350px]' : 'h-[60vh]'
+        } mx-auto map-container`}
+      >
         <MapContainer
           center={center}
           zoom={zoom}
