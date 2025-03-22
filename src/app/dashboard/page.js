@@ -9,9 +9,9 @@ import {
 } from 'firebase/firestore'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
-import { useVenueData } from '@/src/hooks/useVenueData'
-import Spot from '@/src/components/Spot'
-import EditModal from '@/src/components/EditModal'
+import { useVenueData } from '../../hooks/useVenueData'
+import Spot from '../../components/Spot'
+import EditModal from '../../components/EditModal'
 
 const MapComponent = dynamic(
   () => import('../../components/MapComponent'),
