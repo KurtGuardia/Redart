@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Spot from '../../components/Spot'
-import MapComponent from '@/src/components/MapComponent'
+import MapComponent from '../../components/MapComponent'
 
 export default function MapPage() {
   return (

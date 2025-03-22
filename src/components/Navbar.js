@@ -3,8 +3,8 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import useHasScrolled from '@/src/hooks/useHasScrolled'
-import { auth } from '@/src/lib/firebase-client'
+import useHasScrolled from '../hooks/useHasScrolled'
+import { auth } from '../lib/firebase-client'
 import {
   Avatar,
   AvatarFallback,

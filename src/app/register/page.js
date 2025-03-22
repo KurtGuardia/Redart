@@ -1,10 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import {
-  createUserWithEmailAndPassword,
-  updateProfile,
-} from 'firebase/auth'
+import { useState } from 'react'
+import { createUserWithEmailAndPassword } from 'firebase/auth'
 import {
   auth,
   db,

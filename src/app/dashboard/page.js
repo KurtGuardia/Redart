@@ -1,12 +1,23 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { auth, db } from '../../lib/firebase-client'
+import {
+  auth,
+  db,
+  storage,
+} from '../../lib/firebase-client'
 import {
   Timestamp,
   doc,
   updateDoc,
+  GeoPoint,
 } from 'firebase/firestore'
+import {
+  getDownloadURL,
+  ref,
+  uploadBytes,
+  deleteObject,
+} from 'firebase/storage'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { useVenueData } from '../../hooks/useVenueData'
@@ -19,6 +30,17 @@ const MapComponent = dynamic(
     ssr: false,
   },
 )
+
+// Available amenities options
+const AMENITIES_OPTIONS = [
+  'Parking',
+  'Bar',
+  'Escenario',
+  'Snacks',
+  'Comida',
+  'Acceso discapacitados',
+  'Wi-Fi',
+]
 
 export default function Dashboard() {
   const [eventTitle, setEventTitle] = useState('')
@@ -38,6 +60,60 @@ export default function Dashboard() {
     error: venueError,
     refreshVenue,
   } = useVenueData(venueId)
+
+  // Helper function to upload new photos to Firebase Storage
+  const uploadPhotos = async (photos, venueId) => {
+    if (!photos || photos.length === 0) return []
+
+    const urls = []
+
+    // First add all existing photo URLs (strings)
+    for (const photo of photos) {
+      if (typeof photo === 'string') {
+        urls.push(photo)
+      }
+    }
+
+    // Then upload any new photos (File objects)
+    for (const photo of photos) {
+      if (typeof photo !== 'string') {
+        try {
+          // Add timestamp to filename to avoid cache issues
+          const timestamp = new Date().getTime()
+          const fileName = `${timestamp}_${photo.name}`
+          const storageRef = ref(
+            storage,
+            `venues/${venueId}/photos/${fileName}`,
+          )
+
+          await uploadBytes(storageRef, photo)
+          const url = await getDownloadURL(storageRef)
+          urls.push(url)
+        } catch (error) {
+          console.error('Error uploading photo:', error)
+        }
+      }
+    }
+
+    return urls
+  }
+
+  // Helper function to delete a photo from Firebase Storage
+  const deletePhoto = async (photoUrl) => {
+    if (!photoUrl) return
+    try {
+      // Extract the path from the URL
+      const urlParts = photoUrl.split('?')[0].split('/')
+      const fileName = urlParts[urlParts.length - 1]
+      const filePath = `venues/${venueId}/photos/${fileName}`
+      const photoRef = ref(storage, filePath)
+
+      // Delete the file
+      await deleteObject(photoRef)
+    } catch (error) {
+      console.error('Error deleting photo:', error)
+    }
+  }
 
   const handleAddEvent = async (e) => {
     e.preventDefault()
@@ -69,18 +145,79 @@ export default function Dashboard() {
       setLoading(true)
       const venueRef = doc(db, 'venues', venueId)
 
+      // Extract location and photos from updated data
+      const {
+        location,
+        photos: updatedPhotos,
+        ...otherData
+      } = updatedData
+
+      // Create a copy of the formatted data without photos first
       const formattedData = {
-        ...updatedData,
+        ...otherData,
         updatedAt: Timestamp.now(),
       }
 
+      // Handle location updates - only create a GeoPoint if valid lat/lng values exist
+      if (
+        location &&
+        typeof location.lat === 'number' &&
+        typeof location.lng === 'number'
+      ) {
+        formattedData.location = new GeoPoint(
+          location.lat,
+          location.lng,
+        )
+      } else if (!location && venue.location) {
+        // If no new location provided but venue has a location, preserve the existing location
+        formattedData.location = venue.location
+      }
+
+      // Process photos separately if they were modified
+      if (updatedPhotos) {
+        try {
+          // Process deleted photos
+          if (venue.photos) {
+            const deletedPhotos = venue.photos.filter(
+              (photoUrl) =>
+                !updatedPhotos.some(
+                  (photo) =>
+                    typeof photo === 'string' &&
+                    photo === photoUrl,
+                ),
+            )
+
+            // Delete each removed photo from Storage
+            for (const photoUrl of deletedPhotos) {
+              await deletePhoto(photoUrl)
+            }
+          }
+
+          // Upload any new photos and combine with retained existing photos
+          const finalPhotoUrls = await uploadPhotos(
+            updatedPhotos,
+            venueId,
+          )
+
+          // Add the photos to the formatted data
+          formattedData.photos = finalPhotoUrls
+        } catch (error) {
+          console.error('Error processing photos:', error)
+        }
+      }
+
+      // Update the venue in Firestore
       await updateDoc(venueRef, formattedData)
 
+      // First close the modal
       setIsEditModalOpen(false)
 
-      if (refreshVenue) {
-        refreshVenue()
-      }
+      // Then refresh the venue data after a short delay to ensure the modal is closed
+      setTimeout(() => {
+        if (refreshVenue) {
+          refreshVenue()
+        }
+      }, 300)
     } catch (error) {
       console.error('Error updating venue:', error)
     } finally {
@@ -145,11 +282,13 @@ export default function Dashboard() {
       type: 'text',
       label: 'Ciudad',
       required: true,
+      show: false,
     },
     country: {
       type: 'text',
       label: 'País',
       required: true,
+      show: false,
     },
     capacity: {
       type: 'number',
@@ -161,11 +300,23 @@ export default function Dashboard() {
       type: 'email',
       label: 'Email de contacto',
       required: true,
+      show: false,
+    },
+    location: {
+      type: 'map',
+      label: 'Ubicación',
+      description: 'Selecciona el punto exacto de entrada',
     },
     amenities: {
-      type: 'array',
+      type: 'checkboxGroup',
       label: 'Comodidades',
-      itemLabel: 'comodidad',
+      options: AMENITIES_OPTIONS,
+    },
+    photos: {
+      type: 'photoGallery',
+      label: 'Fotos',
+      description: 'Máximo 5 fotos',
+      maxPhotos: 5,
     },
   }
 
