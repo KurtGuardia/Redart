@@ -670,6 +670,161 @@ const EditModal = ({
                       </div>
                     )
 
+                  case 'url':
+                    return (
+                      <div key={key}>
+                        <label
+                          htmlFor={key}
+                          className='block text-sm font-medium text-gray-700 mb-1'
+                        >
+                          {field.label}
+                          {field.required && (
+                            <span className='text-red-500 ml-1'>
+                              *
+                            </span>
+                          )}
+                        </label>
+                        <input
+                          id={key}
+                          name={key}
+                          type='url'
+                          value={formData[key] || ''}
+                          onChange={handleChange}
+                          className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+                          required={field.required}
+                          placeholder={field.placeholder}
+                        />
+                        {field.description && (
+                          <p className='text-sm text-gray-500 mt-1'>
+                            {field.description}
+                          </p>
+                        )}
+                      </div>
+                    )
+
+                  case 'image':
+                    return (
+                      <div key={key}>
+                        <label
+                          htmlFor={key}
+                          className='block text-sm font-medium text-gray-700 mb-1'
+                        >
+                          {field.label}
+                          {field.required && (
+                            <span className='text-red-500 ml-1'>
+                              *
+                            </span>
+                          )}
+                        </label>
+
+                        <div className='flex flex-col space-y-2'>
+                          {/* Show current image if it exists */}
+                          {formData[key] &&
+                            typeof formData[key] ===
+                              'string' && (
+                              <div className='relative w-full h-40 mb-2'>
+                                <img
+                                  src={formData[key]}
+                                  alt='Current image'
+                                  className='object-cover w-full h-full rounded-md'
+                                />
+                                <button
+                                  type='button'
+                                  onClick={() =>
+                                    setFormData({
+                                      ...formData,
+                                      [key]: null,
+                                    })
+                                  }
+                                  className='absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full'
+                                >
+                                  <svg
+                                    className='w-4 h-4'
+                                    fill='none'
+                                    viewBox='0 0 24 24'
+                                    stroke='currentColor'
+                                  >
+                                    <path
+                                      strokeLinecap='round'
+                                      strokeLinejoin='round'
+                                      strokeWidth={2}
+                                      d='M6 18L18 6M6 6l12 12'
+                                    />
+                                  </svg>
+                                </button>
+                              </div>
+                            )}
+
+                          {/* Image upload input */}
+                          <input
+                            id={key}
+                            name={key}
+                            type='file'
+                            accept={
+                              field.accept || 'image/*'
+                            }
+                            onChange={(e) => {
+                              if (
+                                e.target.files &&
+                                e.target.files[0]
+                              ) {
+                                setFormData({
+                                  ...formData,
+                                  [key]: e.target.files[0],
+                                })
+                              }
+                            }}
+                            className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+                          />
+
+                          {/* Show preview of new image */}
+                          {formData[key] &&
+                            typeof formData[key] !==
+                              'string' && (
+                              <div className='relative w-full h-40 mb-2'>
+                                <img
+                                  src={URL.createObjectURL(
+                                    formData[key],
+                                  )}
+                                  alt='New image preview'
+                                  className='object-cover w-full h-full rounded-md'
+                                />
+                                <button
+                                  type='button'
+                                  onClick={() =>
+                                    setFormData({
+                                      ...formData,
+                                      [key]: null,
+                                    })
+                                  }
+                                  className='absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full'
+                                >
+                                  <svg
+                                    className='w-4 h-4'
+                                    fill='none'
+                                    viewBox='0 0 24 24'
+                                    stroke='currentColor'
+                                  >
+                                    <path
+                                      strokeLinecap='round'
+                                      strokeLinejoin='round'
+                                      strokeWidth={2}
+                                      d='M6 18L18 6M6 6l12 12'
+                                    />
+                                  </svg>
+                                </button>
+                              </div>
+                            )}
+
+                          {field.description && (
+                            <p className='text-sm text-gray-500 mt-1'>
+                              {field.description}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )
+
                   default:
                     return null
                 }

@@ -12,9 +12,40 @@ import {
 } from 'firebase/firestore'
 import { db } from '../../lib/firebase-client'
 import Link from 'next/link'
-import MapComponent from '@/src/components/MapComponent'
 
 const ITEMS_PER_PAGE = 9
+
+// Helper function to get currency symbol from currency code
+const getCurrencySymbol = (currencyCode) => {
+  switch (currencyCode) {
+    case 'USD':
+      return '$'
+    case 'EUR':
+      return '€'
+    case 'GBP':
+      return '£'
+    case 'BOB':
+      return 'Bs'
+    case 'BRL':
+      return 'R$'
+    case 'ARS':
+      return '$'
+    case 'CLP':
+      return '$'
+    case 'COP':
+      return '$'
+    case 'MXN':
+      return '$'
+    case 'PEN':
+      return 'S/'
+    case 'UYU':
+      return '$U'
+    case 'PYG':
+      return '₲'
+    default:
+      return currencyCode || 'Bs' // Default to Bs if no currency code is provided
+  }
+}
 
 export default function EventsPage() {
   const [eventsList, setEventsList] = useState([])
@@ -24,48 +55,87 @@ export default function EventsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [filter, setFilter] = useState('all')
 
-  // useEffect(() => {
-  //   fetchEvents()
-  // }, [])
+  useEffect(() => {
+    fetchEvents('', 'all', true)
+  }, [])
 
-  // const fetchEvents = async ( searchTerm = "", filter = "all" ) => {
-  //   setLoading( true )
-  //   let eventsQuery = query( collection( db, "events" ), orderBy( "date", "desc" ), limit( ITEMS_PER_PAGE ) )
+  const fetchEvents = async (
+    searchTerm = '',
+    filter = 'all',
+    shouldReset = false,
+  ) => {
+    setLoading(true)
 
-  //   if ( lastVisible ) {
-  //     eventsQuery = query( eventsQuery, startAfter( lastVisible ) )
-  //   }
+    // Reset the list and lastVisible when explicitly asked to reset
+    if (shouldReset) {
+      setEventsList([])
+      setLastVisible(null)
+    }
 
-  //   const eventsSnapshot = await getDocs( eventsQuery )
-  //   const eventsList = eventsSnapshot.docs.map( ( doc ) => ( { id: doc.id, ...doc.data() } ) )
+    let eventsQuery = query(
+      collection(db, 'events'),
+      orderBy('date', 'desc'),
+      limit(ITEMS_PER_PAGE),
+    )
 
-  //   // Apply client-side filtering
-  //   const filteredEvents = eventsList.filter( ( event ) => {
-  //     const matchesSearch =
-  //       event.title.toLowerCase().includes( searchTerm.toLowerCase() ) ||
-  //       event.description.toLowerCase().includes( searchTerm.toLowerCase() )
-  //     const matchesFilter = filter === "all" || event.category === filter
-  //     return matchesSearch && matchesFilter
-  //   } )
+    if (lastVisible && !shouldReset) {
+      eventsQuery = query(
+        eventsQuery,
+        startAfter(lastVisible),
+      )
+    }
 
-  //   setEventsList( ( prevEvents ) => [...prevEvents, ...filteredEvents] )
-  //   setLastVisible( eventsSnapshot.docs[eventsSnapshot.docs.length - 1] )
-  //   setHasMore( eventsSnapshot.docs.length === ITEMS_PER_PAGE )
-  //   setLoading( false )
-  // }
+    const eventsSnapshot = await getDocs(eventsQuery)
+    const eventsList = eventsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }))
+
+    // Apply client-side filtering
+    const filteredEvents = eventsList.filter((event) => {
+      const matchesSearch =
+        event.title
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        event.description
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
+      const matchesFilter =
+        filter === 'all' || event.category === filter
+      return matchesSearch && matchesFilter
+    })
+
+    // Replace or append based on whether we're resetting
+    setEventsList((prevEvents) =>
+      shouldReset
+        ? filteredEvents
+        : [...prevEvents, ...filteredEvents],
+    )
+
+    // Update the lastVisible pointer for pagination
+    const lastDoc =
+      eventsSnapshot.docs[eventsSnapshot.docs.length - 1]
+    setLastVisible(lastDoc || null)
+
+    setHasMore(
+      eventsSnapshot.docs.length === ITEMS_PER_PAGE,
+    )
+    setLoading(false)
+  }
 
   const handleSearch = (e) => {
     e.preventDefault()
-    setEventsList([])
-    setLastVisible(null)
-    fetchEvents(searchTerm, filter)
+    fetchEvents(searchTerm, filter, true)
   }
 
   const handleFilterChange = (e) => {
     setFilter(e.target.value)
-    setEventsList([])
-    setLastVisible(null)
-    fetchEvents(searchTerm, e.target.value)
+    fetchEvents(searchTerm, e.target.value, true)
+  }
+
+  // Update the load more button click handler
+  const handleLoadMore = () => {
+    fetchEvents(searchTerm, filter, false)
   }
 
   return (
@@ -107,6 +177,7 @@ export default function EventsPage() {
       </form>
 
       {loading && eventsList.length === 0 ? (
+        // TODO: Add a loading spinner or something better
         <p>Cargando eventos...</p>
       ) : (
         <>
@@ -118,7 +189,10 @@ export default function EventsPage() {
                 key={event.id}
               >
                 <img
-                  src={event.imageUrl || '/placeholder.svg'}
+                  src={
+                    event.featuredImage ||
+                    '/placeholder.svg'
+                  }
                   alt={event.title}
                   className='w-full h-48 object-cover'
                 />
@@ -131,12 +205,30 @@ export default function EventsPage() {
                     ...
                   </p>
                   <div className='flex justify-between text-sm text-[var(--gray-500)]'>
-                    <span>{event.date}</span>
-                    <span>{event.location}</span>
-                    <span>{event.price}</span>
+                    <span>
+                      {event.date && event.date.seconds
+                        ? new Date(
+                            event.date.seconds * 1000,
+                          ).toLocaleDateString()
+                        : 'Fecha no disponible'}
+                    </span>
+                    <span>
+                      {event.city ||
+                        'Ubicación no disponible'}
+                    </span>
+                    <span>
+                      {event.price > 0
+                        ? `${getCurrencySymbol(
+                            event.currency,
+                          )} ${event.price}`
+                        : 'Gratis'}
+                    </span>
                   </div>
-                  <Link href={`/spaces/${event.spaceId}`}>
-                    Ver ubicación
+                  <Link
+                    href={`/venues/${event.venueId}`}
+                    className='text-teal-600 hover:text-teal-800 text-sm mt-2 inline-block'
+                  >
+                    Ver local
                   </Link>
                 </div>
               </Link>
@@ -145,9 +237,7 @@ export default function EventsPage() {
           {hasMore && (
             <div className='mt-8 text-center'>
               <button
-                onClick={() =>
-                  fetchEvents(searchTerm, filter)
-                }
+                onClick={handleLoadMore}
                 className='bg-[var(--teal-500)] text-[var(--white)] px-6 py-2 rounded-lg hover:bg-teal-700 transition duration-300'
                 disabled={loading}
               >
