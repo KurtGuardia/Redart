@@ -118,40 +118,38 @@ export default function Register() {
           password,
         )
 
-      // Create a user document in Firestore
-      await setDoc(
-        doc(db, 'venues', userCredential.user.uid),
-        {
-          name,
-          logo: await uploadLogo(
-            logo,
-            userCredential.user.uid,
-          ),
-          email,
-          description,
-          country: selectedCountry,
-          city: selectedCity,
-          address,
-          capacity: Number(capacity),
-          location: new GeoPoint(
-            geoPoint.lat,
-            geoPoint.lng,
-          ),
-          amenities: selectedAmenities,
-          photos: await uploadPhotos(
-            photos,
-            userCredential.user.uid,
-          ),
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-      )
+      const venueId = userCredential.user.uid
+      const venueData = {
+        name,
+        logo: await uploadLogo(logo, venueId),
+        email,
+        description,
+        country: selectedCountry,
+        city: selectedCity,
+        address,
+        capacity: Number(capacity),
+        location: new GeoPoint(geoPoint.lat, geoPoint.lng),
+        amenities: selectedAmenities,
+        photos: await uploadPhotos(photos, venueId),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        active: true,
+      }
 
-      // Upload logo to Storage
-      await uploadLogo(logo, userCredential.user.uid)
+      // Add main venue document to 'venues' collection
+      await setDoc(doc(db, 'venues', venueId), venueData)
 
-      // Upload photos to Storage
-      await uploadPhotos(photos, userCredential.user.uid)
+      // Add simplified location data to 'venue_locations' collection
+      await setDoc(doc(db, 'venue_locations', venueId), {
+        name: venueData.name,
+        address: venueData.address,
+        city: venueData.city,
+        country: venueData.country,
+        location: venueData.location,
+        logo: venueData.logo,
+        active: true,
+        lastUpdated: new Date().toISOString(),
+      })
 
       router.push('/dashboard')
     } catch (error) {
@@ -393,6 +391,7 @@ export default function Register() {
                 <MapComponent
                   center={[-17.389499, -66.156123]}
                   zoom={12}
+                  isEditable={true}
                   registrationAddress={address}
                   registrationCity={selectedCity}
                   onLocationSelect={(location) =>
@@ -400,8 +399,11 @@ export default function Register() {
                   }
                   venues={[
                     {
-                      displayName: name,
-                      geopoint: geoPoint,
+                      name: name,
+                      location: {
+                        latitude: geoPoint.lat,
+                        longitude: geoPoint.lng,
+                      },
                     },
                   ]}
                 />

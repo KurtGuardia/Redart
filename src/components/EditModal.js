@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
@@ -37,6 +37,13 @@ const EditModal = ({
   const [formData, setFormData] = useState({})
   const [isMounted, setIsMounted] = useState(false)
 
+  // Generate a unique map ID for each modal instance
+  const mapId = useMemo(
+    () =>
+      `map-${Math.random().toString(36).substring(2, 9)}`,
+    [],
+  )
+
   // Initialize form data when the modal opens or data changes
   useEffect(() => {
     if (data) {
@@ -48,6 +55,23 @@ const EditModal = ({
   useEffect(() => {
     setIsMounted(true)
   }, [])
+
+  // Add a useEffect to clean up any map instances when the modal closes
+  useEffect(() => {
+    return () => {
+      // Find any leaflet-related elements and remove them
+      const mapContainer = document.getElementById(mapId)
+      if (mapContainer) {
+        // Reset the container content to ensure it's clean for next use
+        mapContainer.innerHTML = ''
+        // Remove any Leaflet-added classes
+        mapContainer.className = mapContainer.className
+          .split(' ')
+          .filter((cls) => !cls.startsWith('leaflet'))
+          .join(' ')
+      }
+    }
+  }, [mapId])
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -280,73 +304,57 @@ const EditModal = ({
 
                   case 'map':
                     return (
-                      <div key={key} className='mb-4'>
-                        <label className='block text-sm font-medium text-gray-700 mb-2'>
+                      <div className='my-4'>
+                        <label className='block text-sm font-medium text-gray-700 mb-1'>
                           {field.label}
-                          {field.description && (
-                            <span className='text-gray-500 text-sm ml-1'>
-                              ({field.description})
+                          {field.required && (
+                            <span className='text-red-500'>
+                              *
                             </span>
                           )}
                         </label>
-                        <div className='h-[300px] w-full mb-2'>
+                        {field.description && (
+                          <p className='text-xs text-gray-500 mb-2'>
+                            {field.description}
+                          </p>
+                        )}
+                        <div className='h-72 w-full rounded-lg overflow-hidden'>
                           <MapComponent
+                            mapId={mapId}
+                            small={true}
+                            isDashboard={true}
+                            isEditable={true}
                             center={
-                              formData.location?.latitude &&
-                              formData.location?.longitude
+                              formData.location
                                 ? [
                                     formData.location
-                                      .latitude,
+                                      .latitude ||
+                                      formData.location.lat,
                                     formData.location
-                                      .longitude,
+                                      .longitude ||
+                                      formData.location.lng,
                                   ]
-                                : [-17.389499, -66.156123] // Default coordinates
+                                : null
                             }
-                            zoom={15}
-                            registrationAddress={
-                              formData.address || ''
-                            }
-                            registrationCity={
-                              formData.city || ''
+                            venues={
+                              formData.location
+                                ? [
+                                    {
+                                      name: formData.name,
+                                      location:
+                                        formData.location,
+                                    },
+                                  ]
+                                : []
                             }
                             onLocationSelect={(
                               location,
                             ) => {
-                              if (
-                                location &&
-                                typeof location.lat ===
-                                  'number' &&
-                                typeof location.lng ===
-                                  'number'
-                              ) {
-                                setFormData({
-                                  ...formData,
-                                  [key]: location,
-                                })
-                              }
+                              setFormData((prev) => ({
+                                ...prev,
+                                location: location,
+                              }))
                             }}
-                            venues={[
-                              {
-                                displayName:
-                                  formData.name || '',
-                                geopoint:
-                                  formData[key] ||
-                                  (formData.location
-                                    ?.latitude &&
-                                  formData.location
-                                    ?.longitude
-                                    ? {
-                                        lat: formData
-                                          .location
-                                          .latitude,
-                                        lng: formData
-                                          .location
-                                          .longitude,
-                                      }
-                                    : null),
-                              },
-                            ]}
-                            small={true}
                           />
                         </div>
                       </div>

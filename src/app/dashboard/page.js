@@ -80,6 +80,37 @@ const getCurrencySymbol = (currencyCode) => {
   }
 }
 
+// Function to sync venue data to venues_locations collection
+async function syncVenueLocation(venueData, venueId) {
+  try {
+    // Create simplified location data
+    const locationData = {
+      venueId: venueId,
+      name: venueData.name,
+      address: venueData.address || '',
+      city: venueData.city || '',
+      country: venueData.country || '',
+      location: venueData.location || null,
+      logo: venueData.logo || null,
+      active: venueData.active !== false, // Default to true if not specified
+      lastUpated: Timestamp.now(), // Note: keeping the typo to match your existing data
+    }
+
+    // Save to venues_locations collection
+    const locationRef = doc(db, 'venues_locations', venueId)
+    await setDoc(locationRef, locationData)
+
+    console.log('Venue location data synced successfully')
+    return true
+  } catch (error) {
+    console.error(
+      'Error syncing venue location data:',
+      error,
+    )
+    return false
+  }
+}
+
 export default function Dashboard() {
   const [eventTitle, setEventTitle] = useState('')
   const [eventDate, setEventDate] = useState('')
@@ -568,6 +599,16 @@ export default function Dashboard() {
       // Update the venue in Firestore
       await updateDoc(venueRef, formattedData)
 
+      // Also sync to venues_locations collection
+      await syncVenueLocation(
+        {
+          ...formattedData,
+          // Include fields that might not be in updatedData
+          active: formattedData.active !== false,
+        },
+        venueId,
+      )
+
       // First close the modal
       setIsEditModalOpen(false)
 
@@ -807,7 +848,7 @@ export default function Dashboard() {
     },
     featuredImage: {
       type: 'image',
-      label: 'Imagen destacada',
+      label: 'Imagen',
       description: 'Imagen principal del evento',
       accept: 'image/*',
     },
@@ -988,6 +1029,7 @@ export default function Dashboard() {
                 zoom={15}
                 small={true}
                 isDashboard={true}
+                mapId='dashboard-map'
               />
             </div>
 
@@ -1243,9 +1285,9 @@ export default function Dashboard() {
             </h2>
             <form
               onSubmit={handleAddEvent}
-              className='space-y-6 mt-6 bg-white p-6 rounded-lg shadow-sm'
+              className='my-6 bg-white rounded-lg shadow-sm'
             >
-              <h3 className='text-lg font-semibold text-gray-800 mb-4 border-b pb-2'>
+              <h3 className='text-lg font-semibold w-fit text-gray-800 my-4 border-b pb-2'>
                 Crear Nuevo Evento
               </h3>
 
@@ -1444,7 +1486,7 @@ export default function Dashboard() {
                     htmlFor='eventImage'
                     className='block text-sm font-medium text-gray-700 mb-1'
                   >
-                    Imagen destacada
+                    Imagen
                   </label>
                   <div className='flex items-center gap-4'>
                     <input
@@ -1555,6 +1597,9 @@ export default function Dashboard() {
                 </button>
               </div>
             </form>
+            <h3 className='text-lg font-semibold w-fit text-gray-800 mb-4 border-b pb-2'>
+              Listado de eventos
+            </h3>
             {eventsLoading ? (
               <div className='text-center py-8'>
                 <div className='animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-teal-500 mx-auto mb-4'></div>

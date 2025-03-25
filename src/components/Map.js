@@ -1,3 +1,5 @@
+'use client'
+
 import {
   MapContainer,
   TileLayer,
@@ -5,10 +7,12 @@ import {
   Popup,
   useMapEvents,
   useMap,
+  Tooltip,
 } from 'react-leaflet'
 import { Icon } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useState, useRef, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
 
@@ -37,14 +41,23 @@ function MapController({ searchResult }) {
 }
 
 function LocationMarker({ onLocationSelect }) {
+  const [position, setPosition] = useState(null)
+
+  // Create a useMapEvents hook to handle map click events
   useMapEvents({
     click(e) {
       const { lat, lng } = e.latlng
+      setPosition([lat, lng])
       onLocationSelect({ lat, lng })
     },
   })
 
-  return null
+  // If position is set, show a marker at that position
+  return position === null ? null : (
+    <Marker position={position} icon={customIcon}>
+      <Popup>Ubicación seleccionada</Popup>
+    </Marker>
+  )
 }
 
 export default function Map({
@@ -56,7 +69,10 @@ export default function Map({
   registrationCity = '',
   isDashboard = false,
   small = false,
+  mapId = 'map',
+  isEditable = false,
 }) {
+  const router = useRouter()
   const [address, setAddress] = useState(
     registrationAddress,
   )
@@ -68,6 +84,12 @@ export default function Map({
   const [showSuggestions, setShowSuggestions] =
     useState(false)
   const suggestionsRef = useRef(null)
+  const mapRef = useRef(null) // Reference to track if map is initialized
+
+  // Generate a unique map container ID if not provided
+  const uniqueMapId = mapId
+    ? mapId
+    : `map-${Math.random().toString(36).substring(2, 9)}`
 
   // Close suggestions when clicking outside
   useEffect(() => {
@@ -187,14 +209,38 @@ export default function Map({
     }
   }
 
-  if (
-    !center ||
-    !Array.isArray(center) ||
-    center.length !== 2
-  ) {
-    console.error('Invalid center prop provided to Map')
-    return null
-  }
+  // Validate center coordinates
+  useEffect(() => {
+    if (
+      !center ||
+      !Array.isArray(center) ||
+      center.length !== 2
+    ) {
+      console.error(
+        'Invalid center prop provided to Map:',
+        center,
+      )
+    }
+  }, [center])
+
+  // Cleanup when component unmounts
+  useEffect(() => {
+    return () => {
+      // Clean up any leaflet-related elements
+      const mapContainer =
+        document.getElementById(uniqueMapId)
+      if (mapContainer) {
+        // Clear any references or state
+        mapRef.current = null
+      }
+    }
+  }, [uniqueMapId])
+
+  // Check if we have valid coordinates
+  const validCenter =
+    center && Array.isArray(center) && center.length === 2
+      ? center
+      : [-17.389499, -66.156123] // Default to Bolivia
 
   return (
     <div className='flex flex-col gap-4 h-full'>
@@ -252,45 +298,91 @@ export default function Map({
       )}
 
       <div
+        id={uniqueMapId}
         className={`w-full ${
           small ? 'h-[350px]' : 'h-[60vh]'
         } mx-auto map-container`}
       >
         <MapContainer
-          center={center}
+          center={validCenter}
           zoom={zoom}
           style={{
             height: '100%',
             width: '100%',
             borderRadius: '15px',
           }}
-          scrollWheelZoom={false}
+          scrollWheelZoom={true}
+          id={uniqueMapId}
+          key={uniqueMapId} // This forces re-render when ID changes
         >
           <TileLayer
             url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           />
-          <LocationMarker
-            onLocationSelect={onLocationSelect}
-          />
+
+          {/* Only render LocationMarker if the map is editable */}
+          {isEditable && (
+            <LocationMarker
+              onLocationSelect={onLocationSelect}
+            />
+          )}
+
           <MapController searchResult={searchResult} />
 
-          {venues.map((venue, index) => (
-            <Marker
-              key={index}
-              position={[
-                venue?.geopoint?.lat || center[0],
-                venue?.geopoint?.lng || center[1],
-              ]}
-              icon={customIcon}
-            >
-              <Popup>
-                <div className='font-semibold'>
-                  {venue.displayName || 'Unknown User'}
-                </div>
-              </Popup>
-            </Marker>
-          ))}
+          {venues.map((venue, index) => {
+            // Simplify position calculation based on standard venue object
+            const position = venue.location
+              ? [
+                  venue.location.latitude,
+                  venue.location.longitude,
+                ]
+              : validCenter
+
+            // Skip invalid coordinates without console warning
+            if (isNaN(position[0]) || isNaN(position[1])) {
+              return null
+            }
+
+            // Use name field for display with simple fallback
+            const venueName = venue.name || 'Sin nombre'
+
+            return (
+              <Marker
+                key={index}
+                position={position}
+                icon={customIcon}
+                eventHandlers={{
+                  click: () => {
+                    if (
+                      venue.id &&
+                      !isDashboard &&
+                      !small
+                    ) {
+                      router.push(`/venues/${venue.id}`)
+                    }
+                  },
+                }}
+              >
+                <Tooltip
+                  direction='top'
+                  offset={[0, -41]}
+                  opacity={0.9}
+                  permanent={false}
+                >
+                  <div className='font-semibold text-center'>
+                    <div className='text-sm font-bold'>
+                      {venueName}
+                    </div>
+                    {venue.address && (
+                      <div className='text-xs text-gray-600'>
+                        {venue.address}
+                      </div>
+                    )}
+                  </div>
+                </Tooltip>
+              </Marker>
+            )
+          })}
         </MapContainer>
       </div>
     </div>

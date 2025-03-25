@@ -6,9 +6,12 @@ import TypingAnimation from '../components/TypingAnimation'
 import Spot from '../components/Spot'
 import EventCard from '../components/EventCard'
 import MapComponent from '../components/MapComponent'
+import { useVenueLocations } from '../hooks/useVenueLocations'
 
 export default function HomePage() {
   const heroRef = useRef(null)
+  const { locations, loading, error } = useVenueLocations()
+
   const images = [
     '/theater.jpg',
     '/carnival.jpg',
@@ -172,9 +175,20 @@ export default function HomePage() {
             eventos.
           </p>
           <div className='w-[70%] h-[60vh] mx-auto'>
-            <MapComponent
-              center={[-17.389499, -66.156123]}
-            />
+            {loading ? (
+              <div className='flex justify-center items-center h-full'>
+                <div className='animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500'></div>
+              </div>
+            ) : error ? (
+              <div className='text-center text-red-500 h-full flex flex-col justify-center'>
+                <p>Error al cargar los lugares: {error}</p>
+              </div>
+            ) : (
+              <MapComponent
+                center={[-17.389499, -66.156123]}
+                venues={locations}
+              />
+            )}
           </div>
         </div>
       </section>
