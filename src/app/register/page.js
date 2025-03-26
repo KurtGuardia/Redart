@@ -1,13 +1,18 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import {
   auth,
   db,
   storage,
 } from '../../lib/firebase-client'
-import { doc, GeoPoint, setDoc } from 'firebase/firestore'
+import {
+  doc,
+  GeoPoint,
+  setDoc,
+  deleteDoc,
+} from 'firebase/firestore'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Spot from '../../components/Spot'
@@ -30,11 +35,17 @@ const AMENITIES_OPTIONS = [
   'Wi-Fi',
 ]
 
+// Define constants for form limits
+const DESCRIPTION_MAX_LENGTH = 500
+const MAX_PHOTOS = 5
+
 export default function Register() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [logo, setLogo] = useState(null)
   const [description, setDescription] = useState('')
+  const [descriptionCharsLeft, setDescriptionCharsLeft] =
+    useState(DESCRIPTION_MAX_LENGTH)
   const [address, setAddress] = useState('')
   const [capacity, setCapacity] = useState('')
   const [geoPoint, setGeoPoint] = useState({
@@ -45,15 +56,21 @@ export default function Register() {
     useState([])
   const [password, setPassword] = useState('')
   const [repeatPassword, setRepeatPassword] = useState('')
+  const [passwordsMatch, setPasswordsMatch] = useState(true)
   const [photos, setPhotos] = useState([])
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
+  const [registerLoading, setRegisterLoading] =
+    useState(false)
   const router = useRouter()
-  const geoNamesUsername =
-    process.env.NEXT_PUBLIC_GEONAMES_USERNAME
   const [selectedCountry, setSelectedCountry] = useState('')
   const [cities, setCities] = useState([])
   const [selectedCity, setSelectedCity] = useState('')
+  const [isClientSide, setIsClientSide] = useState(false)
+
+  useEffect(() => {
+    setIsClientSide(true)
+  }, [])
 
   const handleCountryChange = (e) => {
     const country = e.target.value
@@ -97,6 +114,17 @@ export default function Register() {
     return url
   }
 
+  const getFirstTwoWords = (text) => {
+    if (!text) return ''
+    const words = text.trim().split(/\s+/)
+    const firstTwoWords = words.slice(0, 2).join(' ')
+    console.log(
+      'First two words of address:',
+      firstTwoWords,
+    )
+    return firstTwoWords
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     const passwordError = validatePassword(password)
@@ -109,19 +137,34 @@ export default function Register() {
       return
     }
 
+    setRegisterLoading(true)
+    setError('')
+    let userCredential = null
+
     try {
-      // Create a new user with email and password
-      const userCredential =
-        await createUserWithEmailAndPassword(
-          auth,
-          email,
-          password,
-        )
+      console.log('Starting registration process...')
+      // Step 1: Create a new user with email and password
+      userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      )
+      console.log(
+        'User created successfully:',
+        userCredential.user.uid,
+      )
 
       const venueId = userCredential.user.uid
+
+      // Step 2: Upload logo and photos
+      console.log('Uploading files...')
+      const logoUrl = await uploadLogo(logo, venueId)
+      const photoUrls = await uploadPhotos(photos, venueId)
+      console.log('Files uploaded successfully')
+
       const venueData = {
         name,
-        logo: await uploadLogo(logo, venueId),
+        logo: logoUrl,
         email,
         description,
         country: selectedCountry,
@@ -130,17 +173,20 @@ export default function Register() {
         capacity: Number(capacity),
         location: new GeoPoint(geoPoint.lat, geoPoint.lng),
         amenities: selectedAmenities,
-        photos: await uploadPhotos(photos, venueId),
+        photos: photoUrls,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         active: true,
       }
 
-      // Add main venue document to 'venues' collection
+      // Step 3: Add main venue document to 'venues' collection
+      console.log('Adding venue to Firestore...')
       await setDoc(doc(db, 'venues', venueId), venueData)
+      console.log('Venue added to venues collection')
 
-      // Add simplified location data to 'venue_locations' collection
-      await setDoc(doc(db, 'venue_locations', venueId), {
+      // Step 4: Add simplified location data to 'venues_locations' collection
+      console.log('Adding venue location data...')
+      await setDoc(doc(db, 'venues_locations', venueId), {
         name: venueData.name,
         address: venueData.address,
         city: venueData.city,
@@ -150,12 +196,93 @@ export default function Register() {
         active: true,
         lastUpdated: new Date().toISOString(),
       })
+      console.log('Venue location data added successfully')
 
-      router.push('/dashboard')
+      // Success! Show success message and redirect to dashboard
+      setMessage(
+        '¡Registro exitoso! Redirigiendo al panel...',
+      )
+      console.log(
+        'Registration complete, redirecting to dashboard...',
+      )
+
+      // Wait a moment to ensure Firestore operations are complete
+      setTimeout(() => {
+        try {
+          console.log(
+            'Attempting navigation with Next.js router...',
+          )
+          // Force page reload to ensure auth state is recognized
+          window.location.href = '/dashboard'
+        } catch (navError) {
+          console.error('Navigation error:', navError)
+          // Direct fallback
+          window.location.href = '/dashboard'
+        }
+      }, 1000)
     } catch (error) {
-      setError(error.message)
+      console.error('Registration failed:', error)
+      setError(`Error en el registro: ${error.message}`)
+
+      // Clean up any created resources if we have a user
+      if (userCredential && userCredential.user) {
+        try {
+          const venueId = userCredential.user.uid
+
+          // 1. Try to delete the venues document if it was created
+          try {
+            const venueRef = doc(db, 'venues', venueId)
+            await deleteDoc(venueRef)
+            console.log('Cleaned up venues document')
+          } catch (cleanupError) {
+            console.error(
+              'Error cleaning up venues document:',
+              cleanupError,
+            )
+          }
+
+          // 2. Try to delete the venues_locations document if it was created
+          try {
+            const locationRef = doc(
+              db,
+              'venues_locations',
+              venueId,
+            )
+            await deleteDoc(locationRef)
+            console.log(
+              'Cleaned up venues_locations document',
+            )
+          } catch (cleanupError) {
+            console.error(
+              'Error cleaning up venues_locations document:',
+              cleanupError,
+            )
+          }
+
+          // 3. Delete the Firebase user
+          await userCredential.user.delete()
+          console.log(
+            'User account deleted due to registration failure',
+          )
+        } catch (cleanupError) {
+          console.error(
+            'Error during cleanup:',
+            cleanupError,
+          )
+        }
+      }
+    } finally {
+      setRegisterLoading(false)
     }
   }
+
+  useEffect(() => {
+    if (repeatPassword) {
+      setPasswordsMatch(password === repeatPassword)
+    } else {
+      setPasswordsMatch(true)
+    }
+  }, [password, repeatPassword])
 
   return (
     <>
@@ -172,6 +299,11 @@ export default function Register() {
           {error && (
             <div className='bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4'>
               {error}
+            </div>
+          )}
+          {message && (
+            <div className='mt-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded'>
+              {message}
             </div>
           )}
           <form onSubmit={handleSubmit}>
@@ -235,13 +367,27 @@ export default function Register() {
               <textarea
                 className='w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
                 value={description}
-                onChange={(e) =>
-                  setDescription(e.target.value)
-                }
+                onChange={(e) => {
+                  const newValue = e.target.value
+                  if (
+                    newValue.length <=
+                    DESCRIPTION_MAX_LENGTH
+                  ) {
+                    setDescription(newValue)
+                    setDescriptionCharsLeft(
+                      DESCRIPTION_MAX_LENGTH -
+                        newValue.length,
+                    )
+                  }
+                }}
                 required
                 placeholder='Una breve presentación, una invitación, una descripción de la identidad del lugar...'
                 rows='3'
+                maxLength={DESCRIPTION_MAX_LENGTH}
               />
+              <p className='text-sm text-gray-500 mt-1 text-right'>
+                {descriptionCharsLeft} caracteres restantes
+              </p>
             </div>
             {/* Country Selection */}
             <div className='mb-4'>
@@ -267,9 +413,16 @@ export default function Register() {
                 )}
               </select>
             </div>
-            {/* City Selection */}
-            {selectedCountry && (
-              <div className='mb-4'>
+            {/* City Selection - only render client-side */}
+            {isClientSide && (
+              <div
+                className='mb-4'
+                style={{
+                  display: selectedCountry
+                    ? 'block'
+                    : 'none',
+                }}
+              >
                 <label
                   htmlFor='city'
                   className='block text-gray-700 font-bold mb-2'
@@ -283,6 +436,7 @@ export default function Register() {
                   onChange={(e) =>
                     setSelectedCity(e.target.value)
                   }
+                  disabled={!selectedCountry}
                 >
                   <option value=''>
                     Selecciona una ciudad
@@ -392,20 +546,27 @@ export default function Register() {
                   center={[-17.389499, -66.156123]}
                   zoom={12}
                   isEditable={true}
-                  registrationAddress={address}
+                  registrationAddress={getFirstTwoWords(
+                    address,
+                  )}
                   registrationCity={selectedCity}
                   onLocationSelect={(location) =>
                     setGeoPoint(location)
                   }
-                  venues={[
-                    {
-                      name: name,
-                      location: {
-                        latitude: geoPoint.lat,
-                        longitude: geoPoint.lng,
-                      },
-                    },
-                  ]}
+                  venues={
+                    // Only include the venue if both lat and lng are valid numbers
+                    geoPoint.lat && geoPoint.lng
+                      ? [
+                          {
+                            name: name || 'Nuevo espacio',
+                            location: {
+                              latitude: geoPoint.lat,
+                              longitude: geoPoint.lng,
+                            },
+                          },
+                        ]
+                      : [] // Empty array when no valid coordinates exist
+                  }
                 />
               </div>
             </div>
@@ -417,7 +578,7 @@ export default function Register() {
               >
                 Imágenes{' '}
                 <span className='text-gray-500 text-sm'>
-                  (máximo 5)
+                  (máximo {MAX_PHOTOS})
                 </span>
               </label>
               <input
@@ -428,9 +589,9 @@ export default function Register() {
                 onChange={(e) => {
                   const files = Array.from(e.target.files)
 
-                  if (files.length > 5) {
+                  if (files.length > MAX_PHOTOS) {
                     setMessage(
-                      'Solo puedes subir hasta 5 fotos.',
+                      `Solo puedes subir hasta ${MAX_PHOTOS} fotos.`,
                     )
                     e.target.value = ''
                     return
@@ -494,22 +655,69 @@ export default function Register() {
               >
                 Repetir contraseña
               </label>
-              <input
-                type='password'
-                id='repeatPassword'
-                className='w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
-                value={repeatPassword}
-                onChange={(e) =>
-                  setRepeatPassword(e.target.value)
-                }
-                required
-              />
+              <div className='relative'>
+                <input
+                  type='password'
+                  id='repeatPassword'
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                    passwordsMatch
+                      ? 'focus:ring-teal-500'
+                      : 'focus:ring-red-500 border-red-300'
+                  }`}
+                  value={repeatPassword}
+                  onChange={(e) => {
+                    setRepeatPassword(e.target.value)
+                  }}
+                  required
+                />
+                {repeatPassword && (
+                  <div className='absolute right-3 top-1/2 transform -translate-y-1/2'>
+                    {passwordsMatch ? (
+                      <svg
+                        className='w-5 h-5 text-green-500'
+                        fill='none'
+                        stroke='currentColor'
+                        viewBox='0 0 24 24'
+                      >
+                        <path
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
+                          strokeWidth='2'
+                          d='M5 13l4 4L19 7'
+                        ></path>
+                      </svg>
+                    ) : (
+                      <svg
+                        className='w-5 h-5 text-red-500'
+                        fill='none'
+                        stroke='currentColor'
+                        viewBox='0 0 24 24'
+                      >
+                        <path
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
+                          strokeWidth='2'
+                          d='M6 18L18 6M6 6l12 12'
+                        ></path>
+                      </svg>
+                    )}
+                  </div>
+                )}
+              </div>
+              {!passwordsMatch && repeatPassword && (
+                <p className='text-sm text-red-500 mt-1'>
+                  Las contraseñas no coinciden
+                </p>
+              )}
             </div>
             <button
               type='submit'
-              className='w-full bg-teal-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-teal-600 transition duration-300'
+              className='w-full bg-teal-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-teal-600 transition duration-300 disabled:opacity-70'
+              disabled={registerLoading}
             >
-              Registrarse
+              {registerLoading
+                ? 'Procesando...'
+                : 'Registrarse'}
             </button>
           </form>
           <p className='mt-4 text-center'>

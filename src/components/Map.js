@@ -115,7 +115,20 @@ export default function Map({
 
   // Set address and city from registration
   useEffect(() => {
-    setAddress(registrationAddress)
+    console.log(
+      'Map received address:',
+      registrationAddress,
+    )
+    console.log('Map received city:', registrationCity)
+
+    // Construct search query - if we have both, combine them
+    const addressToSet = registrationAddress || ''
+    const searchQuery =
+      addressToSet +
+      (registrationCity ? `, ${registrationCity}` : '')
+
+    console.log('Setting map search input to:', searchQuery)
+    setAddress(searchQuery)
     setCity(registrationCity)
   }, [registrationAddress, registrationCity])
 
@@ -338,8 +351,15 @@ export default function Map({
                 ]
               : validCenter
 
-            // Skip invalid coordinates without console warning
-            if (isNaN(position[0]) || isNaN(position[1])) {
+            // Skip invalid coordinates or null/undefined values
+            if (
+              !position ||
+              position.length !== 2 ||
+              !position[0] ||
+              !position[1] ||
+              isNaN(position[0]) ||
+              isNaN(position[1])
+            ) {
               return null
             }
 
@@ -363,19 +383,25 @@ export default function Map({
                   },
                 }}
               >
+                {/* Single tooltip with combined info */}
                 <Tooltip
                   direction='top'
-                  offset={[0, -41]}
+                  offset={[0, -10]}
                   opacity={0.9}
                   permanent={false}
                 >
-                  <div className='font-semibold text-center'>
+                  <div className='text-center'>
                     <div className='text-sm font-bold'>
                       {venueName}
                     </div>
                     {venue.address && (
                       <div className='text-xs text-gray-600'>
                         {venue.address}
+                      </div>
+                    )}
+                    {venue.city && venue.country && (
+                      <div className='text-xs text-gray-600'>
+                        {venue.city}, {venue.country}
                       </div>
                     )}
                   </div>
