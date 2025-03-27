@@ -139,7 +139,7 @@ export default function EventsPage() {
   }
 
   return (
-    <div className='relative container mx-auto px-4 py-8'>
+    <div className='relative container mx-auto my-24'>
       <Spot colorName={'SlateBlue'} />
       <Spot colorName={'Magenta'} />
       <Spot colorName={'red'} />

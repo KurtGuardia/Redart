@@ -80,34 +80,32 @@ const getCurrencySymbol = (currencyCode) => {
   }
 }
 
-// Function to sync venue data to venues_locations collection
-async function syncVenueLocation(venueData, venueId) {
+// Function to sync venue data with venues_locations collection
+const syncVenueLocationData = async (
+  venueId,
+  venueData,
+) => {
   try {
-    // Create simplified location data
-    const locationData = {
-      venueId: venueId,
-      name: venueData.name,
-      address: venueData.address || '',
-      city: venueData.city || '',
-      country: venueData.country || '',
-      location: venueData.location || null,
-      logo: venueData.logo || null,
-      active: venueData.active !== false, // Default to true if not specified
-      lastUpated: Timestamp.now(), // Note: keeping the typo to match your existing data
-    }
-
-    // Save to venues_locations collection
-    const locationRef = doc(db, 'venues_locations', venueId)
-    await setDoc(locationRef, locationData)
-
-    console.log('Venue location data synced successfully')
-    return true
+    // Create a simplified venue location document
+    await setDoc(
+      doc(db, 'venues_locations', venueId),
+      {
+        name: venueData.name,
+        address: venueData.address,
+        city: venueData.city,
+        country: venueData.country,
+        location: venueData.location,
+        logo: venueData.logo,
+        active: venueData.active,
+        lastUpdated: new Date().toISOString(),
+      },
+      { merge: true },
+    )
   } catch (error) {
     console.error(
       'Error syncing venue location data:',
       error,
     )
-    return false
   }
 }
 
@@ -252,27 +250,26 @@ export default function Dashboard() {
     }
   }
 
-  // Helper function to upload event featured image
-  const uploadEventImage = async (image) => {
-    if (!image || !venueId) return null
-
+  // Function to upload event image to Firebase Storage
+  const uploadEventImage = async (file) => {
     try {
-      // Create a unique filename with timestamp
-      const timestamp = new Date().getTime()
-      const fileName = `${timestamp}_${image.name}`
+      if (!file || !venueId) return null
+
+      // Create a unique filename
+      const filename = `${Date.now()}_${file.name}`
       const storageRef = ref(
         storage,
-        `venues/${venueId}/events/${fileName}`,
+        `venues/${venueId}/events/${filename}`,
       )
 
-      // Upload the image
-      await uploadBytes(storageRef, image)
+      // Upload the file
+      await uploadBytes(storageRef, file)
 
-      // Get and return the download URL
-      const url = await getDownloadURL(storageRef)
-      return url
+      // Get download URL
+      const downloadURL = await getDownloadURL(storageRef)
+      return downloadURL
     } catch (error) {
-      console.error('Error uploading event image:', error)
+      // Remove console.error
       return null
     }
   }
@@ -285,7 +282,6 @@ export default function Dashboard() {
         collection(db, 'events'),
         eventData,
       )
-      console.log('Event reference:', eventRef)
 
       const eventId = eventRef.id
 
@@ -298,7 +294,6 @@ export default function Dashboard() {
         'events',
         eventId,
       )
-      console.log('Venue event reference:', venueEventRef)
 
       // Only store required fields in the venues subcollection
       await setDoc(venueEventRef, {
@@ -309,18 +304,9 @@ export default function Dashboard() {
         createdAt: Timestamp.now(),
       })
 
-      console.log(
-        'Event added to venues subcollection:',
-        eventId,
-      )
-
       // Return the ID of the newly created event
       return eventId
     } catch (error) {
-      console.error(
-        'Error adding event to Firestore:',
-        error,
-      )
       throw error
     }
   }
@@ -408,7 +394,6 @@ export default function Dashboard() {
 
       // Add the event to Firestore
       const eventId = await addEvent(newEventData)
-      console.log('Event added with ID:', eventId)
 
       // Update local state with new event
       setEvents([
@@ -439,7 +424,6 @@ export default function Dashboard() {
         setEventSuccess('')
       }, 5000)
     } catch (error) {
-      console.error('Error adding event:', error)
       setEventFormError(
         error.message ||
           'Error al agregar el evento. Inténtelo de nuevo.',
@@ -600,14 +584,11 @@ export default function Dashboard() {
       await updateDoc(venueRef, formattedData)
 
       // Also sync to venues_locations collection
-      await syncVenueLocation(
-        {
-          ...formattedData,
-          // Include fields that might not be in updatedData
-          active: formattedData.active !== false,
-        },
-        venueId,
-      )
+      await syncVenueLocationData(venueId, {
+        ...formattedData,
+        // Include fields that might not be in updatedData
+        active: formattedData.active !== false,
+      })
 
       // First close the modal
       setIsEditModalOpen(false)
@@ -865,47 +846,28 @@ export default function Dashboard() {
     },
   }
 
+  // Function to open the event edit modal with current event data
   const openEventEditModal = (event) => {
-    // Create a formatted event object for the edit form
-    let formattedEvent = { ...event }
+    // Convert Timestamp to ISO string for the datetime-local input
+    const date = event.date?.toDate
+      ? event.date.toDate().toISOString().slice(0, 16)
+      : new Date(event.date).toISOString().slice(0, 16)
 
-    // Format date from Timestamp to string for datetime-local input
-    if (event.date && event.date.seconds) {
-      const date = new Date(event.date.seconds * 1000)
-      // Format to YYYY-MM-DDThh:mm
-      const formattedDate = date.toISOString().slice(0, 16)
-      formattedEvent.date = formattedDate
-    }
+    // Make sure ticketUrl is a string
+    const ticketUrl = event.ticketUrl || ''
 
-    // Ensure price is a number
-    if (formattedEvent.price !== undefined) {
-      formattedEvent.price = Number(formattedEvent.price)
-    } else {
-      formattedEvent.price = 0 // Default to 0 if undefined
-    }
-
-    // Ensure ticketUrl is a string (not null)
-    if (formattedEvent.ticketUrl === null) {
-      formattedEvent.ticketUrl = ''
-    }
-
-    // Ensure currency is set
-    if (!formattedEvent.currency) {
-      formattedEvent.currency = 'BOB'
-    }
-
-    // Ensure status is set
-    if (!formattedEvent.status) {
-      formattedEvent.status = 'active'
+    // Format event data for the form
+    const formattedEvent = {
+      ...event,
+      date,
+      ticketUrl,
+      // Make sure we have default values for new fields
+      currency: event.currency || 'BOB',
+      status: event.status || 'active',
     }
 
     // featuredImage should already be correctly set as a URL string
     // No need to modify it for the form
-
-    console.log(
-      'Opening edit modal with data:',
-      formattedEvent,
-    )
 
     // Set current event and open modal
     setCurrentEvent(formattedEvent)
@@ -948,7 +910,7 @@ export default function Dashboard() {
 
   return (
     <>
-      <div className='relative container mx-auto px-4 py-8'>
+      <div className='relative container mx-auto my-24'>
         <Spot colorName={'red'} />
         <Spot colorName={'indigo'} />
         <Spot colorName={'peru'} />

@@ -156,7 +156,11 @@ const EditModal = ({
                           value={formData[key] || ''}
                           onChange={handleChange}
                           className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
-                          required={field.required}
+                          required={
+                            key === 'capacity'
+                              ? false
+                              : field.required
+                          }
                           min={field.min}
                           max={field.max}
                           placeholder={field.placeholder}
@@ -188,14 +192,14 @@ const EditModal = ({
 
                   case 'checkboxGroup':
                     return (
-                      <div key={key}>
+                      <div key={`${key}-group`}>
                         <label className='block text-sm font-medium text-gray-700 mb-2'>
                           {field.label}
                         </label>
                         <div className='grid grid-cols-2 gap-3'>
                           {field.options.map((option) => (
                             <label
-                              key={option}
+                              key={`${key}-option-${option}`}
                               className={`flex items-center space-x-2 p-2 border rounded-lg hover:bg-[#1e40af20] cursor-pointer transition-colors duration-200 ${
                                 formData[key]?.includes(
                                   option,
@@ -303,6 +307,13 @@ const EditModal = ({
                     )
 
                   case 'map':
+                    const hasLocation =
+                      formData.location &&
+                      (formData.location.latitude ||
+                        formData.location.lat) &&
+                      (formData.location.longitude ||
+                        formData.location.lng)
+
                     return (
                       <div className='my-4'>
                         <label className='block text-sm font-medium text-gray-700 mb-1'>
@@ -318,6 +329,31 @@ const EditModal = ({
                             {field.description}
                           </p>
                         )}
+
+                        {/* Show instruction message when no location is set */}
+                        {!hasLocation && (
+                          <div className='bg-blue-50 p-2 mb-3 text-blue-700 text-sm rounded-md'>
+                            <p className='flex items-center'>
+                              <svg
+                                className='h-5 w-5 mr-1'
+                                fill='none'
+                                viewBox='0 0 24 24'
+                                stroke='currentColor'
+                              >
+                                <path
+                                  strokeLinecap='round'
+                                  strokeLinejoin='round'
+                                  strokeWidth={2}
+                                  d='M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
+                                />
+                              </svg>
+                              Haz clic en el mapa para
+                              seleccionar la ubicación
+                              exacta de tu local
+                            </p>
+                          </div>
+                        )}
+
                         <div className='h-72 w-full rounded-lg overflow-hidden'>
                           <MapComponent
                             mapId={mapId}
@@ -325,7 +361,7 @@ const EditModal = ({
                             isDashboard={true}
                             isEditable={true}
                             center={
-                              formData.location
+                              hasLocation
                                 ? [
                                     formData.location
                                       .latitude ||
@@ -334,18 +370,41 @@ const EditModal = ({
                                       .longitude ||
                                       formData.location.lng,
                                   ]
-                                : null
+                                : [-17.389499, -66.156123] // Default center for Bolivia
                             }
                             venues={
-                              formData.location
+                              // Only include venue if BOTH latitude and longitude are valid numbers
+                              hasLocation &&
+                              typeof (
+                                formData.location
+                                  .latitude ||
+                                formData.location.lat
+                              ) === 'number' &&
+                              typeof (
+                                formData.location
+                                  .longitude ||
+                                formData.location.lng
+                              ) === 'number' &&
+                              !isNaN(
+                                formData.location
+                                  .latitude ||
+                                  formData.location.lat,
+                              ) &&
+                              !isNaN(
+                                formData.location
+                                  .longitude ||
+                                  formData.location.lng,
+                              )
                                 ? [
                                     {
-                                      name: formData.name,
+                                      name:
+                                        formData.name ||
+                                        'Mi local',
                                       location:
                                         formData.location,
                                     },
                                   ]
-                                : []
+                                : [] // Empty if no valid location - don't show any venue until location is selected
                             }
                             onLocationSelect={(
                               location,
@@ -581,7 +640,7 @@ const EditModal = ({
 
                   case 'array':
                     return (
-                      <div key={key}>
+                      <div key={`${key}-container`}>
                         <label className='block text-sm font-medium text-gray-700 mb-1'>
                           {field.label}
                         </label>
@@ -590,7 +649,7 @@ const EditModal = ({
                             formData[key].map(
                               (item, index) => (
                                 <div
-                                  key={index}
+                                  key={`${key}-item-${index}`}
                                   className='flex items-center'
                                 >
                                   <input

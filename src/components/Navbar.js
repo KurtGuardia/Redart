@@ -11,11 +11,7 @@ import {
   AvatarImage,
 } from '@radix-ui/react-avatar'
 import { useVenueData } from '../hooks/useVenueData'
-
-function useIsIndexPage() {
-  const pathname = usePathname()
-  return pathname === '/'
-}
+import { useIsIndexPage } from '../hooks/useIsIndexPage'
 
 export default function Navbar() {
   const isIndexPage = useIsIndexPage()

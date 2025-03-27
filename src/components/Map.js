@@ -46,9 +46,23 @@ function LocationMarker({ onLocationSelect }) {
   // Create a useMapEvents hook to handle map click events
   useMapEvents({
     click(e) {
-      const { lat, lng } = e.latlng
+      const lat = Number(e.latlng.lat)
+      const lng = Number(e.latlng.lng)
+
+      // Validate coordinates and ensure they're proper numbers
+      if (isNaN(lat) || isNaN(lng)) return
+
+      // Set position as array for the marker
       setPosition([lat, lng])
-      onLocationSelect({ lat, lng })
+
+      // Pass back location object with explicit lat/lng properties
+      onLocationSelect({
+        lat: lat,
+        lng: lng,
+        // Add these properties to ensure compatibility with different formats
+        latitude: lat,
+        longitude: lng,
+      })
     },
   })
 
@@ -115,19 +129,12 @@ export default function Map({
 
   // Set address and city from registration
   useEffect(() => {
-    console.log(
-      'Map received address:',
-      registrationAddress,
-    )
-    console.log('Map received city:', registrationCity)
-
     // Construct search query - if we have both, combine them
     const addressToSet = registrationAddress || ''
     const searchQuery =
       addressToSet +
       (registrationCity ? `, ${registrationCity}` : '')
 
-    console.log('Setting map search input to:', searchQuery)
     setAddress(searchQuery)
     setCity(registrationCity)
   }, [registrationAddress, registrationCity])
@@ -152,7 +159,6 @@ export default function Map({
       const data = await response.json()
       setSuggestions(data.features)
     } catch (error) {
-      console.error('Error fetching suggestions:', error)
       setSuggestions([])
     }
   }
@@ -213,7 +219,6 @@ export default function Map({
         )
       }
     } catch (error) {
-      console.error('Search error:', error)
       setSearchError(
         'Error al buscar la dirección. Por favor, intente nuevamente.',
       )
@@ -221,20 +226,6 @@ export default function Map({
       setIsSearching(false)
     }
   }
-
-  // Validate center coordinates
-  useEffect(() => {
-    if (
-      !center ||
-      !Array.isArray(center) ||
-      center.length !== 2
-    ) {
-      console.error(
-        'Invalid center prop provided to Map:',
-        center,
-      )
-    }
-  }, [center])
 
   // Cleanup when component unmounts
   useEffect(() => {
@@ -249,11 +240,65 @@ export default function Map({
     }
   }, [uniqueMapId])
 
-  // Check if we have valid coordinates
-  const validCenter =
-    center && Array.isArray(center) && center.length === 2
-      ? center
-      : [-17.389499, -66.156123] // Default to Bolivia
+  // Improved check for valid center coordinates
+  const validCenter = (() => {
+    // Default center coordinates (Bolivia)
+    const defaultCenter = [-17.389499, -66.156123]
+
+    // Check if center is valid
+    if (!center) return defaultCenter
+    if (!Array.isArray(center)) return defaultCenter
+    if (center.length !== 2) return defaultCenter
+    if (!center[0] || !center[1]) return defaultCenter
+    if (
+      isNaN(Number(center[0])) ||
+      isNaN(Number(center[1]))
+    )
+      return defaultCenter
+
+    return center
+  })()
+
+  // Improved function to safely extract position from venue
+  const getValidPosition = (venue) => {
+    if (!venue || !venue.location) return null
+
+    // Try to get coordinates from different possible formats
+    let lat, lng
+
+    // Extract latitude value
+    if (
+      typeof venue.location.latitude !== 'undefined' &&
+      venue.location.latitude !== null
+    ) {
+      lat = Number(venue.location.latitude)
+    } else if (
+      typeof venue.location.lat !== 'undefined' &&
+      venue.location.lat !== null
+    ) {
+      lat = Number(venue.location.lat)
+    }
+
+    // Extract longitude value
+    if (
+      typeof venue.location.longitude !== 'undefined' &&
+      venue.location.longitude !== null
+    ) {
+      lng = Number(venue.location.longitude)
+    } else if (
+      typeof venue.location.lng !== 'undefined' &&
+      venue.location.lng !== null
+    ) {
+      lng = Number(venue.location.lng)
+    }
+
+    // Validate the coordinates - strictly check for valid geographic coordinates
+    if (lat === undefined || lng === undefined) return null
+    if (isNaN(lat) || isNaN(lng)) return null
+    if (lat === 0 || lng === 0) return null // Reject any zero values as they're likely default/unset values
+
+    return [lat, lng]
+  }
 
   return (
     <div className='flex flex-col gap-4 h-full'>
@@ -342,73 +387,77 @@ export default function Map({
 
           <MapController searchResult={searchResult} />
 
-          {venues.map((venue, index) => {
-            // Simplify position calculation based on standard venue object
-            const position = venue.location
-              ? [
-                  venue.location.latitude,
-                  venue.location.longitude,
-                ]
-              : validCenter
+          {venues
+            // Apply strict filtering before mapping to components
+            .filter((venue) => {
+              // Get valid position using our helper function
+              const position = getValidPosition(venue)
 
-            // Skip invalid coordinates or null/undefined values
-            if (
-              !position ||
-              position.length !== 2 ||
-              !position[0] ||
-              !position[1] ||
-              isNaN(position[0]) ||
-              isNaN(position[1])
-            ) {
-              return null
-            }
+              // Only include venues with non-null position arrays that have valid numeric coordinates
+              return (
+                Array.isArray(position) &&
+                position.length === 2 &&
+                typeof position[0] === 'number' &&
+                typeof position[1] === 'number' &&
+                position[0] !== 0 &&
+                position[1] !== 0 &&
+                !isNaN(position[0]) &&
+                !isNaN(position[1])
+              )
+            })
+            .map((venue, index) => {
+              // We already validated this position is valid in the filter step
+              const position = getValidPosition(venue)
 
-            // Use name field for display with simple fallback
-            const venueName = venue.name || 'Sin nombre'
+              // Venue name with fallback
+              const venueName = venue.name || 'Sin nombre'
 
-            return (
-              <Marker
-                key={index}
-                position={position}
-                icon={customIcon}
-                eventHandlers={{
-                  click: () => {
-                    if (
-                      venue.id &&
-                      !isDashboard &&
-                      !small
-                    ) {
-                      router.push(`/venues/${venue.id}`)
-                    }
-                  },
-                }}
-              >
-                {/* Single tooltip with combined info */}
-                <Tooltip
-                  direction='top'
-                  offset={[0, -10]}
-                  opacity={0.9}
-                  permanent={false}
+              // Return the marker component
+              return (
+                <Marker
+                  key={`venue-marker-${index}-${
+                    venue.id || index
+                  }`}
+                  position={position}
+                  icon={customIcon}
+                  eventHandlers={{
+                    click: () => {
+                      if (
+                        venue.id &&
+                        !isDashboard &&
+                        !small
+                      ) {
+                        router.push(`/venues/${venue.id}`)
+                      }
+                    },
+                  }}
                 >
-                  <div className='text-center'>
-                    <div className='text-sm font-bold'>
-                      {venueName}
+                  {/* Tooltip with venue information */}
+                  <Tooltip
+                    direction='top'
+                    offset={[0, -10]}
+                    opacity={0.9}
+                    permanent={false}
+                  >
+                    <div className='text-center'>
+                      <div className='text-sm font-bold'>
+                        {venueName}
+                      </div>
+                      {venue.address && (
+                        <div className='text-xs text-gray-600'>
+                          {venue.address}
+                        </div>
+                      )}
+                      {venue.city && venue.country && (
+                        <div className='text-xs text-gray-600'>
+                          {venue.city}, {venue.country}
+                        </div>
+                      )}
                     </div>
-                    {venue.address && (
-                      <div className='text-xs text-gray-600'>
-                        {venue.address}
-                      </div>
-                    )}
-                    {venue.city && venue.country && (
-                      <div className='text-xs text-gray-600'>
-                        {venue.city}, {venue.country}
-                      </div>
-                    )}
-                  </div>
-                </Tooltip>
-              </Marker>
-            )
-          })}
+                  </Tooltip>
+                </Marker>
+              )
+            })}
         </MapContainer>
       </div>
     </div>

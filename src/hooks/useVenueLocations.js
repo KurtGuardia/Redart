@@ -7,6 +7,27 @@ import {
   where,
 } from 'firebase/firestore'
 
+/**
+ * Helper function to validate if a venue has valid coordinates
+ */
+function hasValidCoordinates(venue) {
+  if (!venue || !venue.location) return false
+
+  // Check latitude
+  const hasValidLat =
+    typeof venue.location.latitude === 'number' &&
+    !isNaN(venue.location.latitude) &&
+    venue.location.latitude !== 0
+
+  // Check longitude
+  const hasValidLng =
+    typeof venue.location.longitude === 'number' &&
+    !isNaN(venue.location.longitude) &&
+    venue.location.longitude !== 0
+
+  return hasValidLat && hasValidLng
+}
+
 export function useVenueLocations(showInactive = false) {
   const [locations, setLocations] = useState([])
   const [loading, setLoading] = useState(true)
@@ -33,19 +54,22 @@ export function useVenueLocations(showInactive = false) {
 
         const snapshot = await getDocs(locationsQuery)
 
-        const venueLocations = snapshot.docs.map((doc) => {
-          const data = doc.data()
-          return {
-            id: data.venueId || doc.id, // Use venueId field or fallback to document ID
-            name: data.name,
-            address: data.address,
-            location: data.location,
-            logo: data.logo || null,
-            city: data.city,
-            country: data.country,
-            active: data.active,
-          }
-        })
+        // Map documents to venue objects and filter out those without valid coordinates
+        const venueLocations = snapshot.docs
+          .map((doc) => {
+            const data = doc.data()
+            return {
+              id: data.venueId || doc.id, // Use venueId field or fallback to document ID
+              name: data.name,
+              address: data.address,
+              location: data.location,
+              logo: data.logo || null,
+              city: data.city,
+              country: data.country,
+              active: data.active,
+            }
+          })
+          .filter(hasValidCoordinates)
 
         setLocations(venueLocations)
       } catch (err) {

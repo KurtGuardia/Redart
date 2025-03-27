@@ -37,7 +37,7 @@ export default function FAQ() {
       <Spot colorName={'Indigo'} />
       <Spot colorName={'red'} />
       <Spot colorName={'Indigo'} />
-      <div className='container mx-auto px-4 py-8'>
+      <div className='container mx-auto my-24'>
         <h1>Preguntas frecuentes</h1>
         <div className='space-y-4'>
           {faqs.map((faq, index) => (

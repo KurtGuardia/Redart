@@ -121,7 +121,7 @@ export default function Login() {
       <Spot colorName={'Indigo'} />
       <Spot colorName={'GoldenRod'} />
       <Spot colorName={'MediumVioletRed'} />
-      <div className='mx-auto mt-14 container'>
+      <div className='mx-auto my-24 container'>
         <div className='max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden'>
           <Suspense fallback={<LoginFormFallback />}>
             <LoginForm />

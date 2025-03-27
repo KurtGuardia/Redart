@@ -35,13 +35,11 @@ try {
     storage = getStorage(app)
 
     // Set persistence (wrapped in try/catch as it's async)
-    setPersistence(auth, browserLocalPersistence)
-      .then(() => {
-        console.log('Firebase persistence set to LOCAL')
-      })
-      .catch((error) => {
+    setPersistence(auth, browserLocalPersistence).catch(
+      (error) => {
         console.error('Error setting persistence:', error)
-      })
+      },
+    )
   }
 } catch (error) {
   console.error('Error initializing Firebase:', error)
