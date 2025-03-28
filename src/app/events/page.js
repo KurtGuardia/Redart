@@ -1,6 +1,7 @@
 'use client'
 
 import Spot from '../../components/Spot'
+import EventCard from '../../components/EventCard'
 import { useState, useEffect } from 'react'
 import {
   collection,
@@ -181,57 +182,31 @@ export default function EventsPage() {
         <p>Cargando eventos...</p>
       ) : (
         <>
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
+          <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 sm:md:grid-cols-2 gap-8'>
             {eventsList.map((event) => (
-              <Link
-                className='bg-[var(--white)] rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300'
-                href={`/events/${event.id}`}
+              <EventCard
+                title={event.title}
                 key={event.id}
-              >
-                <img
-                  src={
-                    event.featuredImage ||
-                    '/placeholder.svg'
-                  }
-                  alt={event.title}
-                  className='w-full h-48 object-cover'
-                />
-                <div className='p-4'>
-                  <h3 className='text-xl font-semibold mb-2'>
-                    {event.title}
-                  </h3>
-                  <p className='text-[var(--gray-600)] mb-2'>
-                    {event.description.substring(0, 100)}
-                    ...
-                  </p>
-                  <div className='flex justify-between text-sm text-[var(--gray-500)]'>
-                    <span>
-                      {event.date && event.date.seconds
-                        ? new Date(
-                            event.date.seconds * 1000,
-                          ).toLocaleDateString()
-                        : 'Fecha no disponible'}
-                    </span>
-                    <span>
-                      {event.city ||
-                        'Ubicación no disponible'}
-                    </span>
-                    <span>
-                      {event.price > 0
-                        ? `${getCurrencySymbol(
-                            event.currency,
-                          )} ${event.price}`
-                        : 'Gratis'}
-                    </span>
-                  </div>
-                  <Link
-                    href={`/venues/${event.venueId}`}
-                    className='text-teal-600 hover:text-teal-800 text-sm mt-2 inline-block'
-                  >
-                    Ver local
-                  </Link>
-                </div>
-              </Link>
+                description={
+                  event.description
+                    ? event.description.substring(0, 100) +
+                      '...'
+                    : ''
+                }
+                date={
+                  event.date && event.date.seconds
+                    ? new Date(
+                        event.date.seconds * 1000,
+                      ).toLocaleDateString()
+                    : 'Fecha no disponible'
+                }
+                location={
+                  event.city || 'Ubicación no disponible'
+                }
+                image={
+                  event.featuredImage || '/placeholder.svg'
+                }
+              />
             ))}
           </div>
           {hasMore && (

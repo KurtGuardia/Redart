@@ -165,7 +165,10 @@ export default function Dashboard() {
             .split('?')[0]
             .split('/')
           const fileName = urlParts[urlParts.length - 1]
-          const filePath = `venues/${venueId}/events/${fileName}`
+
+          // Use the new storage path structure that includes eventId
+          const filePath = `venues/${venueId}/events/${eventId}/${fileName}`
+
           const imageRef = ref(storage, filePath)
           await deleteObject(imageRef)
         } catch (error) {
@@ -251,16 +254,24 @@ export default function Dashboard() {
   }
 
   // Function to upload event image to Firebase Storage
-  const uploadEventImage = async (file) => {
+  const uploadEventImage = async (file, eventId = null) => {
     try {
       if (!file || !venueId) return null
 
       // Create a unique filename
       const filename = `${Date.now()}_${file.name}`
-      const storageRef = ref(
-        storage,
-        `venues/${venueId}/events/${filename}`,
-      )
+
+      // Create the storage path based on whether eventId is provided
+      let storagePath
+      if (eventId) {
+        // New structure with eventId folder
+        storagePath = `venues/${venueId}/events/${eventId}/${filename}`
+      } else {
+        // Use a temporary path for new events that don't have an ID yet
+        storagePath = `venues/${venueId}/events/temp/${filename}`
+      }
+
+      const storageRef = ref(storage, storagePath)
 
       // Upload the file
       await uploadBytes(storageRef, file)
@@ -384,9 +395,7 @@ export default function Dashboard() {
         address: venue?.address || '',
         city: venue?.city || '',
         country: venue?.country || '',
-        featuredImage: eventImage
-          ? await uploadEventImage(eventImage)
-          : null,
+        featuredImage: null, // Will be updated after we have the eventId
         capacity: venue?.capacity || null,
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
@@ -394,6 +403,24 @@ export default function Dashboard() {
 
       // Add the event to Firestore
       const eventId = await addEvent(newEventData)
+
+      // Upload the event image if one was provided, now using the eventId
+      let imageUrl = null
+      if (eventImage) {
+        imageUrl = await uploadEventImage(
+          eventImage,
+          eventId,
+        )
+
+        // Update the event with the image URL
+        if (imageUrl) {
+          const eventRef = doc(db, 'events', eventId)
+          await updateDoc(eventRef, {
+            featuredImage: imageUrl,
+          })
+          newEventData.featuredImage = imageUrl
+        }
+      }
 
       // Update local state with new event
       setEvents([
@@ -647,6 +674,7 @@ export default function Dashboard() {
         // If the image is a File object (new upload), upload it
         const imageUrl = await uploadEventImage(
           updatedData.featuredImage,
+          currentEvent.id,
         )
         if (imageUrl) {
           formattedData.featuredImage = imageUrl
