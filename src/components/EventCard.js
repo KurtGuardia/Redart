@@ -29,16 +29,16 @@ const EventCard = ({
     </div>
     <h3 className='text-xl font-semibold mb-2'>{title}</h3>
     <p className='text-sm mb-4 flex-1'>{description}</p>
-    <div className='flex justify-between items-center text-sm'>
+    <div className='flex justify-between items-center'>
       <div className='flex items-center gap-2 text-gray-600'>
-        <span className='bg-gray-100 px-2 py-1 rounded-md'>
+        <span className='bg-gray-100 px-2 py-1 rounded-md text-[11px]'>
           📅 {date}
         </span>
-        <span className='bg-gray-100 px-2 py-1 rounded-md'>
+        <span className='bg-gray-100 px-2 py-1 rounded-md text-[11px]'>
           📍 {location}
         </span>
       </div>
-      <button className='text-[var(--primary)] font-semibold hover:underline hover:text-[var(--gray-900)] transition-colors'>
+      <button className='text-[var(--primary)] font-semibold hover:underline hover:text-[var(--gray-900)] transition-colors text-[12px]'>
         Ver más
       </button>
     </div>

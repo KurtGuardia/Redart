@@ -4,6 +4,10 @@ import { useEffect, useState, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
+import {
+  compressImage,
+  compressMultipleImages,
+} from '../utils/imageCompression'
 
 // Import MapComponent dynamically to avoid SSR issues
 const MapComponent = dynamic(
@@ -81,9 +85,55 @@ const EditModal = ({
     }))
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    onSave(formData)
+
+    // Create a copy of the form data for processing
+    let processedData = { ...formData }
+
+    // Process image fields before submission
+    for (const [key, field] of Object.entries(fields)) {
+      // Handle photoGallery fields - compress all new photos
+      if (
+        field.type === 'photoGallery' &&
+        processedData[key]
+      ) {
+        // Separate existing URLs from new files
+        const existingPhotos = processedData[key].filter(
+          (photo) => typeof photo === 'string',
+        )
+        const newPhotos = processedData[key].filter(
+          (photo) => typeof photo !== 'string',
+        )
+
+        if (newPhotos.length > 0) {
+          // Compress new photos
+          const compressedPhotos =
+            await compressMultipleImages(newPhotos)
+
+          // Recombine with existing photos
+          processedData[key] = [
+            ...existingPhotos,
+            ...compressedPhotos,
+          ]
+        }
+      }
+
+      // Handle single image fields
+      if (
+        field.type === 'image' &&
+        processedData[key] &&
+        typeof processedData[key] !== 'string'
+      ) {
+        // Compress the image
+        processedData[key] = await compressImage(
+          processedData[key],
+        )
+      }
+    }
+
+    // Submit the processed data
+    onSave(processedData)
   }
 
   // Render nothing on the server

@@ -29,6 +29,10 @@ import dynamic from 'next/dynamic'
 import { useVenueData } from '../../hooks/useVenueData'
 import Spot from '../../components/Spot'
 import EditModal from '../../components/EditModal'
+import {
+  compressImage,
+  compressMultipleImages,
+} from '../../utils/imageCompression'
 
 const MapComponent = dynamic(
   () => import('../../components/MapComponent'),
@@ -160,22 +164,63 @@ export default function Dashboard() {
       // Delete the featured image from storage if it exists
       if (featuredImage) {
         try {
-          // Extract the path from the URL
+          // Try first with the direct path from the structure
+          const filePath = `venues/${venueId}/events/${eventId}`
+
+          // Extract the filename from the URL
           const urlParts = featuredImage
             .split('?')[0]
             .split('/')
           const fileName = urlParts[urlParts.length - 1]
 
-          // Use the new storage path structure that includes eventId
-          const filePath = `venues/${venueId}/events/${eventId}/${fileName}`
+          // Construct the complete file path
+          const completeFilePath = `${filePath}/${fileName}`
 
-          const imageRef = ref(storage, filePath)
+          const imageRef = ref(storage, completeFilePath)
           await deleteObject(imageRef)
         } catch (error) {
           console.error(
             'Error deleting event image:',
             error,
           )
+
+          // If the first attempt fails, try with the extracted path from the URL
+          try {
+            console.log(
+              'Attempting alternative deletion method',
+            )
+
+            // Get the path part of the URL (without the query parameters)
+            const url = new URL(featuredImage)
+            const pathName = decodeURIComponent(
+              url.pathname,
+            )
+
+            // The path typically looks like /v0/b/BUCKET_NAME/o/ENCODED_FILE_PATH
+            // We need to extract just the file path part
+            const parts = pathName.split('/o/')
+            if (parts.length > 1) {
+              const encodedFilePath = parts[1]
+              const filePath =
+                decodeURIComponent(encodedFilePath)
+
+              console.log(
+                'Trying with extracted path:',
+                filePath,
+              )
+
+              const directRef = ref(storage, filePath)
+              await deleteObject(directRef)
+              console.log(
+                'Image deleted with alternative method',
+              )
+            }
+          } catch (secondError) {
+            console.error(
+              'Both deletion attempts failed:',
+              secondError,
+            )
+          }
         }
       }
 
@@ -212,24 +257,32 @@ export default function Dashboard() {
       }
     }
 
-    // Then upload any new photos (File objects)
-    for (const photo of photos) {
-      if (typeof photo !== 'string') {
-        try {
-          // Add timestamp to filename to avoid cache issues
-          const timestamp = new Date().getTime()
-          const fileName = `${timestamp}_${photo.name}`
-          const storageRef = ref(
-            storage,
-            `venues/${venueId}/photos/${fileName}`,
-          )
+    // Collect all new photos (File objects)
+    const newPhotos = photos.filter(
+      (photo) => typeof photo !== 'string',
+    )
 
-          await uploadBytes(storageRef, photo)
-          const url = await getDownloadURL(storageRef)
-          urls.push(url)
-        } catch (error) {
-          console.error('Error uploading photo:', error)
-        }
+    // Compress all new photos before uploading
+    const compressedPhotos = await compressMultipleImages(
+      newPhotos,
+    )
+
+    // Upload the compressed photos
+    for (const photo of compressedPhotos) {
+      try {
+        // Add timestamp to filename to avoid cache issues
+        const timestamp = new Date().getTime()
+        const fileName = `${timestamp}_${photo.name}`
+        const storageRef = ref(
+          storage,
+          `venues/${venueId}/photos/${fileName}`,
+        )
+
+        await uploadBytes(storageRef, photo)
+        const url = await getDownloadURL(storageRef)
+        urls.push(url)
+      } catch (error) {
+        console.error('Error uploading photo:', error)
       }
     }
 
@@ -258,8 +311,13 @@ export default function Dashboard() {
     try {
       if (!file || !venueId) return null
 
+      // Compress the image before uploading
+      const compressedFile = await compressImage(file)
+
       // Create a unique filename
-      const filename = `${Date.now()}_${file.name}`
+      const filename = `${Date.now()}_${
+        compressedFile.name
+      }`
 
       // Create the storage path based on whether eventId is provided
       let storagePath
@@ -273,14 +331,14 @@ export default function Dashboard() {
 
       const storageRef = ref(storage, storagePath)
 
-      // Upload the file
-      await uploadBytes(storageRef, file)
+      // Upload the compressed file
+      await uploadBytes(storageRef, compressedFile)
 
       // Get download URL
       const downloadURL = await getDownloadURL(storageRef)
       return downloadURL
     } catch (error) {
-      // Remove console.error
+      console.error('Error uploading event image:', error)
       return null
     }
   }
@@ -1231,7 +1289,7 @@ export default function Dashboard() {
                           alt={`Foto ${index + 1} de ${
                             venue.name
                           }`}
-                          className='w-full h-36 object-cover rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer'
+                          className='w-full h-36 object-cover rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200'
                         />
                       ))}
                   </div>
@@ -1247,7 +1305,7 @@ export default function Dashboard() {
                             alt={`Foto ${index + 4} de ${
                               venue.name
                             }`}
-                            className='w-full h-36 object-cover rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer'
+                            className='w-full h-36 object-cover rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200'
                           />
                         ))}
                     </div>
@@ -1337,7 +1395,7 @@ export default function Dashboard() {
                     onChange={(e) =>
                       setEventCategory(e.target.value)
                     }
-                    className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+                    className='w-full p-2 border bg-white border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                     required
                   >
                     <option value=''>

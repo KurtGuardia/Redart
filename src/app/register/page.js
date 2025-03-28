@@ -24,6 +24,10 @@ import {
 } from 'firebase/storage'
 import Image from 'next/image'
 import { countriesAndCities } from './countriesAndCities'
+import {
+  compressImage,
+  compressMultipleImages,
+} from '../../utils/imageCompression'
 
 const AMENITIES_OPTIONS = [
   'Parking',
@@ -90,8 +94,13 @@ export default function Register() {
   }
 
   const uploadPhotos = async (photos, venueId) => {
+    // Compress all photos before uploading
+    const compressedPhotos = await compressMultipleImages(
+      photos,
+    )
+
     const urls = []
-    for (const photo of photos) {
+    for (const photo of compressedPhotos) {
       const storageRef = ref(
         storage,
         `venues/${venueId}/photos/${photo.name}`,
@@ -105,11 +114,15 @@ export default function Register() {
 
   const uploadLogo = async (logo, venueId) => {
     if (!logo) return null
+
+    // Compress the logo before uploading
+    const compressedLogo = await compressImage(logo)
+
     const storageRef = ref(
       storage,
-      `venues/${venueId}/logo/${logo.name}`,
+      `venues/${venueId}/logo/${compressedLogo.name}`,
     )
-    await uploadBytes(storageRef, logo)
+    await uploadBytes(storageRef, compressedLogo)
     const url = await getDownloadURL(storageRef)
     return url
   }

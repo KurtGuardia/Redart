@@ -158,17 +158,30 @@ export default function EventsPage() {
           placeholder='Buscar eventos...'
           className='flex-grow px-4 py-2 rounded-lg border border-[var(--gray-300)] focus:outline-none focus:ring-2 focus:ring-[var(--teal-500)]'
         />
-        <select
-          value={filter}
-          onChange={handleFilterChange}
-          className='px-4 py-2 rounded-lg border border-[var(--gray-300)] focus:outline-none focus:ring-2 focus:ring-[var(--teal-500)]'
-        >
-          <option value='all'>Todas las categorías</option>
-          <option value='music'>Música</option>
-          <option value='art'>Arte</option>
-          <option value='theater'>Teatro</option>
-          <option value='dance'>Danza</option>
-        </select>
+        <div className='relative'>
+          <select
+            value={filter}
+            onChange={handleFilterChange}
+            className='appearance-none w-full bg-[var(--teal-500)] text-[var(--white)] px-6 py-2 pr-8 rounded-lg hover:bg-teal-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--teal-500)] font-medium'
+          >
+            <option value='all'>
+              Todas las categorías
+            </option>
+            <option value='music'>Música</option>
+            <option value='art'>Arte</option>
+            <option value='theater'>Teatro</option>
+            <option value='dance'>Danza</option>
+          </select>
+          <div className='pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-white'>
+            <svg
+              className='fill-current h-4 w-4'
+              xmlns='http://www.w3.org/2000/svg'
+              viewBox='0 0 20 20'
+            >
+              <path d='M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z' />
+            </svg>
+          </div>
+        </div>
         <button
           type='submit'
           className='bg-[var(--teal-500)] text-[var(--white)] px-6 py-2 rounded-lg hover:bg-teal-700 transition duration-300'
