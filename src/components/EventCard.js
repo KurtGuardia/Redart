@@ -7,8 +7,15 @@ const EventCard = ({
   date,
   location,
   image,
+  onClick,
+  className,
 }) => (
-  <div className='flex flex-col group bg-[var(--primary-transparent)] text-white border border-gray-200 rounded-xl shadow-lg hover:shadow-2xl hover:bg-[var(--secondary-color-transparent)] hover:scale-[1.02] hover:text-[var(--gray-600)] transition-all duration-500 p-6 max-w-sm mx-auto'>
+  <div
+    className={`flex flex-col group bg-[var(--primary-transparent)] text-white border border-gray-200 rounded-xl shadow-lg hover:shadow-2xl hover:bg-[var(--secondary-color-transparent)] hover:scale-[1.02] hover:text-[var(--gray-600)] transition-all duration-500 p-6 max-w-sm mx-auto ${
+      className || ''
+    }`}
+    onClick={onClick}
+  >
     <div className='relative overflow-hidden rounded-lg mb-4'>
       {image ? (
         <Image
@@ -38,9 +45,9 @@ const EventCard = ({
           📍 {location}
         </span>
       </div>
-      <button className='text-[var(--primary)] font-semibold hover:underline hover:text-[var(--gray-900)] transition-colors text-[12px]'>
+      <span className='text-[var(--primary)] font-semibold hover:text-[var(--gray-900)] transition-colors text-[12px]'>
         Ver más
-      </button>
+      </span>
     </div>
   </div>
 )

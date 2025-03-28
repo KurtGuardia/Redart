@@ -197,7 +197,7 @@ body {
     --destructive: #ef4444;
     --destructive-foreground: #ffffff;
 
-    --border: #444444;
+    --border: #e0e0e0bb;
     --input: #444444;
 
     --radius: 0.5rem;
