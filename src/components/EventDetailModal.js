@@ -61,7 +61,6 @@ const getCategoryLabel = (categoryValue) => {
 }
 
 const EventDetailModal = ({ isOpen, onClose, event }) => {
-  console.log('event', event)
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
