@@ -35,15 +35,21 @@ const EventCard = ({
       <div className='absolute inset-0 bg-gradient-to-t from-black/30 to-transparent rounded-lg' />
     </div>
     <h3 className='text-xl font-semibold mb-2'>{title}</h3>
-    <p className='text-sm mb-4 flex-1'>{description}</p>
+    {description && (
+      <p className='text-sm mb-4 flex-1'>{description}</p>
+    )}
     <div className='flex justify-between items-center'>
       <div className='flex items-center gap-2 text-gray-600'>
-        <span className='bg-gray-100 px-2 py-1 rounded-md text-[11px]'>
-          📅 {date}
-        </span>
-        <span className='bg-gray-100 px-2 py-1 rounded-md text-[11px]'>
-          📍 {location}
-        </span>
+        {date && (
+          <span className='bg-gray-100 px-2 py-1 rounded-md text-[11px]'>
+            📅 {date}
+          </span>
+        )}
+        {location && (
+          <span className='bg-gray-100 px-2 py-1 rounded-md text-[11px]'>
+            📍 {location}
+          </span>
+        )}
       </div>
       <span className='text-[var(--primary)] font-semibold hover:text-[var(--gray-900)] transition-colors text-[12px]'>
         Ver más

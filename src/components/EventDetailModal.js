@@ -183,7 +183,7 @@ const EventDetailModal = ({ isOpen, onClose, event }) => {
                 </p>
                 {event.venueName && (
                   <Link
-                    href={`/venue/${event.venueId}`}
+                    href={`/venues/${event.venueId}`}
                     className='block text-[var(--secondary-color)] underline hover:text-[var(--white)] font-semibold'
                   >
                     {event.venueName}

@@ -16,7 +16,7 @@ import { db } from '../../../lib/firebase-client'
 import Image from 'next/image'
 import Link from 'next/link'
 import Spot from '../../../components/Spot'
-import EventCard from '../../../components/EventCard'
+import VenueEventListItem from '../../../components/VenueEventListItem'
 import EventDetailModal from '../../../components/EventDetailModal'
 
 // Simple SVG Icon for location pin
@@ -48,8 +48,8 @@ export default function VenuePage() {
   const [selectedImageUrl, setSelectedImageUrl] =
     useState(null)
 
-  const openModal = (event) => {
-    setSelectedEvent(event)
+  const openModal = (fullEventDataFromList) => {
+    setSelectedEvent(fullEventDataFromList)
     setIsModalOpen(true)
   }
 
@@ -97,24 +97,51 @@ export default function VenuePage() {
       if (!venueId) return
 
       setLoadingEvents(true)
+      setVenueEvents([])
       try {
-        const eventsCollectionPath = `venues/${venueId}/events`
-        const eventsRef = collection(
+        const eventsSubcollectionPath = `venues/${venueId}/events`
+        const eventsSubcollectionRef = collection(
           db,
-          eventsCollectionPath,
+          eventsSubcollectionPath,
+        )
+        const subcollectionSnapshot = await getDocs(
+          query(eventsSubcollectionRef),
         )
 
-        const q = query(
-          eventsRef,
-          where('date', '>=', Timestamp.now()),
-          orderBy('date', 'asc'),
+        if (subcollectionSnapshot.empty) {
+          setLoadingEvents(false)
+          return
+        }
+
+        const fetchPromises =
+          subcollectionSnapshot.docs.map((subDoc) => {
+            const eventId = subDoc.id
+            const fullEventDocRef = doc(
+              db,
+              'events',
+              eventId,
+            )
+            return getDoc(fullEventDocRef)
+          })
+
+        const fullEventDocSnaps = await Promise.all(
+          fetchPromises,
         )
-        const querySnapshot = await getDocs(q)
-        const events = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-        console.log(events)
+
+        const events = fullEventDocSnaps
+          .map((docSnap) =>
+            docSnap.exists()
+              ? { id: docSnap.id, ...docSnap.data() }
+              : null,
+          )
+          .filter((event) => event !== null)
+          .filter(
+            (event) =>
+              event.date &&
+              event.date.seconds >= Timestamp.now().seconds,
+          )
+          .sort((a, b) => a.date.seconds - b.date.seconds)
+
         setVenueEvents(events)
       } catch (err) {
         console.error('Error fetching venue events:', err)
@@ -200,18 +227,24 @@ export default function VenuePage() {
           <div className='absolute inset-0 bg-gradient-to-br from-[var(--teal-700)] to-[var(--blue-800)] z-0'></div>
         )}
         <div className='relative z-20 p-4 text-white'>
-          <h1 className='text-4xl md:text-6xl font-extrabold mb-2 text-shadow-md'>
+          <h1
+            className='inline-block bg-[radial-gradient(var(--white),transparent)] p-8 rounded-full text-4xl md:text-6xl font-extrabold mb-4'
+            style={{ textShadow: '-2px 3px 7px #000' }}
+          >
             {venue.name}
           </h1>
-          <a
-            href={googleMapsUrl}
-            target='_blank'
-            rel='noopener noreferrer'
-            className='inline-block text-lg md:text-xl font-medium text-gray-200 hover:text-white hover:underline transition-colors duration-200'
-          >
-            <LocationPinIcon />
-            {venue.address} - {venue.city}, {venue.country}
-          </a>
+          <div>
+            <a
+              href={googleMapsUrl}
+              target='_blank'
+              rel='noopener noreferrer'
+              className='inline-block text-lg md:text-xl font-medium text-gray-200 hover:text-white hover:underline transition-colors duration-200'
+            >
+              <LocationPinIcon />
+              {venue.address} - {venue.city},{' '}
+              {venue.country}
+            </a>
+          </div>
         </div>
       </div>
 
@@ -292,7 +325,7 @@ export default function VenuePage() {
             </section>
           )}
 
-          {/* Upcoming Events Section */}
+          {/* Upcoming Events Section - Using new List Item Component */}
           <section>
             <h2 className='text-2xl md:text-3xl font-bold text-[var(--teal-800)] mb-6'>
               Próximos Eventos en {venue.name}
@@ -302,40 +335,13 @@ export default function VenuePage() {
                 Cargando eventos...
               </div>
             ) : venueEvents.length > 0 ? (
-              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8'>
+              // Use a simple div container for the vertical list, add spacing between items
+              <div className='space-y-4'>
                 {venueEvents.map((event) => (
-                  <EventCard
+                  <VenueEventListItem
                     key={event.id}
-                    onClick={() => openModal(event)}
-                    className='cursor-pointer h-full'
-                    title={event.title}
-                    description={
-                      event.description
-                        ? event.description.substring(
-                            0,
-                            100,
-                          ) + '...'
-                        : ''
-                    }
-                    date={
-                      event.date && event.date.seconds
-                        ? new Date(
-                            event.date.seconds * 1000,
-                          ).toLocaleDateString('es-ES', {
-                            day: '2-digit',
-                            month: 'short',
-                            year: 'numeric',
-                          })
-                        : 'Fecha no disponible'
-                    }
-                    location={
-                      event.city ||
-                      'Ubicación no disponible'
-                    }
-                    image={
-                      event.featuredImage ||
-                      '/placeholder.svg'
-                    }
+                    event={event} // Pass the event object from subcollection
+                    onOpenModal={openModal} // Pass the openModal function
                   />
                 ))}
               </div>
