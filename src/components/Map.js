@@ -13,6 +13,7 @@ import { Icon } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
 
@@ -29,13 +30,22 @@ const customIcon = new Icon({
   shadowSize: [41, 41],
 })
 
-// New component to handle map center updates
-function MapController({ searchResult }) {
+// Updated component to handle map view updates for both single points and search results
+function MapController({ searchResult, targetZoom = 16 }) {
   const map = useMap()
 
-  if (searchResult) {
-    map.setView([searchResult.lat, searchResult.lng], 16)
-  }
+  useEffect(() => {
+    if (
+      searchResult &&
+      typeof searchResult.lat === 'number' &&
+      typeof searchResult.lng === 'number'
+    ) {
+      map.setView(
+        [searchResult.lat, searchResult.lng],
+        targetZoom,
+      )
+    }
+  }, [searchResult, targetZoom, map])
 
   return null
 }
@@ -240,62 +250,70 @@ export default function Map({
     }
   }, [uniqueMapId])
 
-  // Improved check for valid center coordinates
-  const validCenter = (() => {
-    // Default center coordinates (Bolivia)
-    const defaultCenter = [-17.389499, -66.156123]
-
-    // Check if center is valid
-    if (!center) return defaultCenter
-    if (!Array.isArray(center)) return defaultCenter
-    if (center.length !== 2) return defaultCenter
-    if (!center[0] || !center[1]) return defaultCenter
-    if (
-      isNaN(Number(center[0])) ||
-      isNaN(Number(center[1]))
-    )
-      return defaultCenter
-
-    return center
-  })()
+  // Revert initialCenter/Zoom logic
+  const initialCenter = center || [-17.389499, -66.156123]
+  const initialZoom = zoom || 13
 
   // Improved function to safely extract position from venue
   const getValidPosition = (venue) => {
-    if (!venue || !venue.location) return null
+    // Ensure venue and venue.location are not null/undefined before proceeding
+    if (!venue || !venue.location) {
+      console.warn(
+        `Venue ${
+          venue?.id || '(no id)'
+        } missing location data.`,
+      )
+      return null
+    }
 
-    // Try to get coordinates from different possible formats
     let lat, lng
 
-    // Extract latitude value
+    // Check for Firebase GeoPoint format
     if (
-      typeof venue.location.latitude !== 'undefined' &&
-      venue.location.latitude !== null
+      typeof venue.location.latitude === 'number' &&
+      typeof venue.location.longitude === 'number'
     ) {
-      lat = Number(venue.location.latitude)
-    } else if (
-      typeof venue.location.lat !== 'undefined' &&
-      venue.location.lat !== null
+      lat = venue.location.latitude
+      lng = venue.location.longitude
+    }
+    // Check for object { lat, lng } format - check existence before access
+    else if (
+      venue.location.hasOwnProperty('lat') &&
+      venue.location.hasOwnProperty('lng') &&
+      typeof venue.location.lat === 'number' &&
+      typeof venue.location.lng === 'number'
     ) {
-      lat = Number(venue.location.lat)
+      lat = venue.location.lat
+      lng = venue.location.lng
+    }
+    // Check for simple array format [lat, lng]
+    else if (
+      Array.isArray(venue.location) &&
+      venue.location.length === 2 &&
+      typeof venue.location[0] === 'number' &&
+      typeof venue.location[1] === 'number'
+    ) {
+      lat = venue.location[0] // Assuming [lat, lng] order
+      lng = venue.location[1]
     }
 
-    // Extract longitude value
+    // Validate the coordinates
     if (
-      typeof venue.location.longitude !== 'undefined' &&
-      venue.location.longitude !== null
+      lat === undefined ||
+      lng === undefined ||
+      isNaN(lat) ||
+      isNaN(lng) ||
+      lat === 0 ||
+      lng === 0
     ) {
-      lng = Number(venue.location.longitude)
-    } else if (
-      typeof venue.location.lng !== 'undefined' &&
-      venue.location.lng !== null
-    ) {
-      lng = Number(venue.location.lng)
+      // Log the problematic location object itself
+      console.warn(
+        `Invalid or zero coordinates derived for venue ${venue.id}. Original location:`,
+        venue.location,
+        `Derived: lat=${lat}, lng=${lng}`,
+      )
+      return null
     }
-
-    // Validate the coordinates - strictly check for valid geographic coordinates
-    if (lat === undefined || lng === undefined) return null
-    if (isNaN(lat) || isNaN(lng)) return null
-    if (lat === 0 || lng === 0) return null // Reject any zero values as they're likely default/unset values
 
     return [lat, lng]
   }
@@ -362,8 +380,8 @@ export default function Map({
         } mx-auto map-container`}
       >
         <MapContainer
-          center={validCenter}
-          zoom={zoom}
+          center={initialCenter}
+          zoom={initialZoom}
           style={{
             height: '100%',
             width: '100%',
@@ -371,93 +389,63 @@ export default function Map({
           }}
           scrollWheelZoom={true}
           id={uniqueMapId}
-          key={uniqueMapId} // This forces re-render when ID changes
+          key={uniqueMapId}
         >
           <TileLayer
             url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           />
 
-          {/* Only render LocationMarker if the map is editable */}
+          {venues &&
+            venues.length > 0 &&
+            venues
+              .filter((venue) => {
+                const position = getValidPosition(venue)
+                return position !== null
+              })
+              .map((venue) => {
+                const position = getValidPosition(venue)
+                const venueName = venue.name || 'Sin nombre'
+                return (
+                  <Marker
+                    key={venue.id || venueName}
+                    position={position}
+                    icon={customIcon}
+                    eventHandlers={{
+                      click: () => {
+                        if (venue.id) {
+                          router.push(`/venues/${venue.id}`)
+                        }
+                      },
+                    }}
+                  >
+                    {venueName && (
+                      <Tooltip
+                        direction='top'
+                        offset={[0, -41]} // Adjust offset based on icon anchor
+                      >
+                        <div className='text-center'>
+                          <div className='font-bold'>
+                            {venueName}
+                          </div>
+                          {venue.address && (
+                            <div className='text-xs'>
+                              {venue.address}
+                            </div>
+                          )}
+                        </div>
+                      </Tooltip>
+                    )}
+                  </Marker>
+                )
+              })}
+
           {isEditable && (
             <LocationMarker
               onLocationSelect={onLocationSelect}
             />
           )}
-
           <MapController searchResult={searchResult} />
-
-          {venues
-            // Apply strict filtering before mapping to components
-            .filter((venue) => {
-              // Get valid position using our helper function
-              const position = getValidPosition(venue)
-
-              // Only include venues with non-null position arrays that have valid numeric coordinates
-              return (
-                Array.isArray(position) &&
-                position.length === 2 &&
-                typeof position[0] === 'number' &&
-                typeof position[1] === 'number' &&
-                position[0] !== 0 &&
-                position[1] !== 0 &&
-                !isNaN(position[0]) &&
-                !isNaN(position[1])
-              )
-            })
-            .map((venue, index) => {
-              // We already validated this position is valid in the filter step
-              const position = getValidPosition(venue)
-
-              // Venue name with fallback
-              const venueName = venue.name || 'Sin nombre'
-
-              // Return the marker component
-              return (
-                <Marker
-                  key={`venue-marker-${index}-${
-                    venue.id || index
-                  }`}
-                  position={position}
-                  icon={customIcon}
-                  eventHandlers={{
-                    click: () => {
-                      if (
-                        venue.id &&
-                        !isDashboard &&
-                        !small
-                      ) {
-                        router.push(`/venues/${venue.id}`)
-                      }
-                    },
-                  }}
-                >
-                  {/* Tooltip with venue information */}
-                  <Tooltip
-                    direction='top'
-                    offset={[0, -10]}
-                    opacity={0.9}
-                    permanent={false}
-                  >
-                    <div className='text-center'>
-                      <div className='text-sm font-bold'>
-                        {venueName}
-                      </div>
-                      {venue.address && (
-                        <div className='text-xs text-gray-600'>
-                          {venue.address}
-                        </div>
-                      )}
-                      {venue.city && venue.country && (
-                        <div className='text-xs text-gray-600'>
-                          {venue.city}, {venue.country}
-                        </div>
-                      )}
-                    </div>
-                  </Tooltip>
-                </Marker>
-              )
-            })}
         </MapContainer>
       </div>
     </div>

@@ -217,3 +217,42 @@ body {
     transition: background-image 1s ease-in-out;
   }
 }
+
+/* Custom Leaflet Tooltip Styling */
+.leaflet-tooltip {
+  background-color: var(
+    --teal-800
+  ) !important; /* Use !important to override default Leaflet styles */
+  color: var(--white) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important; /* Use rgba for border */
+  border-radius: 4px !important; /* Use standard CSS for border-radius */
+  padding: 4px 8px !important; /* Use standard CSS for padding */
+  font-size: 0.875rem !important; /* Equivalent to text-sm */
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1) !important; /* Equivalent to shadow-lg */
+  white-space: nowrap !important; /* Prevent wrapping */
+}
+
+/* Style the tooltip arrow (optional, but recommended) */
+.leaflet-tooltip-top::before {
+  border-top-color: var(--teal-800) !important;
+}
+
+/* Remove Leaflet's default white background/border if necessary */
+.leaflet-tooltip {
+  background: none; /* Remove default if overriding with background-color */
+  border: none; /* Remove default if overriding */
+  box-shadow: none; /* Remove default if overriding */
+}
+
+/* Re-apply styles specifically */
+.leaflet-tooltip {
+  background-color: var(--teal-800) !important;
+  color: var(--white) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 4px !important;
+  padding: 4px 8px !important;
+  font-size: 0.875rem !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+}
