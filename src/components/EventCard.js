@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import React from 'react'
+import { formatTimestamp } from '../lib/utils'
 
 const EventCard = ({
   title,
@@ -42,7 +43,11 @@ const EventCard = ({
       <div className='flex items-center gap-2 text-gray-600'>
         {date && (
           <span className='bg-gray-100 px-2 py-1 rounded-md text-[11px]'>
-            📅 {date}
+            📅{' '}
+            {formatTimestamp(date, {
+              dateStyle: 'medium',
+              timeStyle: undefined,
+            })}
           </span>
         )}
         {location && (

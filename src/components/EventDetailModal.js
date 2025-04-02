@@ -4,82 +4,12 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import Image from 'next/image'
 import Link from 'next/link'
-
-// Helper function to get currency symbol
-const getCurrencySymbol = (currencyCode) => {
-  switch (currencyCode) {
-    case 'USD':
-      return '$'
-    case 'EUR':
-      return '€'
-    case 'GBP':
-      return '£'
-    case 'BOB':
-      return 'Bs'
-    case 'BRL':
-      return 'R$'
-    case 'ARS':
-      return '$'
-    case 'CLP':
-      return '$'
-    case 'COP':
-      return '$'
-    case 'MXN':
-      return '$'
-    case 'PEN':
-      return 'S/'
-    case 'UYU':
-      return '$U'
-    case 'PYG':
-      return '₲'
-    default:
-      return currencyCode || 'Bs'
-  }
-}
-
-// Helper function to format date and time
-const formatDateTime = (timestamp) => {
-  if (!timestamp || !timestamp.seconds)
-    return 'Fecha/Hora no disponible'
-  try {
-    return new Date(
-      timestamp.seconds * 1000,
-    ).toLocaleString('es-ES', {
-      dateStyle: 'long', // e.g., 15 de abril de 2024
-      timeStyle: 'short', // e.g., 19:30
-    })
-  } catch (error) {
-    console.error('Error formatting date:', error)
-    return 'Fecha/Hora inválida'
-  }
-}
-
-// Helper function to get Spanish category label
-const getCategoryLabel = (categoryValue) => {
-  const labels = {
-    music: 'Música',
-    art: 'Arte',
-    theater: 'Teatro',
-    dance: 'Danza',
-    comedy: 'Comedia',
-    workshop: 'Taller',
-    conference: 'Conferencia',
-    literature: 'Literatura',
-    film: 'Cine',
-    gastronomy: 'Gastronomía',
-    kids: 'Infantil',
-    community: 'Comunitario',
-    technology: 'Tecnología',
-    fashion: 'Moda',
-    sports: 'Deportes',
-    other: 'Otro',
-  }
-  return (
-    labels[categoryValue] ||
-    categoryValue ||
-    'Sin categoría'
-  )
-}
+// Import centralized utility functions
+import {
+  getCurrencySymbol,
+  formatTimestamp, // Renamed from formatDateTime
+  getCategoryLabel,
+} from '../lib/utils'
 
 const EventDetailModal = ({ isOpen, onClose, event }) => {
   const [isMounted, setIsMounted] = useState(false)
@@ -186,7 +116,10 @@ const EventDetailModal = ({ isOpen, onClose, event }) => {
                   Fecha y Hora
                 </p>
                 <p className='font-semibold text-[var(--white)]'>
-                  {formatDateTime(event.date)}
+                  {formatTimestamp(event.date, {
+                    dateStyle: 'full',
+                    timeStyle: 'full',
+                  })}
                 </p>
               </div>
             </div>

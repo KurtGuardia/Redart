@@ -24,20 +24,11 @@ import {
 } from 'firebase/storage'
 import Image from 'next/image'
 import { countriesAndCities } from './countriesAndCities'
+import { AMENITIES_OPTIONS } from '../../lib/constants'
 import {
   compressImage,
   compressMultipleImages,
-} from '../../utils/imageCompression'
-
-const AMENITIES_OPTIONS = [
-  'Parking',
-  'Bar',
-  'Escenario',
-  'Snacks',
-  'Comida',
-  'Acceso discapacitados',
-  'Wi-Fi',
-]
+} from '../../lib/utils'
 
 // Define constants for form limits
 const DESCRIPTION_MAX_LENGTH = 500

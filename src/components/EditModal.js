@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic'
 import {
   compressImage,
   compressMultipleImages,
-} from '../utils/imageCompression'
+} from '../lib/utils'
 
 // Import MapComponent dynamically to avoid SSR issues
 const MapComponent = dynamic(
@@ -214,7 +214,6 @@ const EditModal = ({
                           max={field.max}
                           placeholder={field.placeholder}
                         />
-                        {console.log(field)}
                       </div>
                     )
 

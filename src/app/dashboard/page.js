@@ -17,6 +17,7 @@ import {
   getDocs,
   getDoc,
   deleteDoc,
+  arrayRemove,
 } from 'firebase/firestore'
 import {
   getDownloadURL,
@@ -30,9 +31,17 @@ import { useVenueData } from '../../hooks/useVenueData'
 import Spot from '../../components/ui/Spot'
 import EditModal from '../../components/EditModal'
 import {
+  CATEGORIES,
+  AMENITIES_OPTIONS,
+} from '../../lib/constants'
+import {
+  getCurrencySymbol,
+  isValidUrl,
   compressImage,
   compressMultipleImages,
-} from '../../utils/imageCompression'
+  getCategoryLabel,
+} from '../../lib/utils'
+import VenueEventListItem from '../../components/VenueEventListItem'
 
 const MapComponent = dynamic(
   () => import('../../components/MapComponent'),
@@ -40,49 +49,6 @@ const MapComponent = dynamic(
     ssr: false,
   },
 )
-
-// Available amenities options
-const AMENITIES_OPTIONS = [
-  'Parking',
-  'Bar',
-  'Escenario',
-  'Snacks',
-  'Comida',
-  'Acceso discapacitados',
-  'Wi-Fi',
-]
-
-// Helper function to get currency symbol from currency code
-const getCurrencySymbol = (currencyCode) => {
-  switch (currencyCode) {
-    case 'USD':
-      return '$'
-    case 'EUR':
-      return '€'
-    case 'GBP':
-      return '£'
-    case 'BOB':
-      return 'Bs'
-    case 'BRL':
-      return 'R$'
-    case 'ARS':
-      return '$'
-    case 'CLP':
-      return '$'
-    case 'COP':
-      return '$'
-    case 'MXN':
-      return '$'
-    case 'PEN':
-      return 'S/'
-    case 'UYU':
-      return '$U'
-    case 'PYG':
-      return '₲'
-    default:
-      return currencyCode || 'Bs' // Default to Bs if no currency code is provided
-  }
-}
 
 // Function to sync venue data with venues_locations collection
 const syncVenueLocationData = async (
@@ -144,6 +110,15 @@ export default function Dashboard() {
 
   // Function to delete an event
   const deleteEvent = async (eventId, featuredImage) => {
+    if (!venueId || !eventId) {
+      console.error(
+        'Missing venueId or eventId for deletion',
+      )
+      setEventFormError(
+        'Error: Información incompleta para eliminar evento.',
+      )
+      return
+    }
     try {
       setLoading(true)
 
@@ -151,15 +126,11 @@ export default function Dashboard() {
       const eventRef = doc(db, 'events', eventId)
       await deleteDoc(eventRef)
 
-      // Delete the event from the venue's subcollection
-      const venueEventRef = doc(
-        db,
-        'venues',
-        venueId,
-        'events',
-        eventId,
-      )
-      await deleteDoc(venueEventRef)
+      // Remove event ID from the venue's events array field
+      const venueRef = doc(db, 'venues', venueId)
+      await updateDoc(venueRef, {
+        events: arrayRemove(eventId),
+      })
 
       // Delete the featured image from storage if it exists
       if (featuredImage) {
@@ -508,16 +479,6 @@ export default function Dashboard() {
     }
   }
 
-  // Helper function to validate URLs
-  const isValidUrl = (string) => {
-    try {
-      new URL(string)
-      return true
-    } catch (_) {
-      return false
-    }
-  }
-
   // Fetch events from Firestore when component initializes or venueId changes
   useEffect(() => {
     const fetchEvents = async () => {
@@ -776,6 +737,17 @@ export default function Dashboard() {
     }
   }
 
+  // Wrapper function for delete confirmation
+  const triggerDelete = (eventId, featuredImage) => {
+    if (
+      window.confirm(
+        '¿Estás seguro de que deseas eliminar este evento? Esta acción no se puede deshacer.',
+      )
+    ) {
+      deleteEvent(eventId, featuredImage)
+    }
+  }
+
   const venueFormFields = {
     name: {
       type: 'text',
@@ -845,15 +817,7 @@ export default function Dashboard() {
       type: 'select',
       label: 'Categoría',
       required: true,
-      options: [
-        { value: 'music', label: 'Música' },
-        { value: 'art', label: 'Arte' },
-        { value: 'theater', label: 'Teatro' },
-        { value: 'dance', label: 'Danza' },
-        { value: 'comedy', label: 'Comedia' },
-        { value: 'workshop', label: 'Taller' },
-        { value: 'other', label: 'Otro' },
-      ],
+      options: CATEGORIES,
     },
     date: {
       type: 'datetime-local',
@@ -1386,13 +1350,14 @@ export default function Dashboard() {
                     <option value=''>
                       Seleccionar categoría
                     </option>
-                    <option value='music'>Música</option>
-                    <option value='art'>Arte</option>
-                    <option value='theater'>Teatro</option>
-                    <option value='dance'>Danza</option>
-                    <option value='comedy'>Comedia</option>
-                    <option value='workshop'>Taller</option>
-                    <option value='other'>Otro</option>
+                    {CATEGORIES.map((category) => (
+                      <option
+                        key={category.value}
+                        value={category.value}
+                      >
+                        {category.label}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -1660,168 +1625,17 @@ export default function Dashboard() {
             ) : (
               <ul className='space-y-3 mb-6'>
                 {events.map((event) => (
-                  <li
+                  <VenueEventListItem
                     key={event.id}
-                    className='bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200'
-                  >
-                    <div className='flex justify-between items-start'>
-                      <div className='flex-1'>
-                        <div className='flex items-center gap-2'>
-                          <h3 className='font-semibold text-gray-800'>
-                            {event.title}
-                          </h3>
-                          <span
-                            className={`text-xs px-2 py-1 rounded-full ${
-                              event.category === 'music'
-                                ? 'bg-blue-100 text-blue-800'
-                                : event.category === 'art'
-                                ? 'bg-purple-100 text-purple-800'
-                                : event.category ===
-                                  'theater'
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : event.category === 'dance'
-                                ? 'bg-pink-100 text-pink-800'
-                                : event.category ===
-                                  'comedy'
-                                ? 'bg-green-100 text-green-800'
-                                : event.category ===
-                                  'workshop'
-                                ? 'bg-orange-100 text-orange-800'
-                                : 'bg-gray-100 text-gray-800'
-                            }`}
-                          >
-                            {event.category === 'music'
-                              ? 'Música'
-                              : event.category === 'art'
-                              ? 'Arte'
-                              : event.category === 'theater'
-                              ? 'Teatro'
-                              : event.category === 'dance'
-                              ? 'Danza'
-                              : event.category === 'comedy'
-                              ? 'Comedia'
-                              : event.category ===
-                                'workshop'
-                              ? 'Taller'
-                              : event.category === 'other'
-                              ? 'Otro'
-                              : event.category ||
-                                'Sin categoría'}
-                          </span>
-                        </div>
-                        <p className='text-sm text-gray-600 mt-1'>
-                          {new Date(
-                            event.date.seconds * 1000,
-                          ).toLocaleDateString('es-ES', {
-                            weekday: 'long',
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                        </p>
-                        <div className='flex gap-4 mt-2 text-xs text-gray-500'>
-                          <span className='flex items-center'>
-                            <svg
-                              className='w-4 h-4 mr-1'
-                              fill='none'
-                              stroke='currentColor'
-                              viewBox='0 0 24 24'
-                            >
-                              <path
-                                strokeLinecap='round'
-                                strokeLinejoin='round'
-                                strokeWidth={2}
-                                d='M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
-                              />
-                            </svg>
-                            {event.price > 0
-                              ? getCurrencySymbol(
-                                  event.currency,
-                                ) +
-                                ' ' +
-                                event.price
-                              : 'Gratis'}
-                          </span>
-                          {event.ticketUrl && (
-                            <a
-                              href={event.ticketUrl}
-                              target='_blank'
-                              rel='noopener noreferrer'
-                              className='flex items-center text-teal-600 hover:text-teal-800'
-                            >
-                              <svg
-                                className='w-4 h-4 mr-1'
-                                fill='none'
-                                stroke='currentColor'
-                                viewBox='0 0 24 24'
-                              >
-                                <path
-                                  strokeLinecap='round'
-                                  strokeLinejoin='round'
-                                  strokeWidth={2}
-                                  d='M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z'
-                                />
-                              </svg>
-                              Boletos
-                            </a>
-                          )}
-                        </div>
-                      </div>
-                      <div className='flex gap-2'>
-                        <button
-                          onClick={() =>
-                            openEventEditModal(event)
-                          }
-                          className='text-teal-600 hover:text-teal-800'
-                        >
-                          <svg
-                            className='w-5 h-5'
-                            fill='none'
-                            stroke='currentColor'
-                            viewBox='0 0 24 24'
-                          >
-                            <path
-                              strokeLinecap='round'
-                              strokeLinejoin='round'
-                              strokeWidth={2}
-                              d='M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z'
-                            />
-                          </svg>
-                        </button>
-                        <button
-                          onClick={() => {
-                            if (
-                              window.confirm(
-                                '¿Estás seguro de que deseas eliminar este evento? Esta acción no se puede deshacer.',
-                              )
-                            ) {
-                              deleteEvent(
-                                event.id,
-                                event.featuredImage,
-                              )
-                            }
-                          }}
-                          className='text-red-600 hover:text-red-800'
-                        >
-                          <svg
-                            className='w-5 h-5'
-                            fill='none'
-                            stroke='currentColor'
-                            viewBox='0 0 24 24'
-                          >
-                            <path
-                              strokeLinecap='round'
-                              strokeLinejoin='round'
-                              strokeWidth={2}
-                              d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16'
-                            />
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-                  </li>
+                    event={event}
+                    onEdit={openEventEditModal}
+                    onDelete={() =>
+                      triggerDelete(
+                        event.id,
+                        event.featuredImage,
+                      )
+                    }
+                  />
                 ))}
               </ul>
             )}

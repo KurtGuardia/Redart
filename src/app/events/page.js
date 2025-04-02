@@ -13,20 +13,10 @@ import {
   limit,
   startAfter,
 } from 'firebase/firestore'
+import { CATEGORIES } from '../../lib/constants'
+import { formatTimestamp } from '../../lib/utils'
 
 const ITEMS_PER_PAGE = 8
-
-// Define categories for the filter dropdown
-const categories = [
-  { value: 'all', label: 'Categorias' },
-  { value: 'music', label: 'Música' },
-  { value: 'art', label: 'Arte' },
-  { value: 'theater', label: 'Teatro' },
-  { value: 'dance', label: 'Danza' },
-  { value: 'comedy', label: 'Comedia' },
-  { value: 'workshop', label: 'Taller' },
-  { value: 'other', label: 'Otro' },
-]
 
 export default function EventsPage() {
   const [eventsList, setEventsList] = useState([])
@@ -209,7 +199,8 @@ export default function EventsPage() {
               backgroundSize: '1.5em 1.5em',
             }}
           >
-            {categories.map((category) => (
+            <option value='all'>Categorias</option>
+            {CATEGORIES.map((category) => (
               <option
                 key={category.value}
                 value={category.value}
@@ -241,21 +232,12 @@ export default function EventsPage() {
                 title={event.title}
                 description={
                   event.description
-                    ? event.description.substring(0, 100) +
+                    ? // TODO improve character number
+                      event.description.substring(0, 100) +
                       '...'
                     : ''
                 }
-                date={
-                  event.date && event.date.seconds
-                    ? new Date(
-                        event.date.seconds * 1000,
-                      ).toLocaleDateString('es-ES', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric',
-                      })
-                    : 'Fecha no disponible'
-                }
+                date={event.date}
                 location={
                   event.city || 'Ubicación no disponible'
                 }
