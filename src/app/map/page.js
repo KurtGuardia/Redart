@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import Spot from '../../components/Spot'
+import Spot from '../../components/ui/Spot'
 import MapComponent from '../../components/MapComponent'
 import { useVenueLocations } from '../../hooks/useVenueLocations'
 

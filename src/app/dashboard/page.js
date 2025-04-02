@@ -27,7 +27,7 @@ import {
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { useVenueData } from '../../hooks/useVenueData'
-import Spot from '../../components/Spot'
+import Spot from '../../components/ui/Spot'
 import EditModal from '../../components/EditModal'
 import {
   compressImage,
@@ -186,34 +186,19 @@ export default function Dashboard() {
 
           // If the first attempt fails, try with the extracted path from the URL
           try {
-            console.log(
-              'Attempting alternative deletion method',
-            )
-
-            // Get the path part of the URL (without the query parameters)
             const url = new URL(featuredImage)
             const pathName = decodeURIComponent(
               url.pathname,
             )
 
-            // The path typically looks like /v0/b/BUCKET_NAME/o/ENCODED_FILE_PATH
-            // We need to extract just the file path part
+            // Extract the file path from the URL ( /v0/b/BUCKET_NAME/o/ENCODED_FILE_PATH)
             const parts = pathName.split('/o/')
             if (parts.length > 1) {
               const encodedFilePath = parts[1]
               const filePath =
                 decodeURIComponent(encodedFilePath)
-
-              console.log(
-                'Trying with extracted path:',
-                filePath,
-              )
-
               const directRef = ref(storage, filePath)
               await deleteObject(directRef)
-              console.log(
-                'Image deleted with alternative method',
-              )
             }
           } catch (secondError) {
             console.error(

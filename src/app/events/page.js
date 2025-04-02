@@ -1,6 +1,6 @@
 'use client'
 
-import Spot from '../../components/Spot'
+import Spot from '../../components/ui/Spot'
 import EventCard from '../../components/EventCard'
 import EventDetailModal from '../../components/EventDetailModal'
 import { useState, useEffect } from 'react'
@@ -27,38 +27,6 @@ const categories = [
   { value: 'workshop', label: 'Taller' },
   { value: 'other', label: 'Otro' },
 ]
-
-// Helper function to get currency symbol from currency code
-const getCurrencySymbol = (currencyCode) => {
-  switch (currencyCode) {
-    case 'USD':
-      return '$'
-    case 'EUR':
-      return '€'
-    case 'GBP':
-      return '£'
-    case 'BOB':
-      return 'Bs'
-    case 'BRL':
-      return 'R$'
-    case 'ARS':
-      return '$'
-    case 'CLP':
-      return '$'
-    case 'COP':
-      return '$'
-    case 'MXN':
-      return '$'
-    case 'PEN':
-      return 'S/'
-    case 'UYU':
-      return '$U'
-    case 'PYG':
-      return '₲'
-    default:
-      return currencyCode || 'Bs' // Default to Bs if no currency code is provided
-  }
-}
 
 export default function EventsPage() {
   const [eventsList, setEventsList] = useState([])

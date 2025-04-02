@@ -3,7 +3,6 @@
 import { useEffect, useState, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import dynamic from 'next/dynamic'
-import Image from 'next/image'
 import {
   compressImage,
   compressMultipleImages,
@@ -215,6 +214,7 @@ const EditModal = ({
                           max={field.max}
                           placeholder={field.placeholder}
                         />
+                        {console.log(field)}
                       </div>
                     )
 

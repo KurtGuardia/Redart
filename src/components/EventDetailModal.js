@@ -7,7 +7,7 @@ import Link from 'next/link'
 
 // Helper function to get currency symbol
 const getCurrencySymbol = (currencyCode) => {
-  switch (currencyCode?.toUpperCase()) {
+  switch (currencyCode) {
     case 'USD':
       return '$'
     case 'EUR':
@@ -16,7 +16,22 @@ const getCurrencySymbol = (currencyCode) => {
       return '£'
     case 'BOB':
       return 'Bs'
-    // Add other currencies as needed
+    case 'BRL':
+      return 'R$'
+    case 'ARS':
+      return '$'
+    case 'CLP':
+      return '$'
+    case 'COP':
+      return '$'
+    case 'MXN':
+      return '$'
+    case 'PEN':
+      return 'S/'
+    case 'UYU':
+      return '$U'
+    case 'PYG':
+      return '₲'
     default:
       return currencyCode || 'Bs'
   }
@@ -25,39 +40,45 @@ const getCurrencySymbol = (currencyCode) => {
 // Helper function to format date and time
 const formatDateTime = (timestamp) => {
   if (!timestamp || !timestamp.seconds)
-    return 'Fecha no disponible'
-  const date = new Date(timestamp.seconds * 1000)
-  return date.toLocaleDateString('es-ES', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true,
-  })
+    return 'Fecha/Hora no disponible'
+  try {
+    return new Date(
+      timestamp.seconds * 1000,
+    ).toLocaleString('es-ES', {
+      dateStyle: 'long', // e.g., 15 de abril de 2024
+      timeStyle: 'short', // e.g., 19:30
+    })
+  } catch (error) {
+    console.error('Error formatting date:', error)
+    return 'Fecha/Hora inválida'
+  }
 }
 
 // Helper function to get Spanish category label
 const getCategoryLabel = (categoryValue) => {
-  switch (categoryValue) {
-    case 'music':
-      return 'Música'
-    case 'art':
-      return 'Arte'
-    case 'theater':
-      return 'Teatro'
-    case 'dance':
-      return 'Danza'
-    case 'comedy':
-      return 'Comedia'
-    case 'workshop':
-      return 'Taller'
-    case 'other':
-      return 'Otro'
-    default:
-      return categoryValue // Fallback to the value itself
+  const labels = {
+    music: 'Música',
+    art: 'Arte',
+    theater: 'Teatro',
+    dance: 'Danza',
+    comedy: 'Comedia',
+    workshop: 'Taller',
+    conference: 'Conferencia',
+    literature: 'Literatura',
+    film: 'Cine',
+    gastronomy: 'Gastronomía',
+    kids: 'Infantil',
+    community: 'Comunitario',
+    technology: 'Tecnología',
+    fashion: 'Moda',
+    sports: 'Deportes',
+    other: 'Otro',
   }
+  return (
+    labels[categoryValue] ||
+    categoryValue ||
+    'Sin categoría'
+  )
 }
 
 const EventDetailModal = ({ isOpen, onClose, event }) => {
@@ -65,13 +86,11 @@ const EventDetailModal = ({ isOpen, onClose, event }) => {
 
   useEffect(() => {
     setIsMounted(true)
-    // Optional: Prevent background scrolling when modal is open
     if (isOpen) {
       document.body.style.overflow = 'hidden'
     } else {
       document.body.style.overflow = 'unset'
     }
-    // Cleanup function to reset overflow style
     return () => {
       document.body.style.overflow = 'unset'
     }

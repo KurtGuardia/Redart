@@ -1,5 +1,3 @@
-// src/app/register/countriesAndCities.js
-
 export const countriesAndCities = {
   Bolivia: [
     'La Paz',

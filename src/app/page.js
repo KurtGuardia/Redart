@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import TypingAnimation from '../components/TypingAnimation'
-import Spot from '../components/Spot'
+import Spot from '../components/ui/Spot'
 import EventCard from '../components/EventCard'
 import MapComponent from '../components/MapComponent'
 import { useVenueLocations } from '../hooks/useVenueLocations'

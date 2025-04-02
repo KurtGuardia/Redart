@@ -3,9 +3,8 @@
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import Spot from '../../components/Spot'
+import Spot from '../../components/ui/Spot'
 
-// Separate client component that uses searchParams
 function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -103,6 +102,7 @@ function LoginForm() {
   )
 }
 
+//TODO: delete when actual login is implemented
 // Loading fallback component
 function LoginFormFallback() {
   return (

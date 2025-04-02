@@ -13,7 +13,6 @@ import { Icon } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
 

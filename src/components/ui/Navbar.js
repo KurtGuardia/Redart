@@ -2,27 +2,23 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
-import useHasScrolled from '../hooks/useHasScrolled'
-import { auth } from '../lib/firebase-client'
+import { useRouter } from 'next/navigation'
+import useHasScrolled from '../../hooks/useHasScrolled'
+import { auth } from '../../lib/firebase-client'
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from '@radix-ui/react-avatar'
-import { useVenueData } from '../hooks/useVenueData'
-import { useIsIndexPage } from '../hooks/useIsIndexPage'
+import { useVenueData } from '../../hooks/useVenueData'
+import { useIsIndexPage } from '../../hooks/useIsIndexPage'
 
 export default function Navbar() {
   const isIndexPage = useIsIndexPage()
   const hasScrolled = useHasScrolled()
   const router = useRouter()
   const [user, setUser] = useState(null)
-  const {
-    venue,
-    loading: venueLoading,
-    error: venueError,
-  } = useVenueData(user?.uid)
+  const { venue } = useVenueData(user?.uid)
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(

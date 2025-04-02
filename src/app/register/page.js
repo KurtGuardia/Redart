@@ -15,7 +15,7 @@ import {
 } from 'firebase/firestore'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import Spot from '../../components/Spot'
+import Spot from '../../components/ui/Spot'
 import MapComponent from '../../components/MapComponent'
 import {
   getDownloadURL,
@@ -66,7 +66,6 @@ export default function Register() {
   const [message, setMessage] = useState('')
   const [registerLoading, setRegisterLoading] =
     useState(false)
-  const router = useRouter()
   const [selectedCountry, setSelectedCountry] = useState('')
   const [cities, setCities] = useState([])
   const [selectedCity, setSelectedCity] = useState('')

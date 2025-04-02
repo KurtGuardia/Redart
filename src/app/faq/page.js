@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Spot from '../../components/Spot'
+import Spot from '../../components/ui/Spot'
 
 const faqs = [
   {

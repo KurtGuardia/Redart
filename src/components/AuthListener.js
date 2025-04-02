@@ -37,7 +37,7 @@ export default function AuthListener() {
     })
 
     return () => unsubscribe()
-  }, [router]) // Only depend on router changes
+  }, [router])
 
   return null
 }
