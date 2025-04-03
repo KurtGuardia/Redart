@@ -61,8 +61,9 @@ const VenueEventListItem = ({
           <Image
             src={imageUrl}
             alt={`Imagen de ${event.title}`}
-            layout='fill'
-            objectFit='cover'
+            fill
+            className='object-cover'
+            sizes='(max-width: 640px) 10vw, 80px'
             unoptimized={
               imageUrl.startsWith('http') ? undefined : true
             }

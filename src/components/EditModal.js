@@ -189,6 +189,7 @@ const EditModal = ({
                   case 'text':
                   case 'email':
                   case 'number':
+                  case 'url':
                   case 'date':
                     return (
                       <div key={key}>
@@ -205,15 +206,43 @@ const EditModal = ({
                           value={formData[key] || ''}
                           onChange={handleChange}
                           className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
-                          required={
-                            key === 'capacity'
-                              ? false
-                              : field.required
-                          }
+                          required={field.required}
                           min={field.min}
                           max={field.max}
+                          step={field.step}
                           placeholder={field.placeholder}
                         />
+                        {field.description && (
+                          <p className='mt-1 text-xs text-gray-500'>
+                            {field.description}
+                          </p>
+                        )}
+                      </div>
+                    )
+
+                  case 'datetime-local':
+                    return (
+                      <div key={key}>
+                        <label
+                          htmlFor={key}
+                          className='block text-sm font-medium text-gray-700 mb-1'
+                        >
+                          {field.label}
+                        </label>
+                        <input
+                          id={key}
+                          name={key}
+                          type='datetime-local'
+                          value={formData[key] || ''}
+                          onChange={handleChange}
+                          className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+                          required={field.required}
+                        />
+                        {field.description && (
+                          <p className='mt-1 text-xs text-gray-500'>
+                            {field.description}
+                          </p>
+                        )}
                       </div>
                     )
 
@@ -235,7 +264,19 @@ const EditModal = ({
                           className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                           required={field.required}
                           placeholder={field.placeholder}
+                          maxLength={field.maxlength}
                         />
+                        {field.description && (
+                          <p className='mt-1 text-xs text-gray-500'>
+                            {field.description}
+                          </p>
+                        )}
+                        {field.maxlength && (
+                          <p className='text-xs text-gray-500 text-right mt-1'>
+                            {formData[key]?.length || 0} /{' '}
+                            {field.maxlength}
+                          </p>
+                        )}
                       </div>
                     )
 
@@ -312,7 +353,7 @@ const EditModal = ({
                           name={key}
                           value={formData[key] || ''}
                           onChange={handleChange}
-                          className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+                          className='w-full p-2 border bg-white border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                           required={field.required}
                         >
                           <option value=''>
@@ -329,6 +370,11 @@ const EditModal = ({
                               </option>
                             ))}
                         </select>
+                        {field.description && (
+                          <p className='mt-1 text-xs text-gray-500'>
+                            {field.description}
+                          </p>
+                        )}
                       </div>
                     )
 
@@ -364,7 +410,7 @@ const EditModal = ({
                         formData.location.lng)
 
                     return (
-                      <div className='my-4'>
+                      <div key={key} className='my-4'>
                         <label className='block text-sm font-medium text-gray-700 mb-1'>
                           {field.label}
                           {field.required && (
@@ -495,7 +541,7 @@ const EditModal = ({
                                   typeof photo ===
                                     'string' && (
                                     <div
-                                      key={index}
+                                      key={photo}
                                       className='relative group border rounded-lg overflow-hidden'
                                     >
                                       <div className='relative h-36 w-full'>
@@ -629,7 +675,7 @@ const EditModal = ({
                                     typeof photo !==
                                       'string' && (
                                       <div
-                                        key={`new-${index}`}
+                                        key={`new-${photo.name}-${index}`}
                                         className='relative group border rounded-lg overflow-hidden'
                                       >
                                         <div className='relative h-36 w-full'>
@@ -783,38 +829,6 @@ const EditModal = ({
                             {field.itemLabel || 'elemento'}
                           </button>
                         </div>
-                      </div>
-                    )
-
-                  case 'url':
-                    return (
-                      <div key={key}>
-                        <label
-                          htmlFor={key}
-                          className='block text-sm font-medium text-gray-700 mb-1'
-                        >
-                          {field.label}
-                          {field.required && (
-                            <span className='text-red-500 ml-1'>
-                              *
-                            </span>
-                          )}
-                        </label>
-                        <input
-                          id={key}
-                          name={key}
-                          type='url'
-                          value={formData[key] || ''}
-                          onChange={handleChange}
-                          className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
-                          required={field.required}
-                          placeholder={field.placeholder}
-                        />
-                        {field.description && (
-                          <p className='text-sm text-gray-500 mt-1'>
-                            {field.description}
-                          </p>
-                        )}
                       </div>
                     )
 
