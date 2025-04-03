@@ -191,6 +191,7 @@ const EditModal = ({
                   case 'number':
                   case 'url':
                   case 'date':
+                  case 'tel':
                     return (
                       <div key={key}>
                         <label

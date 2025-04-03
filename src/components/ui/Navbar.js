@@ -116,17 +116,18 @@ export default function Navbar() {
               onClick={handleAvatarClick}
               className='cursor-pointer ml-2 h-8 w-8'
             >
-              <Avatar className=''>
+              <Avatar>
                 <AvatarImage
                   src={
                     venue?.logo ||
                     'https://img.icons8.com/ios/50/000000/user--v1.png'
                   }
                   alt={venue?.name || user.email}
-                  className='h-full w-full object-cover rounded-full'
+                  className='h-full w-full object-cover rounded-full ring-1 ring-gray-400 shadow-lg'
                 />
                 <AvatarFallback className='h-full w-full flex items-center justify-center rounded-full bg-muted text-white'>
-                  {venue?.name?.[0]?.toUpperCase() || 'U'}
+                  {venue?.name?.[0]?.toUpperCase() ||
+                    'User Radart'}
                 </AvatarFallback>
               </Avatar>
             </div>

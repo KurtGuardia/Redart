@@ -13,7 +13,6 @@ import {
   setDoc,
   deleteDoc,
 } from 'firebase/firestore'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Spot from '../../components/ui/Spot'
 import MapComponent from '../../components/MapComponent'
@@ -28,6 +27,9 @@ import { AMENITIES_OPTIONS } from '../../lib/constants'
 import {
   compressImage,
   compressMultipleImages,
+  validateFacebookUrl,
+  validateInstagramUrl,
+  validateWhatsappNumber,
 } from '../../lib/utils'
 
 // Define constants for form limits
@@ -61,6 +63,9 @@ export default function Register() {
   const [cities, setCities] = useState([])
   const [selectedCity, setSelectedCity] = useState('')
   const [isClientSide, setIsClientSide] = useState(false)
+  const [facebookUrl, setFacebookUrl] = useState('')
+  const [instagramUrl, setInstagramUrl] = useState('')
+  const [whatsappNumber, setWhatsappNumber] = useState('')
 
   useEffect(() => {
     setIsClientSide(true)
@@ -126,6 +131,10 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setError('') // Clear previous errors
+    setMessage('')
+
+    // --- Start Validation ---
     const passwordError = validatePassword(password)
     if (passwordError) {
       setError(passwordError)
@@ -135,9 +144,29 @@ export default function Register() {
       setError('Las contraseñas no coinciden')
       return
     }
+    if (facebookUrl && !validateFacebookUrl(facebookUrl)) {
+      setError('La URL de Facebook no parece válida.')
+      return
+    }
+    if (
+      instagramUrl &&
+      !validateInstagramUrl(instagramUrl)
+    ) {
+      setError('La URL de Instagram no parece válida.')
+      return
+    }
+    if (
+      whatsappNumber &&
+      !validateWhatsappNumber(whatsappNumber)
+    ) {
+      setError(
+        'El número de WhatsApp debe empezar con + y el código de país.',
+      )
+      return
+    }
+    // --- End Validation ---
 
     setRegisterLoading(true)
-    setError('')
     let userCredential = null
 
     try {
@@ -166,6 +195,15 @@ export default function Register() {
         location: new GeoPoint(geoPoint.lat, geoPoint.lng),
         amenities: selectedAmenities,
         photos: photoUrls,
+        ...(facebookUrl.trim() && {
+          facebookUrl: facebookUrl.trim(),
+        }),
+        ...(instagramUrl.trim() && {
+          instagramUrl: instagramUrl.trim(),
+        }),
+        ...(whatsappNumber.trim() && {
+          whatsappNumber: whatsappNumber.trim(),
+        }),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         active: true,
@@ -275,6 +313,7 @@ export default function Register() {
             <input
               type='text'
               id='name'
+              name='name'
               className='w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -293,6 +332,7 @@ export default function Register() {
               <input
                 type='file'
                 id='logo'
+                name='logo'
                 accept='image/*'
                 onChange={(e) => {
                   const file = e.target.files[0]
@@ -324,6 +364,7 @@ export default function Register() {
             <textarea
               className='w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
               value={description}
+              name='description'
               onChange={(e) => {
                 const newValue = e.target.value
                 if (
@@ -355,6 +396,7 @@ export default function Register() {
             </label>
             <select
               id='country'
+              name='country'
               className='w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--teal-500)] bg-[--white]'
               value={selectedCountry}
               onChange={handleCountryChange}
@@ -386,6 +428,7 @@ export default function Register() {
               </label>
               <select
                 id='city'
+                name='city'
                 className='w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--teal-500)] bg-[--white]'
                 value={selectedCity}
                 onChange={(e) =>
@@ -416,6 +459,7 @@ export default function Register() {
             <input
               type='text'
               id='address'
+              name='address'
               className='w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
               value={address}
               onChange={(e) => setAddress(e.target.value)}
@@ -432,16 +476,81 @@ export default function Register() {
               Capacidad máxima (opcional)
             </label>
             <input
-              type='number'
-              min='0'
-              max='9999'
               id='capacity'
+              name='capacity'
+              type='number'
+              min='1'
+              max='99999'
               className=' px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
               value={capacity}
               onChange={(e) => setCapacity(e.target.value)}
               placeholder='Ej. 200'
               autoComplete='off'
             />
+          </div>
+          {/* Facebook URL */}
+          <div className='mb-4'>
+            <label
+              htmlFor='facebookUrl'
+              className='block text-gray-700 font-bold mb-2'
+            >
+              Página de Facebook (Opcional)
+            </label>
+            <input
+              id='facebookUrl'
+              name='facebookUrl'
+              type='url'
+              placeholder='https://facebook.com/nombre_de_usuario'
+              value={facebookUrl}
+              onChange={(e) =>
+                setFacebookUrl(e.target.value)
+              }
+              className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none'
+            />
+          </div>
+          {/* Instagram URL */}
+          <div className='mb-4'>
+            <label
+              htmlFor='instagramUrl'
+              className='block text-gray-700 font-bold mb-2'
+            >
+              Perfil de Instagram (Opcional)
+            </label>
+            <input
+              id='instagramUrl'
+              name='instagramUrl'
+              type='url'
+              placeholder='https://instagram.com/nombre_de_usuario'
+              value={instagramUrl}
+              onChange={(e) =>
+                setInstagramUrl(e.target.value)
+              }
+              className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none'
+            />
+          </div>
+          {/* WhatsApp Number */}
+          <div className='mb-4'>
+            <label
+              htmlFor='whatsappNumber'
+              className='block text-gray-700 font-bold mb-2'
+            >
+              Número de WhatsApp (Opcional)
+            </label>
+            <input
+              id='whatsappNumber'
+              name='whatsappNumber'
+              type='tel' // Use type 'tel' for phone numbers
+              placeholder='+1234567890 (Incluir código de país)'
+              value={whatsappNumber}
+              onChange={(e) =>
+                setWhatsappNumber(e.target.value)
+              }
+              className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none'
+            />
+            <p className='mt-1 text-xs text-gray-500'>
+              Incluye el código de país (ej. +591 para
+              Bolivia).
+            </p>
           </div>
           {/* Amenities */}
           <div className='mb-4'>

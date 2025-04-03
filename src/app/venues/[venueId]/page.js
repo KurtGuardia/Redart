@@ -18,6 +18,7 @@ import VenueEventListItem from '../../../components/VenueEventListItem'
 import EventDetailModal from '../../../components/EventDetailModal'
 import MapComponent from '../../../components/MapComponent'
 import { useVenueData } from '../../../hooks/useVenueData'
+import { formatWhatsappNumber } from '../../../lib/utils'
 
 // Simple SVG Icon for location pin
 const LocationPinIcon = () => (
@@ -172,7 +173,7 @@ export default function VenuePage() {
   }
 
   return (
-    <div className='relative min-h-screen'>
+    <div className='relative min-h-screen min-w-[80%]'>
       {/* Background Spots */}
       <Spot colorName={'Teal'} />
       <Spot colorName={'Cyan'} />
@@ -181,18 +182,15 @@ export default function VenuePage() {
 
       {/* Hero Section */}
       <div
-        className={`relative w-full ${
-          heroImageUrl ? 'h-64 md:h-80' : 'h-40'
-        } flex items-center justify-center text-center overflow-hidden mb-12 shadow-lg`}
+        className={`relative w-full h-64 md:h-96 flex items-center justify-center text-center overflow-hidden mb-12 shadow-lg`}
       >
         {heroImageUrl ? (
           <>
             <Image
               src={heroImageUrl}
               alt={`${venue.name} featured image`}
-              layout='fill'
-              objectFit='cover'
-              className='absolute inset-0 z-0'
+              fill
+              className='absolute inset-0 z-0 object-cover'
               priority
             />
             <div className='absolute inset-0 bg-black/60 z-10'></div>
@@ -408,83 +406,81 @@ export default function VenuePage() {
                     </div>
                   )}
 
-                {/* Social Media Links with SVG Icons */}
-                <div>
-                  <h3 className='font-semibold text-gray-700 mb-2 flex items-center gap-2'>
-                    <span className='text-xl'>🌐</span>Redes
-                    Sociales
-                  </h3>
-                  <div className='flex items-center space-x-4 pl-8'>
-                    {/* Facebook Icon */}
-                    <a
-                      href='#'
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      className='text-[var(--facebook)] hover:opacity-80 transition-opacity'
-                      title='Facebook'
-                    >
-                      <span className='sr-only'>
-                        Facebook
-                      </span>
-                      <svg
-                        className='h-6 w-6'
-                        fill='currentColor'
-                        viewBox='0 0 24 24'
-                        aria-hidden='true'
-                      >
-                        <path
-                          fillRule='evenodd'
-                          d='M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z'
-                          clipRule='evenodd'
-                        />
-                      </svg>
-                    </a>
-                    {/* Instagram Icon */}
-                    <a
-                      href='#'
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      className='text-[var(--instagram)] hover:opacity-80 transition-opacity'
-                      title='Instagram'
-                    >
-                      <span className='sr-only'>
-                        Instagram
-                      </span>
-                      <svg
-                        className='h-6 w-6'
-                        fill='currentColor'
-                        viewBox='0 0 24 24'
-                        aria-hidden='true'
-                      >
-                        <path
-                          fillRule='evenodd'
-                          d='M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z'
-                          clipRule='evenodd'
-                        />
-                      </svg>
-                    </a>
-                    {/* Twitter/X Icon */}
-                    <a
-                      href='#'
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      className='text-[var(--twitter)] hover:opacity-80 transition-opacity'
-                      title='Twitter/X'
-                    >
-                      <span className='sr-only'>
-                        Twitter
-                      </span>
-                      <svg
-                        className='h-6 w-6'
-                        fill='currentColor'
-                        viewBox='0 0 24 24'
-                        aria-hidden='true'
-                      >
-                        <path d='M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84' />
-                      </svg>
-                    </a>
+                {/* Social Media / WhatsApp Contact */}
+                {(venue.facebookUrl ||
+                  venue.instagramUrl ||
+                  venue.whatsappNumber) && (
+                  <div>
+                    <h3 className='font-semibold text-gray-700 mb-2 flex items-center gap-2'>
+                      <span className='text-xl'>🌐</span>
+                      Contacto / Redes
+                    </h3>
+                    <div className='space-y-2 pl-8'>
+                      {venue.facebookUrl && (
+                        <a
+                          href={venue.facebookUrl}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          className='flex items-center gap-2 text-blue-600 hover:text-blue-800 hover:underline'
+                          title={venue.facebookUrl}
+                        >
+                          <svg
+                            className='w-5 h-5 fill-current'
+                            viewBox='0 0 24 24'
+                          >
+                            <path d='M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z' />
+                          </svg>
+                          <span className='truncate'>
+                            Facebook
+                          </span>
+                        </a>
+                      )}
+                      {venue.instagramUrl && (
+                        <a
+                          href={venue.instagramUrl}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          className='flex items-center gap-2 text-pink-600 hover:text-pink-800 hover:underline'
+                          title={venue.instagramUrl}
+                        >
+                          <svg
+                            className='w-5 h-5 fill-current'
+                            viewBox='0 0 24 24'
+                          >
+                            <path d='M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919C8.417 2.175 8.796 2.163 12 2.163zm0 1.441c-3.118 0-3.479.013-4.699.068-2.636.121-3.773 1.24-3.894 3.894C3.35 8.837 3.337 9.197 3.337 12c0 2.803.013 3.163.068 4.382.121 2.653 1.258 3.773 3.894 3.894 1.22.055 1.58.068 4.699.068 3.118 0 3.479-.013 4.699-.068 2.636-.121 3.773-1.24 3.894-3.894.055-1.219.068-1.579.068-4.382 0-2.803-.013-3.163-.068-4.382-.121-2.653-1.258-3.773-3.894-3.894C15.583 3.617 15.223 3.604 12 3.604zm0 3.071a5.27 5.27 0 100 10.54 5.27 5.27 0 000-10.54zm0 1.441a3.829 3.829 0 110 7.658 3.829 3.829 0 010-7.658zM16.965 6.516a1.2 1.2 0 100 2.4 1.2 1.2 0 000-2.4z' />
+                          </svg>
+                          <span className='truncate'>
+                            Instagram
+                          </span>
+                        </a>
+                      )}
+                      {venue.whatsappNumber && (
+                        <a
+                          href={`https://wa.me/${venue.whatsappNumber.replace(
+                            /\D/g,
+                            '',
+                          )}`}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          className='flex items-center gap-2 text-green-600 hover:text-green-800 hover:underline'
+                          title={venue.whatsappNumber}
+                        >
+                          <svg
+                            className='w-5 h-5 fill-current'
+                            viewBox='0 0 24 24'
+                          >
+                            <path d='M16.75 13.96c.25.13.41.3.46.4.06.1.04.24 0 .38-.03.12-.18.26-.39.41-.21.15-.46.28-.74.39-.28.11-.58.17-.88.17-.34 0-.68-.06-1.03-.18-.34-.12-.68-.29-1.02-.51-.34-.21-.67-.48-.98-.79-.32-.31-.6-.67-.85-1.08-.25-.41-.42-.88-.51-1.39-.09-.51-.14-1.04-.14-1.61 0-.56.05-1.11.14-1.61s.25-.96.49-1.38c.24-.42.55-.78.91-1.08.36-.3.78-.53 1.25-.69.47-.16.97-.24 1.52-.24.54 0 1.06.08 1.54.24.48.16.91.4 1.29.71.38.31.69.7.91 1.15.22.45.35.95.4 1.5.04.55.06 1.12.06 1.73 0 .29-.01.57-.03.84-.02.27-.06.53-.11.78zm-4.8-3.87c-.15-.42-.4-.76-.74-1.03-.34-.27-.74-.4-1.18-.4-.46 0-.89.13-1.27.4-.38.27-.67.63-.85 1.06-.18.43-.27.91-.27 1.44 0 .53.09 1.01.27 1.44.18.43.47.79.85 1.06.38.27.81.4 1.27.4.44 0 .84-.13 1.18-.4.34-.27.59-.61.74-1.03.15-.42.22-.88.22-1.39 0-.51-.07-.97-.22-1.39zm5.42-1.56c-.16-.08-.36-.13-.59-.13-.24 0-.46.05-.63.16-.18.11-.34.26-.47.45-.13.19-.22.41-.28.66-.06.25-.09.53-.09.82v1.1c0 .29.03.57.09.83.06.26.15.49.28.68.13.19.29.35.47.46.18.11.39.17.63.17.23 0 .43-.05.59-.16.16-.11.3-.26.41-.46.11-.2.18-.42.22-.68.04-.26.06-.54.06-.83v-1.1c0-.29-.02-.57-.06-.82-.04-.25-.11-.48-.22-.66-.11-.18-.25-.33-.41-.45z' />
+                          </svg>
+                          <span className='truncate'>
+                            {formatWhatsappNumber(
+                              venue.whatsappNumber,
+                            )}
+                          </span>
+                        </a>
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Active Status (Subtle) */}
                 <div className='flex items-center gap-2 pt-2'>

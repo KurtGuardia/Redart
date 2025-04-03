@@ -105,7 +105,7 @@ export default function HomePage() {
           <Spot colorName={'FireBrick'} />
           <Spot colorName={'Magenta'} />
           <Spot colorName={'Peru'} />
-          <h2 className='text-3xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--blue-600)] to-[var(--blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg backface-visibility-hidden transform-gpu hover:scale-105 transition-transform'>
+          <h2 className='text-3xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--blue-600)] to-[var(--blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg'>
             Eventos destacados
           </h2>
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-14 justify-items-center'>
@@ -165,7 +165,7 @@ export default function HomePage() {
           <Spot colorName={'Teal'} />
           <Spot colorName={'Chartreuse'} />
           <Spot colorName={'Coral'} />
-          <h2 className='text-3xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--blue-600)] to-[var(--blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg backface-visibility-hidden transform-gpu hover:scale-105 transition-transform'>
+          <h2 className='text-3xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--blue-600)] to-[var(--blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg'>
             Explora los espacios culturales
           </h2>
           <p className='text-center text-xl font-light mb-12'>
@@ -194,7 +194,7 @@ export default function HomePage() {
       </section>
 
       <section className='join text-center container mx-auto mb-48'>
-        <h2 className='text-3xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--blue-600)] to-[var(--blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg backface-visibility-hidden transform-gpu hover:scale-105 transition-transform'>
+        <h2 className='text-3xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--blue-600)] to-[var(--blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg transform-gpu hover:scale-105 transition-transform'>
           ¿Quieres unirte a la comunidad de Radarte?
         </h2>
         <p className='text-center text-xl font-semibold max-w-2xl mx-auto mb-8 animate-fade-in-up'>
