@@ -12,7 +12,7 @@ const EventCard = ({
   className,
 }) => (
   <div
-    className={`flex flex-col group bg-[var(--primary-transparent)] text-white rounded-xl shadow-lg hover:shadow-2xl hover:bg-[var(--secondary-color-transparent)] hover:scale-[1.02] hover:text-[var(--gray-600)] transition-all duration-500 p-6 max-w-sm mx-auto ${
+    className={`flex flex-col group bg-[var(--primary-transparent)] text-white rounded-xl shadow-lg hover:shadow-2xl hover:bg-[var(--secondary-color-transparent)] hover:scale-[1.02] hover:text-[var(--gray-600)] transition-all duration-500 p-6 max-w-sm mx-auto w-full ${
       className || ''
     }`}
     onClick={onClick}

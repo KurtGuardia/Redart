@@ -429,6 +429,49 @@ export const formatWhatsappNumber = (number) => {
   return `+${countryCode} ${spacedRest}`
 }
 
+/**
+ * Checks if the given event date/timestamp is in the past.
+ * @param {Timestamp|Date|object|string} dateInput - The timestamp, date object {seconds, nanoseconds}, or date string to check.
+ * @returns {boolean} True if the date is in the past, false otherwise or if date is invalid.
+ */
+export const hasEventPassed = (dateInput) => {
+  if (!dateInput) {
+    return false // Cannot determine if no date is provided
+  }
+
+  let eventDate
+
+  // Convert Firestore Timestamp or Date object
+  if (dateInput && typeof dateInput.toDate === 'function') {
+    eventDate = dateInput.toDate()
+  } else if (dateInput instanceof Date) {
+    eventDate = dateInput
+  } else {
+    // Try parsing if it's a string or other type
+    try {
+      eventDate = new Date(dateInput)
+      if (isNaN(eventDate.getTime())) {
+        // Invalid date
+        console.warn(
+          'hasEventPassed: Received invalid date input:',
+          dateInput,
+        )
+        return false
+      }
+    } catch (e) {
+      console.warn(
+        'hasEventPassed: Error parsing date input:',
+        dateInput,
+        e,
+      )
+      return false // Error parsing date
+    }
+  }
+
+  const now = new Date()
+  return eventDate < now // Return true if the event date is before now
+}
+
 // --- Image Compression Functions ---
 
 /**

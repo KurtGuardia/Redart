@@ -33,6 +33,7 @@ const VenueEventListItem = ({
   onEdit,
   onDelete,
   onOpenModal,
+  onClickItem,
 }) => {
   if (!event) return null
 
@@ -54,7 +55,10 @@ const VenueEventListItem = ({
   }
 
   return (
-    <li className='bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200'>
+    <li
+      className='bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer'
+      onClick={() => onClickItem && onClickItem(event)}
+    >
       <div className='flex justify-between items-start gap-4'>
         {/* Left: Image */}
         <div className='flex-shrink-0 w-20 h-20 relative rounded-md overflow-hidden'>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   auth,
   db,
@@ -47,6 +47,7 @@ import {
   formatWhatsappNumber,
 } from '../../lib/utils'
 import VenueEventListItem from '../../components/VenueEventListItem'
+import EventDetailModal from '../../components/EventDetailModal'
 
 const MapComponent = dynamic(
   () => import('../../components/MapComponent'),
@@ -106,12 +107,115 @@ export default function Dashboard() {
   const [isEventEditModalOpen, setIsEventEditModalOpen] =
     useState(false)
   const [currentEvent, setCurrentEvent] = useState(null)
+  const [selectedEventDetail, setSelectedEventDetail] =
+    useState(null)
+
+  const [isDetailModalOpen, setIsDetailModalOpen] =
+    useState(false)
   const {
     venue,
     loading: venueLoading,
     error: venueError,
     refreshVenue,
   } = useVenueData(venueId)
+
+  // Effect to handle authentication state changes and set venue ID
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(
+      (currentVenue) => {
+        if (currentVenue) {
+          setVenueId(currentVenue.uid)
+        } else {
+          // Redirect to login if not authenticated
+          router.push('/login')
+        }
+        // Only set auth loading to false, not events loading
+        setLoading(false)
+      },
+    )
+
+    return () => unsubscribe()
+  }, [])
+
+  // Fetch events from Firestore when component initializes or venueId changes
+  useEffect(() => {
+    const fetchEvents = async () => {
+      if (!venueId) return
+
+      try {
+        setEventsLoading(true)
+
+        // 1. Fetch the main venue document
+        const venueRef = doc(db, 'venues', venueId)
+        const venueSnap = await getDoc(venueRef)
+
+        if (!venueSnap.exists()) {
+          console.log(
+            'Venue document not found, cannot fetch events.',
+          )
+          setEvents([])
+          setEventsLoading(false)
+          return
+        }
+
+        // 2. Get the array of event IDs from the venue data
+        const venueData = venueSnap.data()
+        const eventIds = venueData.events || [] // Get the 'events' array, default to empty
+
+        // If no event IDs found in the array, return empty
+        if (
+          !Array.isArray(eventIds) ||
+          eventIds.length === 0
+        ) {
+          console.log(
+            "No event IDs found in the venue's event array.",
+          )
+          setEvents([])
+          setEventsLoading(false)
+          return
+        }
+
+        // 3. Fetch full event details from the main events collection based on IDs
+        const fetchedEvents = []
+        await Promise.all(
+          eventIds.map(async (eventId) => {
+            if (!eventId || typeof eventId !== 'string')
+              return // Skip invalid IDs
+            const eventDocRef = doc(db, 'events', eventId)
+            const eventSnapshot = await getDoc(eventDocRef)
+
+            if (eventSnapshot.exists()) {
+              fetchedEvents.push({
+                id: eventId,
+                ...eventSnapshot.data(),
+              })
+            } else {
+              console.warn(
+                `Event document with ID ${eventId} not found.`,
+              )
+              // Optional: You might want to clean up this ID from the venue's array here
+              // if an event doc is missing but its ID is still in the array.
+            }
+          }),
+        )
+
+        // 4. Sort events by date (most recent first)
+        fetchedEvents.sort(
+          (a, b) =>
+            (b.date?.seconds || 0) - (a.date?.seconds || 0), // Safe sorting
+        )
+
+        setEvents(fetchedEvents)
+      } catch (error) {
+        console.error('Error fetching events:', error)
+        setEvents([]) // Reset events on error
+      } finally {
+        setEventsLoading(false)
+      }
+    }
+
+    fetchEvents()
+  }, [venueId])
 
   // Function to delete an event
   const deleteEvent = async (eventId, featuredImage) => {
@@ -562,86 +666,6 @@ export default function Dashboard() {
     }
   }
 
-  // Fetch events from Firestore when component initializes or venueId changes
-  useEffect(() => {
-    const fetchEvents = async () => {
-      if (!venueId) return
-
-      try {
-        setEventsLoading(true)
-
-        // 1. Fetch the main venue document
-        const venueRef = doc(db, 'venues', venueId)
-        const venueSnap = await getDoc(venueRef)
-
-        if (!venueSnap.exists()) {
-          console.log(
-            'Venue document not found, cannot fetch events.',
-          )
-          setEvents([])
-          setEventsLoading(false)
-          return
-        }
-
-        // 2. Get the array of event IDs from the venue data
-        const venueData = venueSnap.data()
-        const eventIds = venueData.events || [] // Get the 'events' array, default to empty
-
-        // If no event IDs found in the array, return empty
-        if (
-          !Array.isArray(eventIds) ||
-          eventIds.length === 0
-        ) {
-          console.log(
-            "No event IDs found in the venue's event array.",
-          )
-          setEvents([])
-          setEventsLoading(false)
-          return
-        }
-
-        // 3. Fetch full event details from the main events collection based on IDs
-        const fetchedEvents = []
-        await Promise.all(
-          eventIds.map(async (eventId) => {
-            if (!eventId || typeof eventId !== 'string')
-              return // Skip invalid IDs
-            const eventDocRef = doc(db, 'events', eventId)
-            const eventSnapshot = await getDoc(eventDocRef)
-
-            if (eventSnapshot.exists()) {
-              fetchedEvents.push({
-                id: eventId,
-                ...eventSnapshot.data(),
-              })
-            } else {
-              console.warn(
-                `Event document with ID ${eventId} not found.`,
-              )
-              // Optional: You might want to clean up this ID from the venue's array here
-              // if an event doc is missing but its ID is still in the array.
-            }
-          }),
-        )
-
-        // 4. Sort events by date (most recent first)
-        fetchedEvents.sort(
-          (a, b) =>
-            (b.date?.seconds || 0) - (a.date?.seconds || 0), // Safe sorting
-        )
-
-        setEvents(fetchedEvents)
-      } catch (error) {
-        console.error('Error fetching events:', error)
-        setEvents([]) // Reset events on error
-      } finally {
-        setEventsLoading(false)
-      }
-    }
-
-    fetchEvents()
-  }, [venueId]) // Re-run only when venueId changes
-
   const handleEditVenue = async (updatedData) => {
     try {
       // --- Start Validation ---
@@ -1064,7 +1088,6 @@ export default function Dashboard() {
       options: [
         { value: 'active', label: 'Activo' },
         { value: 'cancelled', label: 'Cancelado' },
-        { value: 'completed', label: 'Completado' },
         { value: 'postponed', label: 'Pospuesto' },
       ],
     },
@@ -1099,22 +1122,17 @@ export default function Dashboard() {
     setIsEventEditModalOpen(true)
   }
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(
-      (currentVenue) => {
-        if (currentVenue) {
-          setVenueId(currentVenue.uid)
-        } else {
-          // Redirect to login if not authenticated
-          router.push('/login')
-        }
-        // Only set auth loading to false, not events loading
-        setLoading(false)
-      },
-    )
+  // Function to open the detail modal
+  const openDetailModal = (event) => {
+    setSelectedEventDetail(event)
+    setIsDetailModalOpen(true)
+  }
 
-    return () => unsubscribe()
-  }, [])
+  // Function to close the detail modal
+  const closeDetailModal = () => {
+    setSelectedEventDetail(null)
+    setIsDetailModalOpen(false)
+  }
 
   if (loading || venueLoading) {
     return (
@@ -1132,7 +1150,7 @@ export default function Dashboard() {
   if (venueError) {
     return <div>Error: {venueError}</div>
   }
-  console.log(venue)
+
   return (
     <>
       <div className='relative container mx-auto my-24'>
@@ -1921,13 +1939,14 @@ export default function Dashboard() {
                   <VenueEventListItem
                     key={event.id}
                     event={event}
-                    onEdit={openEventEditModal}
+                    onEdit={() => openEventEditModal(event)}
                     onDelete={() =>
                       triggerDelete(
                         event.id,
                         event.featuredImage,
                       )
                     }
+                    onClickItem={openDetailModal}
                   />
                 ))}
               </ul>
@@ -1956,6 +1975,12 @@ export default function Dashboard() {
         fields={eventFormFields}
         onSave={handleEditEvent}
         saveButtonText='Actualizar Evento'
+      />
+
+      <EventDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={closeDetailModal}
+        event={selectedEventDetail}
       />
 
       <div className='w-fit mx-auto p-4'>

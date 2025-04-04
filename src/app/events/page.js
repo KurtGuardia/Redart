@@ -14,7 +14,6 @@ import {
   startAfter,
 } from 'firebase/firestore'
 import { CATEGORIES } from '../../lib/constants'
-import { formatTimestamp } from '../../lib/utils'
 
 const ITEMS_PER_PAGE = 8
 
