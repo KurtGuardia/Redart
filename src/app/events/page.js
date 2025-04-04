@@ -14,8 +14,18 @@ import {
   startAfter,
 } from 'firebase/firestore'
 import { CATEGORIES } from '../../lib/constants'
+import { hasEventPassed } from '../../lib/utils'
 
 const ITEMS_PER_PAGE = 8
+
+// Define status filter options
+const STATUS_FILTERS = [
+  { value: 'active', label: 'Próximos' },
+  { value: 'past', label: 'Pasados' },
+  { value: 'postponed', label: 'Pospuestos' },
+  { value: 'cancelled', label: 'Cancelados' },
+  { value: 'all', label: 'Todos' },
+]
 
 export default function EventsPage() {
   const [eventsList, setEventsList] = useState([])
@@ -24,6 +34,7 @@ export default function EventsPage() {
   const [hasMore, setHasMore] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [filter, setFilter] = useState('all')
+  const [filterStatus, setFilterStatus] = useState('all')
   const [selectedEvent, setSelectedEvent] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -38,12 +49,13 @@ export default function EventsPage() {
   }
 
   useEffect(() => {
-    fetchEvents('', 'all', true)
+    fetchEvents('', 'all', 'all', true)
   }, [])
 
   const fetchEvents = async (
     searchTerm = '',
-    filter = 'all',
+    categoryFilter = 'all',
+    statusFilter = 'all',
     shouldReset = false,
   ) => {
     setLoading(true)
@@ -77,12 +89,15 @@ export default function EventsPage() {
 
       const filteredEvents = newEvents.filter((event) => {
         const lowerSearchTerm = searchTerm.toLowerCase()
+        const isPast = hasEventPassed(event.date)
+        const status = event.status || 'active'
+
         const matchesSearch =
           event.title
-            .toLowerCase()
+            ?.toLowerCase()
             .includes(lowerSearchTerm) ||
           event.description
-            .toLowerCase()
+            ?.toLowerCase()
             .includes(lowerSearchTerm) ||
           event.venueName
             ?.toLowerCase()
@@ -91,14 +106,44 @@ export default function EventsPage() {
             ?.toLowerCase()
             .includes(lowerSearchTerm)
 
-        const matchesFilter =
-          filter === 'all' || event.category === filter
+        const matchesCategoryFilter =
+          categoryFilter === 'all' ||
+          event.category === categoryFilter
+
+        let matchesStatusFilter = false
+        switch (statusFilter) {
+          case 'postponed':
+            matchesStatusFilter = status === 'postponed'
+            break
+          case 'cancelled':
+            matchesStatusFilter = status === 'cancelled'
+            break
+          case 'past':
+            matchesStatusFilter =
+              isPast &&
+              status !== 'cancelled' &&
+              status !== 'postponed'
+            break
+          case 'active':
+            matchesStatusFilter =
+              !isPast &&
+              status !== 'cancelled' &&
+              status !== 'postponed'
+            break
+          case 'all':
+          default:
+            matchesStatusFilter = true
+            break
+        }
 
         const hasValidDate =
           event.date && event.date.seconds
 
         return (
-          matchesSearch && matchesFilter && hasValidDate
+          matchesSearch &&
+          matchesCategoryFilter &&
+          matchesStatusFilter &&
+          hasValidDate
         )
       })
 
@@ -125,18 +170,24 @@ export default function EventsPage() {
   const handleSearchChange = (e) => {
     const newSearchTerm = e.target.value
     setSearchTerm(newSearchTerm)
-    fetchEvents(newSearchTerm, filter, true)
+    fetchEvents(newSearchTerm, filter, filterStatus, true)
   }
 
-  const handleFilterChange = (e) => {
+  const handleCategoryFilterChange = (e) => {
     const newFilter = e.target.value
     setFilter(newFilter)
-    fetchEvents(searchTerm, newFilter, true)
+    fetchEvents(searchTerm, newFilter, filterStatus, true)
+  }
+
+  const handleStatusFilterChange = (e) => {
+    const newStatusFilter = e.target.value
+    setFilterStatus(newStatusFilter)
+    fetchEvents(searchTerm, filter, newStatusFilter, true)
   }
 
   const handleLoadMore = () => {
     if (!loading && hasMore) {
-      fetchEvents(searchTerm, filter, false)
+      fetchEvents(searchTerm, filter, filterStatus, false)
     }
   }
 
@@ -149,9 +200,8 @@ export default function EventsPage() {
       <Spot colorName={'Indigo'} />
       <h1>Próximos Eventos</h1>
 
-      <div className='flex flex-col md:flex-row items-center justify-center md:space-x-4 mb-8'>
-        {/* Search input container with relative positioning for the X icon */}
-        <div className='relative w-full md:w-1/2 mb-4 md:mb-0'>
+      <div className='flex flex-col md:flex-row items-center justify-center gap-4 mb-8'>
+        <div className='relative w-full md:w-1/3'>
           <input
             type='text'
             placeholder='Buscar eventos, lugares o ciudades...'
@@ -159,12 +209,11 @@ export default function EventsPage() {
             onChange={handleSearchChange}
             className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--teal-500)] pr-10'
           />
-          {/* X icon to clear search input */}
           {searchTerm && (
             <button
               onClick={() => {
                 setSearchTerm('')
-                fetchEvents('', filter, true)
+                fetchEvents('', filter, filterStatus, true)
               }}
               className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600'
               aria-label='Limpiar búsqueda'
@@ -185,10 +234,10 @@ export default function EventsPage() {
           )}
         </div>
 
-        <div className='relative'>
+        <div className='relative w-full md:w-auto'>
           <select
             value={filter}
-            onChange={handleFilterChange}
+            onChange={handleCategoryFilterChange}
             className='w-full md:w-auto appearance-none px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--teal-500)] bg-[var(--white)] pr-8 cursor-pointer'
             style={{
               backgroundImage:
@@ -209,6 +258,30 @@ export default function EventsPage() {
             ))}
           </select>
         </div>
+
+        <div className='relative w-full md:w-auto'>
+          <select
+            value={filterStatus}
+            onChange={handleStatusFilterChange}
+            className='w-full md:w-auto appearance-none px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--teal-500)] bg-[var(--white)] pr-8 cursor-pointer'
+            style={{
+              backgroundImage:
+                "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e\")",
+              backgroundPosition: 'right 0.5rem center',
+              backgroundRepeat: 'no-repeat',
+              backgroundSize: '1.5em 1.5em',
+            }}
+          >
+            {STATUS_FILTERS.map((statusOption) => (
+              <option
+                key={statusOption.value}
+                value={statusOption.value}
+              >
+                {statusOption.label}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {loading && eventsList.length === 0 ? (
@@ -217,8 +290,8 @@ export default function EventsPage() {
         </p>
       ) : eventsList.length === 0 ? (
         <p className='text-center text-gray-500'>
-          No se encontraron eventos que coincidan con tu
-          búsqueda.
+          No se encontraron eventos que coincidan con los
+          filtros seleccionados.
         </p>
       ) : (
         <>

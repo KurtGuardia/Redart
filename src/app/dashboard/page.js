@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import {
   auth,
   db,
@@ -14,7 +14,6 @@ import {
   addDoc,
   collection,
   setDoc,
-  getDocs,
   getDoc,
   deleteDoc,
   arrayRemove,
@@ -36,15 +35,14 @@ import {
   AMENITIES_OPTIONS,
 } from '../../lib/constants'
 import {
-  getCurrencySymbol,
   isValidUrl,
   compressImage,
   compressMultipleImages,
-  getCategoryLabel,
   validateFacebookUrl,
   validateInstagramUrl,
   validateWhatsappNumber,
   formatWhatsappNumber,
+  hasEventPassed,
 } from '../../lib/utils'
 import VenueEventListItem from '../../components/VenueEventListItem'
 import EventDetailModal from '../../components/EventDetailModal'
@@ -112,6 +110,7 @@ export default function Dashboard() {
 
   const [isDetailModalOpen, setIsDetailModalOpen] =
     useState(false)
+  const [filterStatus, setFilterStatus] = useState('all') // Change default state to 'all'
   const {
     venue,
     loading: venueLoading,
@@ -1134,6 +1133,39 @@ export default function Dashboard() {
     setIsDetailModalOpen(false)
   }
 
+  // Filter events based on the selected status
+  const filteredEvents = useMemo(() => {
+    if (!events) return []
+    return events.filter((event) => {
+      const isPast = hasEventPassed(event.date)
+      const status = event.status || 'active'
+
+      switch (filterStatus) {
+        case 'postponed':
+          return status === 'postponed'
+        case 'cancelled':
+          return status === 'cancelled'
+        case 'past':
+          // Show only past events that aren't cancelled or postponed
+          return (
+            isPast &&
+            status !== 'cancelled' &&
+            status !== 'postponed'
+          )
+        case 'active':
+          // Show only upcoming events that aren't cancelled or postponed
+          return (
+            !isPast &&
+            status !== 'cancelled' &&
+            status !== 'postponed'
+          )
+        case 'all':
+        default:
+          return true // Show all
+      }
+    })
+  }, [events, filterStatus])
+
   if (loading || venueLoading) {
     return (
       <div className='min-h-screen flex justify-center items-center bg-gray-50'>
@@ -1909,6 +1941,67 @@ export default function Dashboard() {
             <h3 className='text-lg font-semibold w-fit text-gray-800 mb-4 border-b pb-2'>
               Listado de eventos
             </h3>
+
+            {/* Filter Buttons */}
+            {!eventsLoading && events.length > 0 && (
+              <div className='flex flex-wrap gap-2 mb-4 border-b pb-4'>
+                <button
+                  onClick={() => setFilterStatus('all')}
+                  className={`px-3 py-1 rounded-md text-sm ${
+                    filterStatus === 'all'
+                      ? 'bg-teal-600 text-white shadow'
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  }`}
+                >
+                  Todos
+                </button>
+                <button
+                  onClick={() => setFilterStatus('active')}
+                  className={`px-3 py-1 rounded-md text-sm ${
+                    filterStatus === 'active'
+                      ? 'bg-teal-600 text-white shadow'
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  }`}
+                >
+                  Próximos
+                </button>
+                <button
+                  onClick={() => setFilterStatus('past')}
+                  className={`px-3 py-1 rounded-md text-sm ${
+                    filterStatus === 'past'
+                      ? 'bg-teal-600 text-white shadow'
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  }`}
+                >
+                  Pasados
+                </button>
+                <button
+                  onClick={() =>
+                    setFilterStatus('postponed')
+                  }
+                  className={`px-3 py-1 rounded-md text-sm ${
+                    filterStatus === 'postponed'
+                      ? 'bg-teal-600 text-white shadow'
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  }`}
+                >
+                  Pospuestos
+                </button>
+                <button
+                  onClick={() =>
+                    setFilterStatus('cancelled')
+                  }
+                  className={`px-3 py-1 rounded-md text-sm ${
+                    filterStatus === 'cancelled'
+                      ? 'bg-teal-600 text-white shadow'
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  }`}
+                >
+                  Cancelados
+                </button>
+              </div>
+            )}
+
             {eventsLoading ? (
               <div className='text-center py-8'>
                 <div className='animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-teal-500 mx-auto mb-4'></div>
@@ -1916,7 +2009,7 @@ export default function Dashboard() {
                   Cargando eventos...
                 </p>
               </div>
-            ) : events.length === 0 ? (
+            ) : filteredEvents.length === 0 ? (
               <div className='text-center py-8 text-gray-500'>
                 <svg
                   className='w-16 h-16 mx-auto mb-4'
@@ -1931,11 +2024,23 @@ export default function Dashboard() {
                     d='M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'
                   />
                 </svg>
-                <p>No tienes eventos registrados.</p>
+                <p>
+                  No hay eventos que coincidan con el filtro
+                  seleccionado.
+                </p>
+                {events.length > 0 &&
+                  filterStatus !== 'all' && (
+                    <button
+                      onClick={() => setFilterStatus('all')}
+                      className='mt-4 text-sm text-teal-600 hover:underline'
+                    >
+                      Mostrar todos los eventos
+                    </button>
+                  )}
               </div>
             ) : (
               <ul className='space-y-3 mb-6'>
-                {events.map((event) => (
+                {filteredEvents.map((event) => (
                   <VenueEventListItem
                     key={event.id}
                     event={event}

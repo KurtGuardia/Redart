@@ -32,7 +32,7 @@ const getCategoryColor = (category) => {
 // Function to get status badge styles
 const getStatusBadgeStyle = (status, isPast) => {
   if (status === 'cancelled') {
-    return 'bg-[var(--pink-600-transparent)] text-red-800'
+    return 'bg-[var(--pink-600-transparent)]'
   }
   if (status === 'postponed') {
     return 'bg-yellow-100 text-yellow-800'
