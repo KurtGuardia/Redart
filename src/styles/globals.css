@@ -164,6 +164,7 @@ body {
 
     /* Pink */
     --pink-600: #ec4899;
+    --pink-600-transparent: #ec489980;
 
     /* Blue scale */
     --blue-100: #dbeafe;

@@ -206,7 +206,7 @@ const EditModal = ({
                           type={field.type}
                           value={formData[key] || ''}
                           onChange={handleChange}
-                          className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+                          className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none'
                           required={field.required}
                           min={field.min}
                           max={field.max}
@@ -236,7 +236,7 @@ const EditModal = ({
                           type='datetime-local'
                           value={formData[key] || ''}
                           onChange={handleChange}
-                          className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+                          className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none'
                           required={field.required}
                         />
                         {field.description && (
@@ -262,7 +262,7 @@ const EditModal = ({
                           value={formData[key] || ''}
                           onChange={handleChange}
                           rows={field.rows || 3}
-                          className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+                          className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none'
                           required={field.required}
                           placeholder={field.placeholder}
                           maxLength={field.maxlength}
@@ -329,7 +329,7 @@ const EditModal = ({
                                     })
                                   }
                                 }}
-                                className='form-checkbox h-4 w-4'
+                                className='form-checkbox h-4 w-4 outline-none focus:ring-teal-500'
                               />
                               <span className='text-gray-700'>
                                 {option}
@@ -354,7 +354,7 @@ const EditModal = ({
                           name={key}
                           value={formData[key] || ''}
                           onChange={handleChange}
-                          className='w-full p-2 border bg-white border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+                          className='w-full p-2 border bg-white border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none'
                           required={field.required}
                         >
                           <option value=''>
@@ -391,7 +391,7 @@ const EditModal = ({
                           type='checkbox'
                           checked={!!formData[key]}
                           onChange={handleChange}
-                          className='h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded'
+                          className='h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded outline-none'
                         />
                         <label
                           htmlFor={key}
@@ -639,7 +639,7 @@ const EditModal = ({
                               // Reset the input to allow selecting the same files again
                               e.target.value = ''
                             }}
-                            className='w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
+                            className='w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 outline-none'
                           />
                           {field.maxPhotos && (
                             <p className='text-xs text-gray-500 mt-1'>
@@ -762,7 +762,7 @@ const EditModal = ({
                                         [key]: newArray,
                                       })
                                     }}
-                                    className='flex-grow p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+                                    className='flex-grow p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none'
                                   />
                                   <button
                                     type='button'
@@ -905,7 +905,7 @@ const EditModal = ({
                                 })
                               }
                             }}
-                            className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+                            className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none'
                           />
 
                           {/* Show preview of new image */}
