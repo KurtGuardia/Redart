@@ -48,11 +48,7 @@ export default function MapPage() {
         </div>
       ) : (
         <div className='w-[700px] h-[50vh] mx-auto'>
-          <MapComponent
-            center={[-17.389499, -66.156123]}
-            zoom={12}
-            venues={locations}
-          />
+          <MapComponent zoom={12} venues={locations} />
           <div className='bg-[var(--blue-800-transparent)] text-[var(--white)] p-2 my-2 rounded-lg w-fit mx-auto text-sm'>
             Mostrando {locations.length}{' '}
             {locations.length === 1
