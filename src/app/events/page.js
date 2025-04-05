@@ -22,7 +22,7 @@ const ITEMS_PER_PAGE = 8
 const STATUS_FILTERS = [
   { value: 'active', label: 'Próximos' },
   { value: 'past', label: 'Pasados' },
-  { value: 'postponed', label: 'Pospuestos' },
+  { value: 'suspended', label: 'Suspendidos' },
   { value: 'cancelled', label: 'Cancelados' },
   { value: 'all', label: 'Todos' },
 ]
@@ -112,8 +112,8 @@ export default function EventsPage() {
 
         let matchesStatusFilter = false
         switch (statusFilter) {
-          case 'postponed':
-            matchesStatusFilter = status === 'postponed'
+          case 'suspended':
+            matchesStatusFilter = status === 'suspended'
             break
           case 'cancelled':
             matchesStatusFilter = status === 'cancelled'
@@ -122,13 +122,13 @@ export default function EventsPage() {
             matchesStatusFilter =
               isPast &&
               status !== 'cancelled' &&
-              status !== 'postponed'
+              status !== 'suspended'
             break
           case 'active':
             matchesStatusFilter =
               !isPast &&
               status !== 'cancelled' &&
-              status !== 'postponed'
+              status !== 'suspended'
             break
           case 'all':
           default:
@@ -318,6 +318,7 @@ export default function EventsPage() {
                 }
                 venueName={event.venueName}
                 venueId={event.venueId}
+                status={event.status || 'active'}
               />
             ))}
           </div>

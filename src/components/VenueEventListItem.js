@@ -32,10 +32,10 @@ const getCategoryColor = (category) => {
 // Function to get status badge styles
 const getStatusBadgeStyle = (status, isPast) => {
   if (status === 'cancelled') {
-    return 'bg-[var(--pink-600-transparent)]'
+    return 'bg-red-200 text-red-800'
   }
-  if (status === 'postponed') {
-    return 'bg-yellow-100 text-yellow-800'
+  if (status === 'suspended') {
+    return 'bg-yellow-200 text-yellow-800'
   }
   if (isPast) {
     return 'bg-gray-200 text-gray-600'
@@ -45,7 +45,7 @@ const getStatusBadgeStyle = (status, isPast) => {
 
 const getStatusLabel = (status, isPast) => {
   if (status === 'cancelled') return 'Cancelado'
-  if (status === 'postponed') return 'Pospuesto'
+  if (status === 'suspended') return 'Suspendido'
   if (isPast) return 'Finalizado'
   return ''
 }
@@ -78,13 +78,15 @@ const VenueEventListItem = ({
   // Determine background and opacity based on status and date
   let backgroundClass = ''
   let opacityClass = ''
+  let textColorClass = ''
 
   if (status === 'cancelled') {
     backgroundClass = 'bg-[var(--pink-600-transparent)]'
-  } else if (status === 'postponed') {
+  } else if (status === 'suspended') {
     backgroundClass =
-      'bg-[var(--secondary-color-transparent)]' // Keep active bg
+      'bg-[var(--secondary-color-transparent)]'
     opacityClass = 'opacity-50'
+    textColorClass = 'text-yellow-900'
   } else {
     // Active or Completed (potentially)
     backgroundClass = isPast
@@ -101,7 +103,7 @@ const VenueEventListItem = ({
 
   return (
     <li
-      className={`p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer ${backgroundClass} ${opacityClass}`}
+      className={`p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer ${backgroundClass} ${opacityClass} ${textColorClass}`}
       onClick={() => onClickItem && onClickItem(event)}
     >
       <div className='flex items-start gap-4'>

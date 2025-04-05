@@ -9,6 +9,7 @@ import {
   getCurrencySymbol,
   formatTimestamp, // Renamed from formatDateTime
   getCategoryLabel,
+  hasEventPassed, // Import hasEventPassed
 } from '../lib/utils'
 
 const EventDetailModal = ({ isOpen, onClose, event }) => {
@@ -28,6 +29,40 @@ const EventDetailModal = ({ isOpen, onClose, event }) => {
 
   if (!isMounted || !isOpen || !event) return null
 
+  const isPast = hasEventPassed(event.date)
+  const status = event.status || 'active' // Default to active
+
+  // Determine conditional styles based on status and date
+  let modalOpacityClass = 'opacity-100'
+  let contentBgClass =
+    'bg-gradient-to-b from-[var(--secondary-color-transparent)] to-[var(--blue-800-transparent)]'
+  let statusLabel = null
+  let statusLabelClasses = ''
+
+  if (status === 'cancelled') {
+    modalOpacityClass = 'opacity-60'
+    contentBgClass =
+      'bg-gradient-to-b to-[var(--primary)] from-[var(--pink-600-transparent)]'
+    statusLabel = 'CANCELADO'
+    statusLabelClasses =
+      'bg-red-500 px-4 py-1 rounded font-bold text-3xl text-white tracking-wider'
+  } else if (status === 'suspended') {
+    modalOpacityClass = 'opacity-60'
+    statusLabel = 'SUSPENDIDO'
+    statusLabelClasses =
+      'bg-yellow-400 px-4 py-1 rounded font-bold text-3xl text-white tracking-wider'
+  } else if (isPast) {
+    contentBgClass = 'bg-gray-700/80'
+    statusLabel = 'PASADO'
+    modalOpacityClass = 'opacity-80'
+    statusLabelClasses =
+      'bg-gray-600 px-4 py-1 rounded font-bold text-3xl text-white tracking-wider'
+  }
+
+  const isActiveAndUpcoming = !isPast && status === 'active'
+  const shouldRenderButton =
+    isActiveAndUpcoming && !!event.ticketUrl
+
   return createPortal(
     <div className='fixed inset-0 z-[9999] flex items-center justify-center p-4'>
       <div
@@ -35,8 +70,16 @@ const EventDetailModal = ({ isOpen, onClose, event }) => {
         onClick={onClose}
         aria-hidden='true'
       />
-
-      <div className='relative backdrop-blur-md border border-[var(--border)] rounded-xl shadow-2xl w-full max-w-3xl mx-auto my-8 z-[10000] max-h-[90vh] overflow-y-auto flex flex-col custom-scrollbar'>
+      <div className='absolute top-1/3 z-[99999] transform rotate-12'>
+        {statusLabel && (
+          <span className={`${statusLabelClasses}`}>
+            {statusLabel}
+          </span>
+        )}
+      </div>
+      <div
+        className={`relative backdrop-blur-md border border-[var(--border)] rounded-xl shadow-2xl w-full max-w-3xl mx-auto my-8 z-[9000] max-h-[90vh] overflow-y-auto flex flex-col custom-scrollbar ${modalOpacityClass} transition-opacity duration-300`}
+      >
         <style jsx>{`
           .custom-scrollbar::-webkit-scrollbar {
             width: 20px;
@@ -65,21 +108,30 @@ const EventDetailModal = ({ isOpen, onClose, event }) => {
               rgba(0, 0, 0, 0.2);
           }
         `}</style>
+
         <div className='relative'>
-          {event.featuredImage ? (
-            <div className='relative w-full h-56 sm:h-72 md:h-80 rounded-t-xl overflow-hidden group animate-fade-in-up border-[10px] border-[#00f5a080]'>
-              <Image
-                src={event.featuredImage}
-                alt={event.title}
-                layout='fill'
-                objectFit='cover'
-                className='transition-transform duration-500 ease-in-out scale-110 group-hover:scale-100'
-              />
-              <div className='absolute inset-0 bg-gradient-to-t from-black/70 to-[var(--teal-700-transparent)]  scale-110 group-hover:scale-100 transition-all duration-500 ease-in-out'></div>
-            </div>
-          ) : (
-            <div className='h-20 bg-gradient-to-r from-[var(--blue-500)] to-[var(--blue-800)] rounded-t-xl'></div>
-          )}
+          <div
+            className={`relative w-full h-56 sm:h-72 md:h-80 rounded-t-xl overflow-hidden group animate-fade-in-up border-[10px] ${
+              isPast
+                ? 'border-[var(--gray-700)]'
+                : status === 'cancelled'
+                ? 'border-[var(--pink-600-transparent)]'
+                : 'border-[var(--secondary-color-transparent)]'
+            }`}
+          >
+            <Image
+              src={
+                event.featuredImage || '/placeholder.svg'
+              }
+              alt={event.title}
+              fill
+              className='absolute inset-0 object-cover transition-transform duration-500 ease-in-out scale-110 group-hover:scale-100'
+              unoptimized={!event.featuredImage}
+            />
+            {event.featuredImage && (
+              <div className='absolute inset-0 bg-gradient-to-t from-black/70 to-[var(--teal-700-transparent)] scale-110 group-hover:scale-100 transition-all duration-500 ease-in-out'></div>
+            )}
+          </div>
           <button
             className='absolute top-4 right-4 text-[var(--white)] bg-black/40 rounded-full p-1.5 hover:bg-black/60 transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--white)] focus:ring-offset-2 focus:ring-offset-[var(--gray-800)]'
             onClick={onClose}
@@ -100,10 +152,15 @@ const EventDetailModal = ({ isOpen, onClose, event }) => {
             </svg>
           </button>
         </div>
-        <div className='bg-gradient-to-b from-[var(--secondary-color-transparent)] to-[var(--blue-800-transparent)] p-6 sm:p-8 flex-grow text-[var(--white)]'>
-          <h2 className='text-2xl sm:text-3xl font-bold mb-5 leading-tight text-[var(--white)] text-shadow'>
+        <div
+          className={`${contentBgClass} relative p-6 sm:p-8 flex-grow text-[var(--white)]`}
+        >
+          {/* <div className='flex justify-between items-baseline gap-4 mb-5'> */}
+          <h2 className='text-2xl sm:text-4xl font-bold leading-tight text-[var(--white)] text-shadow flex-grow mb-5'>
             {event.title}
           </h2>
+
+          {/* </div> */}
 
           <div className='grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5 mb-8 text-sm sm:text-base'>
             {/* Date & Time */}
@@ -196,13 +253,13 @@ const EventDetailModal = ({ isOpen, onClose, event }) => {
           </div>
         </div>
 
-        {event.ticketUrl && (
+        {shouldRenderButton && (
           <div className='bg-[var(--blue-800-transparent)] backdrop-blur-md px-6 sm:px-8 py-4 rounded-b-xl mt-auto border-t border-[#ffffff33]'>
             <a
               href={event.ticketUrl}
               target='_blank'
               rel='noopener noreferrer'
-              className='w-full flex items-center justify-center bg-gradient-to-r from-[var(--teal-800)] to-[var(--teal-300)] text-[var(--white)] font-bold py-3 px-6 rounded-lg hover:from-[var(--teal-300)] hover:to-[var(--teal-800)] transition-all duration-300 ease-in-out shadow-md hover:shadow-lg transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--teal-500)]'
+              className='w-full flex items-center justify-center bg-gradient-to-r from-[var(--teal-800)] to-[var(--teal-300)] text-[var(--white)] font-bold py-3 px-6 rounded-lg shadow-md transform hover:from-[var(--teal-300)] hover:to-[var(--teal-800)] transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--teal-500)]'
             >
               <span className='mr-2'>🎟️</span> Comprar
               Entradas

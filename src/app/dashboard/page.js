@@ -46,6 +46,7 @@ import {
 } from '../../lib/utils'
 import VenueEventListItem from '../../components/VenueEventListItem'
 import EventDetailModal from '../../components/EventDetailModal'
+import Link from 'next/link'
 
 const MapComponent = dynamic(
   () => import('../../components/MapComponent'),
@@ -1087,7 +1088,7 @@ export default function Dashboard() {
       options: [
         { value: 'active', label: 'Activo' },
         { value: 'cancelled', label: 'Cancelado' },
-        { value: 'postponed', label: 'Pospuesto' },
+        { value: 'suspended', label: 'Suspendido' }, // Changed from postponed
       ],
     },
   }
@@ -1108,9 +1109,8 @@ export default function Dashboard() {
       ...event,
       date,
       ticketUrl,
-      // Make sure we have default values for new fields
       currency: event.currency || 'BOB',
-      status: event.status || 'active',
+      status: event.status || 'active', // Keep default logic
     }
 
     // featuredImage should already be correctly set as a URL string
@@ -1141,23 +1141,23 @@ export default function Dashboard() {
       const status = event.status || 'active'
 
       switch (filterStatus) {
-        case 'postponed':
-          return status === 'postponed'
+        case 'suspended': // Changed from postponed
+          return status === 'suspended'
         case 'cancelled':
           return status === 'cancelled'
         case 'past':
-          // Show only past events that aren't cancelled or postponed
+          // Show only past events that aren't cancelled or suspended
           return (
             isPast &&
             status !== 'cancelled' &&
-            status !== 'postponed'
+            status !== 'suspended'
           )
         case 'active':
-          // Show only upcoming events that aren't cancelled or postponed
+          // Show only upcoming events that aren't cancelled or suspended
           return (
             !isPast &&
             status !== 'cancelled' &&
-            status !== 'postponed'
+            status !== 'suspended'
           )
         case 'all':
         default:
@@ -1602,6 +1602,35 @@ export default function Dashboard() {
                     </div>
                   )}
                 </div>
+                {/* Link to public venue page */}
+                <div className='mt-32 text-center'>
+                  <Link
+                    href={`/venues/${venue.id}`}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    // Use CSS variable for background and focus ring
+                    className='inline-flex items-center gap-2 justify-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[var(--blue-500)] hover:brightness-125 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary)] transition-all duration-200'
+                  >
+                    <span>
+                      Ver Página Pública del Local
+                    </span>
+                    {/* External Link Icon */}
+                    <svg
+                      className='w-4 h-4'
+                      fill='none'
+                      stroke='currentColor'
+                      viewBox='0 0 24 24'
+                      xmlns='http://www.w3.org/2000/svg'
+                    >
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        strokeWidth='2'
+                        d='M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14'
+                      ></path>
+                    </svg>
+                  </Link>
+                </div>
               </div>
             )}
           </div>
@@ -1977,15 +2006,15 @@ export default function Dashboard() {
                 </button>
                 <button
                   onClick={() =>
-                    setFilterStatus('postponed')
+                    setFilterStatus('suspended')
                   }
                   className={`px-3 py-1 rounded-md text-sm ${
-                    filterStatus === 'postponed'
+                    filterStatus === 'suspended'
                       ? 'bg-teal-600 text-white shadow'
                       : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                   }`}
                 >
-                  Pospuestos
+                  Suspendidos
                 </button>
                 <button
                   onClick={() =>
