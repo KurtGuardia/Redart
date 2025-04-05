@@ -3,6 +3,7 @@
 import Spot from '../../components/ui/Spot'
 import EventCard from '../../components/EventCard'
 import EventDetailModal from '../../components/EventDetailModal'
+import EventCardSkeleton from '../../components/EventCardSkeleton'
 import { useState, useEffect } from 'react'
 import { db } from '../../lib/firebase-client'
 import {
@@ -284,56 +285,64 @@ export default function EventsPage() {
         </div>
       </div>
 
-      {loading && eventsList.length === 0 ? (
-        <p className='text-center text-gray-500'>
-          Cargando eventos...
-        </p>
-      ) : eventsList.length === 0 ? (
-        <p className='text-center text-gray-500'>
-          No se encontraron eventos que coincidan con los
-          filtros seleccionados.
-        </p>
-      ) : (
-        <>
-          <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8'>
-            {eventsList.map((event) => (
-              <EventCard
-                key={event.id}
-                onClick={() => openModal(event)}
-                className='cursor-pointer'
-                title={event.title}
-                description={
-                  event.description
-                    ? // TODO improve character number
-                      event.description.substring(0, 100) +
-                      '...'
-                    : ''
-                }
-                date={event.date}
-                location={
-                  event.city || 'Ubicación no disponible'
-                }
-                image={
-                  event.featuredImage || '/placeholder.svg'
-                }
-                venueName={event.venueName}
-                venueId={event.venueId}
-                status={event.status || 'active'}
-              />
-            ))}
-          </div>
-          {hasMore && (
-            <div className='mt-8 text-center'>
-              <button
-                onClick={handleLoadMore}
-                className='bg-[var(--teal-500)] text-[var(--white)] px-6 py-2 rounded-lg hover:bg-teal-700 transition duration-300 disabled:opacity-50'
-                disabled={loading}
-              >
-                {loading ? 'Cargando...' : 'Cargar más'}
-              </button>
-            </div>
-          )}
-        </>
+      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8'>
+        {loading &&
+          eventsList.length === 0 &&
+          Array.from({ length: 3 }).map((_, index) => (
+            <EventCardSkeleton key={`skeleton-${index}`} />
+          ))}
+
+        {!loading && eventsList.length === 0 && (
+          <p className='col-span-full text-center text-gray-500 py-10'>
+            No se encontraron eventos que coincidan con los
+            filtros seleccionados.
+          </p>
+        )}
+
+        {eventsList.map((event) => (
+          <EventCard
+            key={event.id}
+            onClick={() => openModal(event)}
+            className='cursor-pointer'
+            title={event.title}
+            description={
+              event.description
+                ? event.description.substring(0, 100) +
+                  '...'
+                : ''
+            }
+            date={event.date}
+            location={
+              event.city || 'Ubicación no disponible'
+            }
+            image={
+              event.featuredImage || '/placeholder.svg'
+            }
+            venueName={event.venueName}
+            venueId={event.venueId}
+            status={event.status || 'active'}
+          />
+        ))}
+
+        {loading &&
+          eventsList.length > 0 &&
+          Array.from({ length: 4 }).map((_, index) => (
+            <EventCardSkeleton
+              key={`loading-more-${index}`}
+            />
+          ))}
+      </div>
+
+      {!loading && hasMore && (
+        <div className='mt-12 text-center'>
+          <button
+            onClick={handleLoadMore}
+            className='bg-[var(--primary)] text-[var(--white)] px-6 py-2 rounded-lg hover:brightness-110 transition duration-300 disabled:opacity-50'
+            disabled={loading}
+          >
+            Cargar más
+          </button>
+        </div>
       )}
 
       <EventDetailModal
