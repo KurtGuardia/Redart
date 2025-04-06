@@ -5,7 +5,7 @@ import EventListView from './EventListView'
 const ITEMS_PER_PAGE = 8
 
 export default async function EventsPage() {
-  console.log('[EventsPage] Server Component CALLED.')
+  console.log('[EventsPage] FUNCTION ENTRY POINT.')
   let initialEvents = []
   let initialHasMore = false
   let fetchError = null

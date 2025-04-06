@@ -4,7 +4,7 @@ import MapView from './MapView'
 import { getAllVenueLocations } from '../../lib/venueService'
 
 export default async function MapPage() {
-  console.log('[MapPage] Server Component CALLED.')
+  console.log('[MapPage] FUNCTION ENTRY POINT.')
   let initialLocations = []
   let fetchError = null
 
