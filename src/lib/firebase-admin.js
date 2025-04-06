@@ -40,20 +40,51 @@ if (!admin.apps.length) {
 */
 
 // Initialize using Application Default Credentials (ADC)
+console.log(
+  '[firebase-admin] Attempting Firebase Admin Init...',
+) // Log entry
+
 if (!admin.apps.length) {
   try {
+    console.log(
+      '[firebase-admin] ADC Init: Entering Try block...',
+    ) // Log step
     admin.initializeApp()
+    console.log(
+      '[firebase-admin] ADC Init: SUCCESS - Firebase Admin SDK Initialized using ADC',
+    ) // Log success
   } catch (error) {
     console.error(
-      'Firebase Admin SDK initialization error (using ADC). Did you set GOOGLE_APPLICATION_CREDENTIALS correctly?',
-      error.stack,
+      '[firebase-admin] ADC Init: FAILED - Firebase Admin SDK initialization error (using ADC). Did you set GOOGLE_APPLICATION_CREDENTIALS correctly?',
     )
+    // --- Log the specific initialization error ---
+    console.error(
+      '[firebase-admin] ADC Init Error Object:',
+      error,
+    )
+    // ---------------------------------------------
     // Depending on your app, you might want to throw the error
     // or allow the app to continue with limited functionality.
     // throw error; // Uncomment to make initialization failure critical
   }
+} else {
+  console.log(
+    '[firebase-admin] ADC Init: Skipped - Already initialized.',
+  ) // Log skip
 }
 
-const dbAdmin = admin.firestore()
+let dbAdmin = null
+try {
+  dbAdmin = admin.firestore()
+  console.log(
+    '[firebase-admin] Firestore instance obtained successfully.',
+  ) // Log firestore success
+} catch (firestoreError) {
+  console.error(
+    '[firebase-admin] FAILED to get Firestore instance:',
+    firestoreError,
+  ) // Log firestore failure
+  // dbAdmin remains null, subsequent calls will likely fail
+}
 
 export { dbAdmin }
