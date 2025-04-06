@@ -4,14 +4,22 @@ import MapView from './MapView'
 import { getAllVenueLocations } from '../../lib/venueService'
 
 export default async function MapPage() {
+  console.log('[MapPage] Server Component CALLED.')
   let initialLocations = []
   let fetchError = null
 
   try {
+    console.log(
+      '[MapPage] Attempting to call getAllVenueLocations...',
+    )
     initialLocations = await getAllVenueLocations()
+    console.log(
+      '[MapPage] getAllVenueLocations call FINISHED.',
+    )
+    // console.log('[MapPage Server Component] initialLocations fetched:', JSON.stringify(initialLocations, null, 2));
   } catch (error) {
     console.error(
-      'Error fetching venue locations server-side:',
+      '[MapPage] Error calling or processing getAllVenueLocations:',
       error,
     )
     fetchError =

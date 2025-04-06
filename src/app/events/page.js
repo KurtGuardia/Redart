@@ -5,20 +5,25 @@ import EventListView from './EventListView'
 const ITEMS_PER_PAGE = 8
 
 export default async function EventsPage() {
+  console.log('[EventsPage] Server Component CALLED.')
   let initialEvents = []
   let initialHasMore = false
   let fetchError = null
 
   try {
+    console.log(
+      '[EventsPage] Attempting to call getAllEvents...',
+    )
     const result = await getAllEvents({
       page: 1,
       limit: ITEMS_PER_PAGE,
     })
+    console.log('[EventsPage] getAllEvents call FINISHED.')
     initialEvents = result.events || []
     initialHasMore = result.hasMore || false
   } catch (error) {
     console.error(
-      'Error fetching initial events server-side:',
+      '[EventsPage] Error calling or processing getAllEvents:',
       error,
     )
     fetchError = error.message || 'Error al cargar eventos.'
