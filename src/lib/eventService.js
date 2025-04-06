@@ -25,6 +25,15 @@ export async function getAllEvents(
   limit = ITEMS_PER_PAGE,
   filters = {},
 ) {
+  console.log(
+    `[eventService] getAllEvents function CALLED. page: ${page}, limit: ${limit}`,
+  ) // <-- Add this log
+  // Log dbAdmin validity again, inside the function scope
+  console.log(
+    '[eventService/Inside] dbAdmin valid?:',
+    typeof dbAdmin,
+    dbAdmin ? 'Yes' : 'No',
+  )
   try {
     console.log('[eventService] Entered try block.') // Log entry
     const eventsRef = dbAdmin.collection('events')

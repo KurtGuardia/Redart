@@ -14,6 +14,15 @@ console.log(
  * @returns {Promise<Array<{id: string, name: string, latitude: number, longitude: number}>>}
  */
 export async function getAllVenueLocations() {
+  console.log(
+    '[venueService/Locations] getAllVenueLocations function CALLED.',
+  )
+  // Log dbAdmin validity again, inside the function scope
+  console.log(
+    '[venueService/Locations/Inside] dbAdmin valid?:',
+    typeof dbAdmin,
+    dbAdmin ? 'Yes' : 'No',
+  )
   try {
     console.log(
       '[venueService/Locations] Entered try block.',
