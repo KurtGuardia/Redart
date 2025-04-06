@@ -18,12 +18,21 @@ export async function getAllEvents(
   filters = {},
 ) {
   try {
+    console.log('[eventService] Entered try block.') // Log entry
     const eventsRef = dbAdmin.collection('events')
-    // let query = eventsRef
-    //   .orderBy('date', 'desc') // Order by date, newest first
-    //   .limit(limit + 1) // Fetch one extra item to check if there are more
+    console.log(
+      '[eventService] Got events collection reference.',
+    ) // Log step
 
+    // --- Logging before the query ---
+    console.log(
+      '[eventService] Attempting snapshot.get()...',
+    )
     const snapshot = await eventsRef.get()
+    // --- Logging after the query (only if successful) ---
+    console.log(
+      `[eventService] snapshot.get() successful. Found ${snapshot.docs.length} raw documents.`,
+    )
 
     let events = snapshot.docs.map((doc) => {
       const data = doc.data()

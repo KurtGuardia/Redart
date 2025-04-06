@@ -7,9 +7,24 @@ import { dbAdmin } from './firebase-admin'
  */
 export async function getAllVenueLocations() {
   try {
-    const venuesSnapshot = await dbAdmin
-      .collection('venues')
-      .get()
+    console.log(
+      '[venueService/Locations] Entered try block.',
+    ) // Log entry
+    const venuesRef = dbAdmin.collection('venues')
+    console.log(
+      '[venueService/Locations] Got venues collection reference.',
+    ) // Log step
+
+    // --- Logging before the query ---
+    console.log(
+      '[venueService/Locations] Attempting venuesSnapshot.get()...',
+    )
+    const venuesSnapshot = await venuesRef.get()
+    // --- Logging after the query (only if successful) ---
+    console.log(
+      `[venueService/Locations] venuesSnapshot.get() successful. Found ${venuesSnapshot.docs.length} raw documents.`,
+    )
+
     const locations = venuesSnapshot.docs
       .map((doc) => {
         const data = doc.data()
@@ -38,6 +53,9 @@ export async function getAllVenueLocations() {
       })
       .filter((location) => location !== null) // Filter out null entries
 
+    console.log(
+      `Fetched ${locations.length} valid venue locations.`,
+    )
     return locations
   } catch (error) {
     console.error('Error fetching venue locations:', error)
