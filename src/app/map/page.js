@@ -1,12 +1,22 @@
-'use client'
-
 import Link from 'next/link'
 import Spot from '../../components/ui/Spot'
-import MapComponent from '../../components/MapComponent'
-import { useVenueLocations } from '../../hooks/useVenueLocations'
+import MapView from './MapView'
+import { getAllVenueLocations } from '../../lib/venueService'
 
-export default function MapPage() {
-  const { locations, loading, error } = useVenueLocations()
+export default async function MapPage() {
+  let initialLocations = []
+  let fetchError = null
+
+  try {
+    initialLocations = await getAllVenueLocations()
+  } catch (error) {
+    console.error(
+      'Error fetching venue locations server-side:',
+      error,
+    )
+    fetchError =
+      error.message || 'Error al cargar localizaciones.'
+  }
 
   return (
     <div className='map relative container mx-auto my-24'>
@@ -17,13 +27,12 @@ export default function MapPage() {
       <Spot colorName={'indigo'} />
       <h1>Descubre la movida cultural que tengas cerca!</h1>
 
-      {loading ? (
-        <div className='flex justify-center items-center h-[50vh]'>
-          <div className='animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500'></div>
-        </div>
-      ) : error ? (
-        <div className='text-center text-red-500 h-[50vh] flex flex-col justify-center'>
-          <p>Error al cargar los lugares: {error}</p>
+      {fetchError ? (
+        <div className='text-center text-red-500 h-[60vh] flex flex-col justify-center items-center bg-red-50 p-4 rounded-lg shadow-lg'>
+          <p className='font-semibold'>
+            Error al cargar el mapa:
+          </p>
+          <p>{fetchError}</p>
           <Link
             href='/'
             className='mt-4 inline-block bg-teal-500 text-white px-6 py-2 rounded-full'
@@ -31,34 +40,20 @@ export default function MapPage() {
             Volver al inicio
           </Link>
         </div>
-      ) : locations.length === 0 ? (
-        <div className='text-center h-[50vh] flex flex-col justify-center'>
-          <p className='text-gray-700 mb-4'>
-            No hay lugares disponibles en este momento.
-          </p>
-          <p className='text-gray-500 mb-8'>
-            ¡Sé el primero en registrar tu espacio cultural!
-          </p>
-          <Link
-            href='/register'
-            className='inline-block bg-teal-500 text-white px-6 py-2 rounded-full'
-          >
-            Registrar mi espacio
-          </Link>
-        </div>
       ) : (
-        <div className='w-[700px] h-[50vh] mx-auto'>
-          <MapComponent zoom={12} venues={locations} />
-          <div className='bg-[var(--blue-800-transparent)] text-[var(--white)] p-2 my-2 rounded-lg w-fit mx-auto text-sm'>
-            Mostrando {locations.length}{' '}
-            {locations.length === 1
-              ? 'espacio cultural'
-              : 'espacios culturales'}
-          </div>
+        <MapView initialLocations={initialLocations} />
+      )}
+
+      {!fetchError && (
+        <div className='bg-[var(--blue-800-transparent)] text-[var(--white)] p-2 my-4 rounded-lg w-fit mx-auto text-sm'>
+          Mostrando {initialLocations.length}{' '}
+          {initialLocations.length === 1
+            ? 'espacio cultural'
+            : 'espacios culturales'}
         </div>
       )}
 
-      <div className='text-center mt-16'>
+      <div className='text-center mt-8'>
         <Link
           href='/'
           className='bg-[var(--teal-500)] text-[var(--white)] px-6 py-2 rounded-full text-lg font-semibold hover:bg-teal-700 hover:text-white transition duration-300 '

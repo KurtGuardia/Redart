@@ -94,7 +94,6 @@ export default function Map({
   registrationAddress = '',
   registrationCity = '',
   isDashboard = false,
-  small = false,
   mapId = 'map',
   isEditable = false,
 }) {
@@ -161,65 +160,85 @@ export default function Map({
 
   // Improved function to safely extract position from venue
   const getValidPosition = (venue) => {
-    // Ensure venue and venue.location are not null/undefined before proceeding
-    if (!venue || !venue.location) {
+    // Initial check for a valid venue object
+    if (!venue || typeof venue !== 'object') {
       console.warn(
-        `Venue ${
-          venue?.id || '(no id)'
-        } missing location data.`,
+        `Invalid venue object received in getValidPosition.`,
+        venue,
       )
       return null
     }
 
     let lat, lng
 
-    // Check for Firebase GeoPoint format
+    // Check various potential location structures:
+
+    // 1. Nested location object (e.g., from older data or direct GeoPoint)
     if (
-      typeof venue.location.latitude === 'number' &&
-      typeof venue.location.longitude === 'number'
+      venue.location &&
+      typeof venue.location === 'object'
     ) {
-      lat = venue.location.latitude
-      lng = venue.location.longitude
-    }
-    // Check for object { lat, lng } format - check existence before access
-    else if (
-      venue.location.hasOwnProperty('lat') &&
-      venue.location.hasOwnProperty('lng') &&
-      typeof venue.location.lat === 'number' &&
-      typeof venue.location.lng === 'number'
-    ) {
-      lat = venue.location.lat
-      lng = venue.location.lng
-    }
-    // Check for simple array format [lat, lng]
-    else if (
-      Array.isArray(venue.location) &&
-      venue.location.length === 2 &&
-      typeof venue.location[0] === 'number' &&
-      typeof venue.location[1] === 'number'
-    ) {
-      lat = venue.location[0] // Assuming [lat, lng] order
-      lng = venue.location[1]
+      // Check for Firebase GeoPoint format
+      if (
+        typeof venue.location.latitude === 'number' &&
+        typeof venue.location.longitude === 'number'
+      ) {
+        lat = venue.location.latitude
+        lng = venue.location.longitude
+      }
+      // Check for object { lat, lng } format
+      else if (
+        venue.location.hasOwnProperty('lat') &&
+        venue.location.hasOwnProperty('lng') &&
+        typeof venue.location.lat === 'number' &&
+        typeof venue.location.lng === 'number'
+      ) {
+        lat = venue.location.lat
+        lng = venue.location.lng
+      }
+      // Check for simple array format [lat, lng]
+      else if (
+        Array.isArray(venue.location) &&
+        venue.location.length === 2 &&
+        typeof venue.location[0] === 'number' &&
+        typeof venue.location[1] === 'number'
+      ) {
+        lat = venue.location[0] // Assuming [lat, lng] order
+        lng = venue.location[1]
+      }
     }
 
-    // Validate the coordinates
+    // 2. Top-level latitude/longitude properties (from our refactored service)
+    // Only check this if lat/lng haven't already been found in venue.location
+    if (lat === undefined && lng === undefined) {
+      if (
+        typeof venue.latitude === 'number' &&
+        typeof venue.longitude === 'number'
+      ) {
+        lat = venue.latitude
+        lng = venue.longitude
+      }
+    }
+
+    // Validate the final derived coordinates
     if (
       lat === undefined ||
       lng === undefined ||
       isNaN(lat) ||
-      isNaN(lng) ||
-      lat === 0 ||
-      lng === 0
+      isNaN(lng)
+      // Consider if you need to validate bounds, e.g., lat between -90 and 90
     ) {
-      // Log the problematic location object itself
       console.warn(
-        `Invalid or zero coordinates derived for venue ${venue.id}. Original location:`,
-        venue.location,
+        `Invalid or missing coordinates derived for venue ${
+          venue.id || '(no id)'
+        }. Original venue data:`,
+        venue,
         `Derived: lat=${lat}, lng=${lng}`,
       )
       return null
     }
 
+    // Always return consistent [lat, lng] array format for Leaflet
     return [lat, lng]
   }
 
@@ -279,9 +298,7 @@ export default function Map({
 
       <div
         id={uniqueMapId}
-        className={`w-full ${
-          small ? 'h-[350px]' : 'h-[60vh]'
-        } mx-auto map-container`}
+        className={`w-full h-[60vh] mx-auto map-container`}
       >
         <MapContainer
           center={initialMapCenter}

@@ -1,35 +1,11 @@
-'use client'
-
-import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import TypingAnimation from '../components/TypingAnimation'
 import Spot from '../components/ui/Spot'
 import EventCard from '../components/EventCard'
-import MapComponent from '../components/MapComponent'
-import { useVenueLocations } from '../hooks/useVenueLocations'
+import HeroBackgroundSlider from '../components/HeroBackgroundSlider'
+import HomePageMapSection from '../components/HomePageMapSection'
 
 export default function HomePage() {
-  const heroRef = useRef(null)
-  const { locations, loading, error } = useVenueLocations()
-
-  const images = [
-    '/theater.jpg',
-    '/carnival.jpg',
-    '/guitarist.jpg',
-  ]
-
-  useEffect(() => {
-    let bgIndex = 0
-    const interval = setInterval(() => {
-      bgIndex = (bgIndex + 1) % images.length
-      if (heroRef.current) {
-        heroRef.current.style.backgroundImage = `url(${images[bgIndex]})`
-      }
-    }, 2000)
-
-    return () => clearInterval(interval)
-  }, [])
-
   const featuredEvents = [
     {
       id: 1,
@@ -62,17 +38,16 @@ export default function HomePage() {
       type: 'destructive',
     },
   ]
+  const heroImages = [
+    '/theater.jpg',
+    '/carnival.jpg',
+    '/guitarist.jpg',
+  ]
 
   return (
     <div className='flex flex-col min-h-screen'>
       <div className='absolute top-0 left-0 right-0 opacity-80 bg-gradient-to-r from-[var(--secondary-color)] to-[var(--primary)] h-[80vh]' />
-      <section
-        ref={heroRef}
-        className='hero img text-white h-[80vh] flex items-center w-full'
-        style={{
-          backgroundImage: `url(${images[0]})`,
-        }}
-      >
+      <HeroBackgroundSlider images={heroImages}>
         <div className='container mx-auto px-4 z-10 text-center flex flex-col justify-between gap-4 bg-white bg-opacity-25 rounded-3xl py-10'>
           <h1 className='text-4xl text-[var(--white)] md:text-6xl font-bold md:leading-[150%] mb-4 animate-fade-in-up'>
             Descubre la vibrante escena artística de Bolivia
@@ -88,7 +63,7 @@ export default function HomePage() {
             Explorar eventos
           </Link>
         </div>
-      </section>
+      </HeroBackgroundSlider>
 
       <section className='intro relative py-16 my-16'>
         <Spot colorName={'red'} />
@@ -117,7 +92,6 @@ export default function HomePage() {
                 date={event.date}
                 location={event.location}
                 image={event.image}
-                type={event.type}
               />
             ))}
           </div>
@@ -174,22 +148,7 @@ export default function HomePage() {
             tuyo preferido y conoce la programación de
             eventos.
           </p>
-          <div className='w-[70%] h-[60vh] mx-auto'>
-            {loading ? (
-              <div className='flex justify-center items-center h-full'>
-                <div className='animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500'></div>
-              </div>
-            ) : error ? (
-              <div className='text-center text-red-500 h-full flex flex-col justify-center'>
-                <p>Error al cargar los lugares: {error}</p>
-              </div>
-            ) : (
-              <MapComponent
-                center={[-17.389499, -66.156123]}
-                venues={locations}
-              />
-            )}
-          </div>
+          <HomePageMapSection />
         </div>
       </section>
 

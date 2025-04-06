@@ -69,7 +69,6 @@ const EventCard = ({
       <div
         className={`relative text-white overflow-hidden flex flex-col group rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6 max-w-sm mx-auto w-full ${backgroundClass} ${opacityClass}`}
       >
-        {/* Use z-0 or z-20 for content */}
         <div className='relative overflow-hidden rounded-lg mb-4 aspect-[4/3]'>
           {image ? (
             <Image
@@ -102,12 +101,10 @@ const EventCard = ({
             {date && (
               <span className='bg-gray-100 px-2 py-1 rounded-md text-[11px] whitespace-nowrap'>
                 📅{' '}
-                {typeof date === 'string'
-                  ? date
-                  : formatTimestamp(date, {
-                      dateStyle: 'medium',
-                      timeStyle: undefined,
-                    })}
+                {formatTimestamp(date, {
+                  dateStyle: 'medium',
+                  timeStyle: undefined,
+                })}
               </span>
             )}
             {location && (

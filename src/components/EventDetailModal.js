@@ -175,7 +175,7 @@ const EventDetailModal = ({ isOpen, onClose, event }) => {
                 <p className='font-semibold text-[var(--white)]'>
                   {formatTimestamp(event.date, {
                     dateStyle: 'full',
-                    timeStyle: 'full',
+                    timeStyle: 'short',
                   })}
                 </p>
               </div>

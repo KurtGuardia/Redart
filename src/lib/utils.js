@@ -47,45 +47,58 @@ export const getCurrencySymbol = (currencyCode) => {
 }
 
 /**
- * Formats a Firestore Timestamp or Date object into a localized string.
- * @param {Timestamp|Date|object} timestamp - The timestamp or date object {seconds, nanoseconds} to format.
- * @param {object} options - Intl.DateTimeFormat options (optional). Defaults to long date, short time.
- * @returns {string} Formatted date/time string or fallback text.
+ * Formats a Firestore Timestamp, Date object, or ISO date string into a localized string.
+ * Handles potential null/undefined/invalid inputs.
  */
-export const formatTimestamp = (
-  timestamp,
-  options = {},
-) => {
-  if (!timestamp) return 'Fecha no disponible'
-
-  let date
-  if (timestamp instanceof Timestamp) {
-    date = timestamp.toDate()
-  } else if (timestamp instanceof Date) {
-    date = timestamp
-  } else if (
-    timestamp.seconds &&
-    typeof timestamp.seconds === 'number'
-  ) {
-    date = new Date(timestamp.seconds * 1000)
-  } else {
-    return 'Fecha inválida'
-  }
-
+export function formatTimestamp(timestampInput, options) {
+  // Default options if none provided
   const defaultOptions = {
-    dateStyle: 'long',
+    dateStyle: 'medium',
     timeStyle: 'short',
-    ...options, // Allow overriding defaults
   }
+  const formatOptions = { ...defaultOptions, ...options }
+
+  // 1. Handle null or undefined input gracefully
+  if (!timestampInput) {
+    // console.warn('formatTimestamp received null or undefined input.');
+    return 'Fecha no disponible' // Or return empty string, based on preference
+  }
+
+  let dateObj
 
   try {
+    // 2. Convert input to Date object
+    if (timestampInput.toDate) {
+      // Check if it's a Firestore Timestamp
+      dateObj = timestampInput.toDate()
+    } else {
+      // Assume it's a Date object or ISO string
+      dateObj = new Date(timestampInput)
+    }
+
+    // 3. Validate the created Date object
+    if (isNaN(dateObj.getTime())) {
+      // getTime() returns NaN for invalid dates
+      console.warn(
+        'formatTimestamp resulted in an invalid date for input:',
+        timestampInput,
+      )
+      return 'Fecha inválida'
+    }
+
+    // 4. Format the valid Date object
     return new Intl.DateTimeFormat(
       'es-ES',
-      defaultOptions,
-    ).format(date)
+      formatOptions,
+    ).format(dateObj)
   } catch (error) {
-    console.error('Error formatting date:', error)
-    return 'Fecha inválida'
+    console.error(
+      'Error formatting timestamp:',
+      error,
+      'Input:',
+      timestampInput,
+    )
+    return 'Error de fecha' // Return a generic error message
   }
 }
 
@@ -505,7 +518,6 @@ export async function compressImage(
       fileType: imageFile.type,
     }
 
-    // Removed console.log for compression start/end
     const compressedFile = await imageCompression(
       imageFile,
       options,

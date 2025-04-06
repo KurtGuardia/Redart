@@ -1,24 +1,20 @@
-'use client'
-
-import { useState, useEffect } from 'react'
-import { useParams } from 'next/navigation'
-import {
-  doc,
-  getDoc,
-  collection,
-  query,
-  getDocs,
-  orderBy,
-  Timestamp,
-} from 'firebase/firestore'
-import { db } from '../../../lib/firebase-client'
+import { notFound } from 'next/navigation' // Import notFound
 import Image from 'next/image'
 import Spot from '../../../components/ui/Spot'
-import VenueEventListItem from '../../../components/VenueEventListItem'
-import EventDetailModal from '../../../components/EventDetailModal'
-import MapComponent from '../../../components/MapComponent'
-import { useVenueData } from '../../../hooks/useVenueData'
+import MapComponent from '../../../components/MapComponent' // Keep if MapComponent is used directly
 import { formatWhatsappNumber } from '../../../lib/utils'
+import {
+  getVenueById,
+  getUpcomingEventsForVenue,
+} from '../../../lib/venueService' // Assume server-side functions
+import VenuePhotoGallery from './VenuePhotoGallery' // Import client component
+import VenueEventListWrapper from './VenueEventListWrapper' // Import client component
+import Link from 'next/link' // Import Link
+import {
+  FaWhatsapp,
+  FaInstagram,
+  FaFacebook,
+} from 'react-icons/fa' // Example import
 
 // Simple SVG Icon for location pin
 const LocationPinIcon = () => (
@@ -36,114 +32,45 @@ const LocationPinIcon = () => (
   </svg>
 )
 
-export default function VenuePage() {
-  const params = useParams()
+// Make the page component async to fetch data
+export default async function VenuePage({ params }) {
   const venueId = params?.venueId
 
-  const { venue, loading, error } = useVenueData(venueId)
-
-  const [venueEvents, setVenueEvents] = useState([])
-  const [loadingEvents, setLoadingEvents] = useState(true)
-  const [selectedEvent, setSelectedEvent] = useState(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedImageUrl, setSelectedImageUrl] =
-    useState(null)
-
-  const openModal = (fullEventDataFromList) => {
-    setSelectedEvent(fullEventDataFromList)
-    setIsModalOpen(true)
+  if (!venueId) {
+    notFound() // Trigger 404 if no ID
   }
 
-  const closeModal = () => {
-    setSelectedEvent(null)
-    setIsModalOpen(false)
-  }
+  let venue = null
+  let initialEvents = []
+  let fetchError = null
 
-  useEffect(() => {
-    if (venue && venue.photos && venue.photos.length > 0) {
-      if (!selectedImageUrl) {
-        setSelectedImageUrl(venue.photos[0])
-      }
+  try {
+    venue = await getVenueById(venueId)
+    if (!venue) {
+      notFound() // Venue doesn't exist
     }
-  }, [venue, selectedImageUrl])
-
-  useEffect(() => {
-    const fetchVenueEvents = async () => {
-      if (!venueId) return
-
-      setLoadingEvents(true)
-      setVenueEvents([])
-      try {
-        const eventsSubcollectionPath = `venues/${venueId}/events`
-        const eventsSubcollectionRef = collection(
-          db,
-          eventsSubcollectionPath,
-        )
-        const subcollectionSnapshot = await getDocs(
-          query(eventsSubcollectionRef),
-        )
-
-        if (subcollectionSnapshot.empty) {
-          setLoadingEvents(false)
-          return
-        }
-
-        const fetchPromises =
-          subcollectionSnapshot.docs.map((subDoc) => {
-            const eventId = subDoc.id
-            const fullEventDocRef = doc(
-              db,
-              'events',
-              eventId,
-            )
-            return getDoc(fullEventDocRef)
-          })
-
-        const fullEventDocSnaps = await Promise.all(
-          fetchPromises,
-        )
-
-        const events = fullEventDocSnaps
-          .map((docSnap) =>
-            docSnap.exists()
-              ? { id: docSnap.id, ...docSnap.data() }
-              : null,
-          )
-          .filter((event) => event !== null)
-          .filter(
-            (event) =>
-              event.date &&
-              event.date.seconds >= Timestamp.now().seconds,
-          )
-          .sort((a, b) => a.date.seconds - b.date.seconds)
-
-        setVenueEvents(events)
-      } catch (err) {
-        console.error('Error fetching venue events:', err)
-      } finally {
-        setLoadingEvents(false)
-      }
-    }
-
-    fetchVenueEvents()
-  }, [venueId])
-
-  if (loading) {
-    return (
-      <div className='min-h-screen flex items-center justify-center'>
-        Cargando...
-      </div>
+    // Fetch only upcoming events for the public page
+    initialEvents = await getUpcomingEventsForVenue(venueId)
+  } catch (err) {
+    console.error(
+      'Error fetching venue data server-side:',
+      err,
     )
+    fetchError =
+      err.message || 'Error al cargar datos del lugar.'
+    // Render an error state or re-throw to trigger error boundary
   }
 
-  if (error) {
+  // Handle fetch error state
+  if (fetchError) {
     return (
       <div className='min-h-screen flex items-center justify-center text-red-600'>
-        Error al cargar el lugar: {error.message}
+        Error: {fetchError}
       </div>
     )
   }
 
+  // This check is now redundant due to notFound() above, but kept for safety
   if (!venue) {
     return (
       <div className='min-h-screen flex items-center justify-center'>
@@ -153,11 +80,9 @@ export default function VenuePage() {
   }
 
   const heroImageUrl =
-    selectedImageUrl ||
-    (venue.photos && venue.photos.length > 0
+    venue.photos && venue.photos.length > 0
       ? venue.photos[0]
-      : null)
-  const allGalleryImages = venue.photos || []
+      : null
 
   let googleMapsUrl = '#'
   if (
@@ -180,7 +105,7 @@ export default function VenuePage() {
       <Spot colorName={'SkyBlue'} />
       <Spot colorName={'Indigo'} />
 
-      {/* Hero Section */}
+      {/* Hero Section (Now uses data directly) */}
       <div
         className={`relative w-full h-64 md:h-96 flex items-center justify-center text-center overflow-hidden mb-12 shadow-lg`}
       >
@@ -198,7 +123,7 @@ export default function VenuePage() {
         ) : (
           <div className='absolute inset-0 bg-gradient-to-br from-[var(--teal-700)] to-[var(--blue-800)] z-0'></div>
         )}
-        <div className='relative z-20 p-4 text-white'>
+        <div className='relative z-20 p-4 text-white text-center'>
           <h1
             className='inline-block bg-[radial-gradient(var(--white),transparent)] p-8 rounded-full text-4xl md:text-6xl font-extrabold mb-4'
             style={{ textShadow: '-2px 3px 7px #000' }}
@@ -235,69 +160,12 @@ export default function VenuePage() {
             </section>
           )}
 
-          {/* Interactive Photo Gallery (Max 5 images - Featured + Clickable Grid) */}
-          {venue.photos && venue.photos.length > 0 && (
-            <section className='mb-10 md:mb-12 border-b border-gray-200/80 pb-8'>
-              <h2 className='text-2xl md:text-3xl font-bold text-[var(--teal-800)] mb-6'>
-                Galería
-              </h2>
-              <div className='space-y-4 md:space-y-6'>
-                {/* Large Featured Image Display */}
-                {selectedImageUrl && (
-                  <div className='relative w-full aspect-[16/9] rounded-xl overflow-hidden shadow-lg'>
-                    <Image
-                      src={selectedImageUrl}
-                      alt={`${venue.name} selected photo`}
-                      layout='fill'
-                      objectFit='cover'
-                    />
-                  </div>
-                )}
+          {/* Interactive Photo Gallery (Client Component) */}
+          <VenuePhotoGallery
+            photos={venue.photos || []}
+            venueName={venue.name}
+          />
 
-                {/* Grid for all images as thumbnails (Clickable) */}
-                {allGalleryImages.length > 1 && (
-                  <div
-                    className={`grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 md:gap-4`}
-                  >
-                    {allGalleryImages.map(
-                      (photoUrl, index) => (
-                        <div
-                          key={index}
-                          onClick={() =>
-                            setSelectedImageUrl(photoUrl)
-                          }
-                          className={`relative aspect-square rounded-lg overflow-hidden shadow-md group cursor-pointer border-2 ${
-                            selectedImageUrl === photoUrl
-                              ? 'border-[var(--teal-500)]'
-                              : 'border-transparent'
-                          } hover:border-[var(--teal-300)] transition-all duration-200`}
-                        >
-                          <Image
-                            src={photoUrl}
-                            alt={`${venue.name} thumbnail ${
-                              index + 1
-                            }`}
-                            layout='fill'
-                            objectFit='cover'
-                            className='transition-transform duration-300 ease-in-out group-hover:scale-110'
-                          />
-                          <div
-                            className={`absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 ${
-                              selectedImageUrl === photoUrl
-                                ? 'opacity-100 bg-black/20'
-                                : ''
-                            } transition-opacity duration-300 ease-in-out`}
-                          ></div>
-                        </div>
-                      ),
-                    )}
-                  </div>
-                )}
-              </div>
-            </section>
-          )}
-
-          {/* == NEW SECTION: Map & Details == */}
           <section className='mb-10 md:mb-12 border-b border-gray-200/80 pb-8'>
             <div className='flex flex-col lg:flex-row gap-8 lg:gap-12'>
               {/* Left Column: Map */}
@@ -312,20 +180,13 @@ export default function VenuePage() {
                 venue.location?.longitude ? (
                   <div className='h-80 md:h-96 w-full'>
                     <MapComponent
-                      venues={[
-                        {
-                          id: venue.id,
-                          name: venue.name,
-                          location: venue.location,
-                          address: venue.address,
-                        },
-                      ]}
+                      venues={[venue]} // Pass venue data for the single marker
                       center={[
                         venue.location.latitude,
                         venue.location.longitude,
                       ]}
-                      zoom={16}
-                      small={true}
+                      zoom={16} // Zoom in closer for single venue
+                      isDashboard={true}
                     />
                   </div>
                 ) : (
@@ -486,54 +347,32 @@ export default function VenuePage() {
                 <div className='flex items-center gap-2 pt-2'>
                   <span
                     className={`h-3 w-3 rounded-full ${
-                      venue.active
+                      venue.status === 'active'
                         ? 'bg-green-500'
                         : 'bg-red-500'
                     }`}
                   ></span>
                   <span className='text-sm text-gray-600'>
-                    {venue.active ? 'Activo' : 'Inactivo'}
+                    {venue.status === 'active'
+                      ? 'Activo'
+                      : 'Inactivo'}
                   </span>
                 </div>
               </div>
             </div>
           </section>
-          {/* == END NEW SECTION == */}
 
-          {/* Upcoming Events Section - Using new List Item Component */}
-          <section>
+          {/* Upcoming Events Section */}
+          <section className='mb-10 md:mb-12 border-b border-gray-200/80 pb-8'>
             <h2 className='text-2xl md:text-3xl font-bold text-[var(--teal-800)] mb-6'>
-              Próximos Eventos en {venue.name}
+              Próximos Eventos
             </h2>
-            {loadingEvents ? (
-              <div className='text-center text-gray-500'>
-                Cargando eventos...
-              </div>
-            ) : venueEvents.length > 0 ? (
-              // Use a simple div container for the vertical list, add spacing between items
-              <div className='space-y-4'>
-                {venueEvents.map((event) => (
-                  <VenueEventListItem
-                    key={event.id}
-                    event={event} // Pass the event object from subcollection
-                    onOpenModal={openModal} // Pass the openModal function
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className='text-center text-gray-500 italic p-6 border border-dashed border-gray-300 rounded-lg'>
-                No hay próximos eventos programados en este
-                lugar por el momento.
-              </div>
-            )}
+            <VenueEventListWrapper
+              initialEvents={initialEvents}
+            />
           </section>
         </div>
       </div>
-      <EventDetailModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        event={selectedEvent}
-      />
     </div>
   )
 }

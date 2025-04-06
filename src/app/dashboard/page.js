@@ -1606,9 +1606,6 @@ export default function Dashboard() {
                 <div className='mt-32 text-center'>
                   <Link
                     href={`/venues/${venue.id}`}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    // Use CSS variable for background and focus ring
                     className='inline-flex items-center gap-2 justify-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[var(--blue-500)] hover:brightness-125 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary)] transition-all duration-200'
                   >
                     <span>
@@ -1626,7 +1623,7 @@ export default function Dashboard() {
                         strokeLinecap='round'
                         strokeLinejoin='round'
                         strokeWidth='2'
-                        d='M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14'
+                        d='M13 7V3L4 12h10v8l9-9-9-9z'
                       ></path>
                     </svg>
                   </Link>

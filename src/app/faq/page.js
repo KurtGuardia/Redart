@@ -1,7 +1,5 @@
-'use client'
-
-import { useState } from 'react'
 import Spot from '../../components/ui/Spot'
+import FAQItem from '../../components/FAQItem'
 
 const faqs = [
   {
@@ -23,12 +21,6 @@ const faqs = [
 ]
 
 export default function FAQ() {
-  const [openIndex, setOpenIndex] = useState(null)
-
-  const toggleFAQ = (index) => {
-    setOpenIndex(openIndex === index ? null : index)
-  }
-
   return (
     <>
       <Spot colorName={'SlateBlue'} />
@@ -38,45 +30,16 @@ export default function FAQ() {
       <Spot colorName={'red'} />
       <Spot colorName={'Indigo'} />
       <div className='container mx-auto my-24'>
-        <h1>Preguntas frecuentes</h1>
-        <div className='space-y-4'>
+        <h1 className='text-3xl font-bold text-center mb-12'>
+          Preguntas Frecuentes
+        </h1>
+        <div className='space-y-4 max-w-3xl mx-auto'>
           {faqs.map((faq, index) => (
-            <div
+            <FAQItem
               key={index}
-              className='border-b border-gray-200 pb-4'
-            >
-              <button
-                className='flex justify-between items-center w-full text-left'
-                onClick={() => toggleFAQ(index)}
-              >
-                <span className='text-lg font-semibold'>
-                  {faq.question}
-                </span>
-                <svg
-                  className={`w-6 h-6 transition-transform ${
-                    openIndex === index
-                      ? 'transform rotate-180'
-                      : ''
-                  }`}
-                  fill='none'
-                  stroke='currentColor'
-                  viewBox='0 0 24 24'
-                  xmlns='http://www.w3.org/2000/svg'
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='M19 9l-7 7-7-7'
-                  />
-                </svg>
-              </button>
-              {openIndex === index && (
-                <p className='mt-2 text-gray-600'>
-                  {faq.answer}
-                </p>
-              )}
-            </div>
+              question={faq.question}
+              answer={faq.answer}
+            />
           ))}
         </div>
       </div>
