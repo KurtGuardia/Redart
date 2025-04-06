@@ -1,5 +1,13 @@
 import { dbAdmin } from './firebase-admin'
 
+// --- Log dbAdmin on import ---
+console.log(
+  '[eventService] Imported dbAdmin:',
+  typeof dbAdmin,
+  dbAdmin ? Object.keys(dbAdmin) : 'null or undefined',
+)
+// ---------------------------
+
 const ITEMS_PER_PAGE = 8 // Consistent with EventListView
 
 /**

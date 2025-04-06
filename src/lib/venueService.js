@@ -1,5 +1,13 @@
 import { dbAdmin } from './firebase-admin'
 
+// --- Log dbAdmin on import ---
+console.log(
+  '[venueService] Imported dbAdmin:',
+  typeof dbAdmin,
+  dbAdmin ? Object.keys(dbAdmin) : 'null or undefined',
+)
+// ---------------------------
+
 /**
  * Fetches basic location data for all venues.
  * Used for the main map page.
