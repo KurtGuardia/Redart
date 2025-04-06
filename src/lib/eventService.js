@@ -1,5 +1,4 @@
 import { dbAdmin } from './firebase-admin'
-import { Timestamp } from 'firebase-admin/firestore' // Import Timestamp
 
 const ITEMS_PER_PAGE = 8 // Consistent with EventListView
 
@@ -114,6 +113,7 @@ export async function getAllEvents(
     return { events: finalEvents, hasMore }
   } catch (error) {
     console.error('Error fetching all events:', error)
+    console.error('Original error:', error)
     // Depending on requirements, either throw or return empty state
     // Throwing might be better for the page to show a generic error
     throw new Error('Could not fetch events.')

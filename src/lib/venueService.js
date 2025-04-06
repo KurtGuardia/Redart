@@ -1,5 +1,4 @@
 import { dbAdmin } from './firebase-admin'
-import { Timestamp } from 'firebase-admin/firestore' // Import Timestamp
 
 /**
  * Fetches basic location data for all venues.
@@ -42,6 +41,7 @@ export async function getAllVenueLocations() {
     return locations
   } catch (error) {
     console.error('Error fetching venue locations:', error)
+    console.error('Original error:', error)
     throw new Error('Could not fetch venue locations.') // Re-throw for the page to handle
   }
 }
@@ -154,6 +154,7 @@ export async function getVenueById(venueId) {
     return serializableVenue
   } catch (error) {
     console.error(`Error fetching venue ${venueId}:`, error)
+    console.error('Original error:', error)
     throw new Error(
       `Could not fetch venue data for ${venueId}.`,
     )
@@ -238,6 +239,7 @@ export async function getUpcomingEventsForVenue(venueId) {
       `Error fetching upcoming events for venue ${venueId}:`,
       error,
     )
+    console.error('Original error:', error)
     // Decide if throwing an error or returning empty array is better
     // Returning empty might be safer for the UI
     return []
