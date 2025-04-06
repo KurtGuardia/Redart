@@ -24,102 +24,28 @@ export async function getAllEvents(
       '[eventService] Got events collection reference.',
     ) // Log step
 
-    // --- Logging before the query ---
     console.log(
-      '[eventService] Attempting snapshot.get()...',
+      '[eventService] >> Skipping snapshot.get() for debugging <<',
     )
-    const snapshot = await eventsRef.get()
-    // --- Logging after the query (only if successful) ---
+    // const snapshot = await eventsRef.get() // <-- Temporarily comment out
     console.log(
-      `[eventService] snapshot.get() successful. Found ${snapshot.docs.length} raw documents.`,
-    )
+      '[eventService] Reached point after skipped .get() call.',
+    ) // <-- Add this log
 
-    let events = snapshot.docs.map((doc) => {
-      const data = doc.data()
-
-      // Attempt to create the serializable event object by selecting fields
-      try {
-        // Select and convert necessary fields explicitly
-        const serializableEvent = {
-          id: doc.id,
-          title: data.title || '',
-          description: data.description || '',
-          category: data.category || 'other',
-          price:
-            typeof data.price === 'number' ? data.price : 0,
-          currency: data.currency || 'BOB',
-          ticketUrl: data.ticketUrl || '',
-          venueId: data.venueId || '',
-          venueName: data.venueName || '',
-          address: data.address || '',
-          city: data.city || '',
-          country: data.country || '',
-          featuredImage: data.featuredImage || null,
-          capacity: data.capacity || 0,
-          status: data.status || 'active',
-
-          // Convert Timestamps to serializable format (ISO string)
-          date: data.date?.toDate().toISOString() || null,
-          createdAt:
-            data.createdAt?.toDate().toISOString() || null,
-          updatedAt:
-            data.updatedAt?.toDate().toISOString() || null,
-
-          // Explicitly exclude the raw location object for now
-          // If precise location needed on client list, convert GeoPoint here:
-          // location: data.location ? {
-          //     latitude: data.location._latitude,
-          //     longitude: data.location._longitude
-          // } : null,
-        }
-        // --- Log Processed Data ---
-        // console.log(`[eventService] Serializable object for doc ${doc.id}:`, JSON.stringify(serializableEvent, null, 2))
-        // ------------------------
-        return serializableEvent
-      } catch (conversionError) {
-        console.error(
-          `[eventService] Error converting data for doc ${doc.id}:`,
-          conversionError,
-        )
-        console.error(
-          `[eventService] Problematic raw data for doc ${doc.id}:`,
-          JSON.stringify(data, null, 2),
-        )
-        // Return null or a placeholder to avoid crashing the map, but indicate error
-        return {
-          id: doc.id,
-          error: 'Data conversion failed',
-        }
-      }
-    })
-
-    // Filter out events that failed conversion, if any
-    const validEvents = events.filter(
-      (event) => event && !event.error,
-    )
-    const conversionErrors =
-      events.length - validEvents.length
-    if (conversionErrors > 0) {
-      console.warn(
-        `[eventService] ${conversionErrors} event(s) failed data conversion.`,
-      )
-    }
-
-    // Determine if there are more pages based on original snapshot size vs limit
-    let hasMore = false
-    if (snapshot.docs.length > limit) {
-      hasMore = true
-      // Note: We slice the potentially filtered list, which might be smaller than limit
-      // This is generally okay, as hasMore is determined before filtering/slicing.
-    }
-
-    // Slice the VALID events list after determining hasMore
-    const finalEvents = validEvents.slice(0, limit)
-
+    // --- Return Dummy Data ---
     console.log(
-      `Fetched ${finalEvents.length} valid events for initial load. HasMore: ${hasMore}`,
+      '[eventService] Returning dummy data due to skipped .get()',
     )
-    return { events: finalEvents, hasMore }
+    return { events: [], hasMore: false }
+    // -------------------------
+
+    /* --- Original logic (commented out) ---
+    // console.log(`[eventService] snapshot.get() successful. Found ${snapshot.docs.length} raw documents.`);
+    // let events = snapshot.docs.map((doc) => { ... });
+    // const validEvents = events.filter(...);
+    // ...
+    // return { events: finalEvents, hasMore };
+    */
   } catch (error) {
     console.error('Error fetching all events:', error)
     console.error('Original error:', error)

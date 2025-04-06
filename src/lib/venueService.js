@@ -9,54 +9,33 @@ export async function getAllVenueLocations() {
   try {
     console.log(
       '[venueService/Locations] Entered try block.',
-    ) // Log entry
+    )
     const venuesRef = dbAdmin.collection('venues')
     console.log(
       '[venueService/Locations] Got venues collection reference.',
-    ) // Log step
-
-    // --- Logging before the query ---
-    console.log(
-      '[venueService/Locations] Attempting venuesSnapshot.get()...',
-    )
-    const venuesSnapshot = await venuesRef.get()
-    // --- Logging after the query (only if successful) ---
-    console.log(
-      `[venueService/Locations] venuesSnapshot.get() successful. Found ${venuesSnapshot.docs.length} raw documents.`,
     )
 
-    const locations = venuesSnapshot.docs
-      .map((doc) => {
-        const data = doc.data()
-        const venueId = doc.id // Get ID for logging
-
-        // Ensure location object exists and latitude/longitude are valid numbers
-        if (
-          data.location &&
-          typeof data.location.latitude === 'number' && // Explicitly check for number type
-          typeof data.location.longitude === 'number' // Explicitly check for number type
-        ) {
-          return {
-            id: venueId,
-            name: data.name || 'Nombre no disponible', // Provide default name
-            latitude: data.location.latitude,
-            longitude: data.location.longitude,
-          }
-        } else {
-          // Log the reason for skipping
-          console.warn(
-            `Skipping venue ${venueId}: Missing or invalid location data. Found:`,
-            data.location,
-          )
-          return null // Exclude venues without valid location data
-        }
-      })
-      .filter((location) => location !== null) // Filter out null entries
-
     console.log(
-      `Fetched ${locations.length} valid venue locations.`,
+      '[venueService/Locations] >> Skipping venuesSnapshot.get() for debugging <<',
     )
-    return locations
+    // const venuesSnapshot = await venuesRef.get(); // <-- Temporarily comment out
+    console.log(
+      '[venueService/Locations] Reached point after skipped .get() call.',
+    ) // <-- Add this log
+
+    // --- Return Dummy Data ---
+    console.log(
+      '[venueService/Locations] Returning dummy data due to skipped .get()',
+    )
+    return [] // Return empty array
+    // -------------------------
+
+    /* --- Original logic (commented out) ---
+    // console.log(`[venueService/Locations] venuesSnapshot.get() successful. Found ${venuesSnapshot.docs.length} raw documents.`);
+    // const locations = venuesSnapshot.docs.map((doc) => { ... }).filter(...);
+    // console.log(`Fetched ${locations.length} valid venue locations.`);
+    // return locations;
+    */
   } catch (error) {
     console.error('Error fetching venue locations:', error)
     console.error('Original error:', error)
