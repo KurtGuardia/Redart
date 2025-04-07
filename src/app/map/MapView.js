@@ -2,17 +2,10 @@
 
 import { useState } from 'react' // Keep useState if needed for client-side map interactions
 import MapComponent from '../../components/MapComponent'
-// import { useVenueLocations } from '../../hooks/useVenueLocations'; // Remove if only using initial data
+import { useVenueLocations } from '../../hooks/useVenueLocations' // Remove if only using initial data
 
-export default function MapView({ initialLocations }) {
-  // Option 1: Just use initial data from server
-  const locations = initialLocations
-  const loading = false // Data is pre-loaded
-  const error = null
-
-  // Option 2: Use initial data, but allow client-side hook for potential updates/refreshes
-  // const { locations: dynamicLocations, loading, error } = useVenueLocations(initialLocations);
-  // const locations = dynamicLocations || initialLocations; // Prioritize dynamic if available
+export default function MapView() {
+  const { locations, loading, error } = useVenueLocations()
 
   return (
     <div className='w-full h-[60vh] mx-auto rounded-lg overflow-hidden shadow-lg'>
@@ -28,11 +21,19 @@ export default function MapView({ initialLocations }) {
           </p>
         </div>
       ) : locations && locations.length > 0 ? (
-        <MapComponent
-          center={[-17.389499, -66.156123]} // Or calculate center based on locations
-          zoom={13} // Adjust zoom back to a reasonable default like 13
-          venues={locations}
-        />
+        <>
+          <MapComponent
+            center={[-17.389499, -66.156123]} // Or calculate center based on locations
+            zoom={13} // Adjust zoom back to a reasonable default like 13
+            venues={locations}
+          />
+          <div className='bg-[var(--blue-800-transparent)] text-[var(--white)] p-2 my-4 rounded-lg w-fit mx-auto text-sm'>
+            Mostrando {locations.length}{' '}
+            {locations.length === 1
+              ? 'espacio cultural'
+              : 'espacios culturales'}
+          </div>
+        </>
       ) : (
         <div className='text-center h-full flex flex-col justify-center items-center bg-gray-100 p-4'>
           <p className='text-gray-700 mb-4'>
@@ -41,7 +42,6 @@ export default function MapView({ initialLocations }) {
           </p>
         </div>
       )}
-      {/* Maybe display count here if needed, passing locations.length? */}
     </div>
   )
 }

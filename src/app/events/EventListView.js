@@ -9,43 +9,44 @@ import {
   orderBy,
   limit,
   startAfter,
+  Timestamp, // Import Timestamp for type checking if needed
 } from 'firebase/firestore'
 import { CATEGORIES } from '../../lib/constants'
-import { hasEventPassed } from '../../lib/utils'
+import {
+  hasEventPassed,
+  formatTimestamp,
+} from '../../lib/utils' // formatTimestamp might not be needed here if converted later
 import EventCard from '../../components/EventCard'
 import EventDetailModal from '../../components/EventDetailModal'
 import EventCardSkeleton from '../../components/EventCardSkeleton'
 
 // Define status filter options (duplicated here for now, could be shared)
 const STATUS_FILTERS = [
+  { value: 'all', label: 'Todos' },
   { value: 'active', label: 'Próximos' },
   { value: 'past', label: 'Pasados' },
   { value: 'suspended', label: 'Suspendidos' },
   { value: 'cancelled', label: 'Cancelados' },
-  { value: 'all', label: 'Todos' },
 ]
 
-const ITEMS_PER_PAGE = 8 // Keep consistent with server fetch if applicable
+const ITEMS_PER_PAGE = 8
 
-const EventListView = ({
-  initialEvents = [],
-  initialHasMore = true,
-}) => {
-  const [eventsList, setEventsList] =
-    useState(initialEvents)
-  const [loading, setLoading] = useState(false) // Loading is for subsequent fetches
-  const [lastVisible, setLastVisible] = useState(null) // Need to determine initial lastVisible from initialEvents if possible
-  const [hasMore, setHasMore] = useState(initialHasMore)
+const EventListView = () => {
+  const [eventsList, setEventsList] = useState([])
+  const [loading, setLoading] = useState(true) // Start loading true for initial fetch
+  const [lastVisible, setLastVisible] = useState(null)
+  const [hasMore, setHasMore] = useState(true) // Assume has more initially
+  const [fetchError, setFetchError] = useState(null) // Add error state
+
   const [searchTerm, setSearchTerm] = useState('')
-  const [filter, setFilter] = useState('all') // Category filter
-  const [filterStatus, setFilterStatus] = useState('all') // Status filter
+  const [filter, setFilter] = useState('all')
+  const [filterStatus, setFilterStatus] = useState('all')
   const [selectedEvent, setSelectedEvent] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
-    setEventsList(initialEvents)
-    setHasMore(initialHasMore)
-  }, [initialEvents, initialHasMore])
+    fetchEvents(searchTerm, filter, filterStatus, true)
+  }, [])
 
   const openModal = (event) => {
     setSelectedEvent(event)
@@ -57,45 +58,34 @@ const EventListView = ({
     setIsModalOpen(false)
   }
 
-  // Fetching logic now primarily for loading more or filtering
   const fetchEvents = async (
-    currentSearchTerm,
-    currentCategoryFilter,
-    currentStatusFilter,
+    currentSearchTerm = '',
+    currentCategoryFilter = 'all',
+    currentStatusFilter = 'all',
     shouldReset = false,
   ) => {
     setLoading(true)
+    setFetchError(null)
 
-    let currentLastVisible = shouldReset
-      ? null
-      : lastVisible
+    let currentLastVisible = lastVisible
     if (shouldReset) {
-      setEventsList([]) // Clear list if resetting for filters/search
+      setEventsList([])
+      currentLastVisible = null
+      setLastVisible(null)
     }
 
-    // --- Client-side Firebase Query ---
-    // This remains largely the same as the original page.js logic
-    // Consider abstracting this query logic if used elsewhere.
     let eventsQuery = query(
       collection(db, 'events'),
       orderBy('date', 'desc'),
       limit(ITEMS_PER_PAGE),
     )
 
-    if (currentLastVisible) {
+    if (currentLastVisible && !shouldReset) {
       eventsQuery = query(
         eventsQuery,
         startAfter(currentLastVisible),
       )
     }
-
-    // NOTE: Applying WHERE clauses for status/category server-side is more efficient
-    // but adds complexity. Client-side filtering is simpler to implement initially.
-    // Example server-side additions (would need indexes):
-    // if (currentCategoryFilter !== 'all') {
-    //   eventsQuery = query(eventsQuery, where('category', '==', currentCategoryFilter));
-    // }
-    // Status filtering server-side is harder due to combinations with date.
 
     try {
       const eventsSnapshot = await getDocs(eventsQuery)
@@ -106,16 +96,19 @@ const EventListView = ({
         }),
       )
 
-      // Client-side filtering based on ALL current filters
-      const filteredNewEvents = newEventsData.filter(
+      const filteredEvents = newEventsData.filter(
         (event) => {
           const lowerSearchTerm =
             currentSearchTerm.toLowerCase()
-          const isPast = hasEventPassed(event.date)
+
+          const eventDateTimestamp = event.date
+          const isPast = eventDateTimestamp
+            ? hasEventPassed(eventDateTimestamp)
+            : false
           const status = event.status || 'active'
 
           const matchesSearch =
-            !currentSearchTerm || // Pass if no search term
+            !currentSearchTerm ||
             event.title
               ?.toLowerCase()
               .includes(lowerSearchTerm) ||
@@ -153,12 +146,13 @@ const EventListView = ({
                 status !== 'cancelled' &&
                 status !== 'suspended'
               break
+            case 'all':
             default:
               matchesStatusFilter = true
-              break // 'all'
+              break
           }
           const hasValidDate =
-            event.date && event.date.seconds
+            eventDateTimestamp instanceof Timestamp
 
           return (
             matchesSearch &&
@@ -169,15 +163,28 @@ const EventListView = ({
         },
       )
 
+      const finalEvents = filteredEvents.map((event) => ({
+        ...event,
+        date: event.date?.toDate
+          ? event.date.toDate().toISOString()
+          : null,
+        createdAt: event.createdAt?.toDate
+          ? event.createdAt.toDate().toISOString()
+          : null,
+        updatedAt: event.updatedAt?.toDate
+          ? event.updatedAt.toDate().toISOString()
+          : null,
+      }))
+
       setEventsList((prevEvents) =>
         shouldReset
-          ? filteredNewEvents
-          : [...prevEvents, ...filteredNewEvents],
+          ? finalEvents
+          : [...prevEvents, ...finalEvents],
       )
 
       const lastDocSnapshot =
         eventsSnapshot.docs[eventsSnapshot.docs.length - 1]
-      setLastVisible(lastDocSnapshot || null) // Store the actual snapshot for pagination
+      setLastVisible(lastDocSnapshot || null)
       setHasMore(
         eventsSnapshot.docs.length === ITEMS_PER_PAGE,
       )
@@ -186,42 +193,39 @@ const EventListView = ({
         'Error fetching events client-side:',
         error,
       )
-      // Handle error state if needed
+      setFetchError(error)
     } finally {
       setLoading(false)
     }
   }
 
-  // --- Event Handlers ---
   const handleSearchChange = (e) => {
     const newSearchTerm = e.target.value
     setSearchTerm(newSearchTerm)
-    fetchEvents(newSearchTerm, filter, filterStatus, true) // Pass current state
+    fetchEvents(newSearchTerm, filter, filterStatus, true)
   }
 
   const handleCategoryFilterChange = (e) => {
     const newFilter = e.target.value
     setFilter(newFilter)
-    fetchEvents(searchTerm, newFilter, filterStatus, true) // Pass current state
+    fetchEvents(searchTerm, newFilter, filterStatus, true)
   }
 
   const handleStatusFilterChange = (e) => {
     const newStatusFilter = e.target.value
     setFilterStatus(newStatusFilter)
-    fetchEvents(searchTerm, filter, newStatusFilter, true) // Pass current state
+    fetchEvents(searchTerm, filter, newStatusFilter, true)
   }
 
   const handleLoadMore = () => {
     if (!loading && hasMore) {
-      fetchEvents(searchTerm, filter, filterStatus, false) // Fetch next page
+      fetchEvents(searchTerm, filter, filterStatus, false)
     }
   }
 
   return (
     <>
-      {/* Filter Controls */}
       <div className='flex flex-col md:flex-row items-center justify-center gap-4 mb-8'>
-        {/* Search Input */}
         <div className='relative w-full md:w-1/3'>
           <input
             type='text'
@@ -229,6 +233,7 @@ const EventListView = ({
             value={searchTerm}
             onChange={handleSearchChange}
             className='w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500 pr-10'
+            disabled={loading}
           />
           {searchTerm && (
             <button
@@ -239,7 +244,6 @@ const EventListView = ({
               className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none'
               aria-label='Clear search'
             >
-              {/* X icon */}
               <svg
                 xmlns='http://www.w3.org/2000/svg'
                 className='h-5 w-5'
@@ -255,12 +259,12 @@ const EventListView = ({
             </button>
           )}
         </div>
-        {/* Category Select */}
         <div className='relative w-full md:w-auto'>
           <select
             value={filter}
             onChange={handleCategoryFilterChange}
             className='w-full md:w-48 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500 appearance-none bg-white pr-8 cursor-pointer'
+            disabled={loading}
           >
             <option value='all'>Categorías</option>
             {CATEGORIES.map((category) => (
@@ -272,7 +276,6 @@ const EventListView = ({
               </option>
             ))}
           </select>
-          {/* Arrow Icon for Select */}
           <div className='pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700'>
             <svg
               className='fill-current h-4 w-4'
@@ -283,12 +286,12 @@ const EventListView = ({
             </svg>
           </div>
         </div>
-        {/* Status Select */}
         <div className='relative w-full md:w-auto'>
           <select
             value={filterStatus}
             onChange={handleStatusFilterChange}
             className='w-full md:w-48 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500 appearance-none bg-white pr-8 cursor-pointer'
+            disabled={loading}
           >
             {STATUS_FILTERS.map((statusOption) => (
               <option
@@ -299,7 +302,6 @@ const EventListView = ({
               </option>
             ))}
           </select>
-          {/* Arrow Icon for Select */}
           <div className='pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700'>
             <svg
               className='fill-current h-4 w-4'
@@ -312,21 +314,37 @@ const EventListView = ({
         </div>
       </div>
 
-      {/* Event List Rendering */}
+      {fetchError && (
+        <p className='col-span-full text-center text-red-500 py-10'>
+          Error al cargar eventos:{' '}
+          {fetchError.message || 'Error desconocido'}
+        </p>
+      )}
+
       <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8'>
-        {/* Initial state from props might be empty if server sent none */}
-        {eventsList.length === 0 && !loading && (
-          <p className='col-span-full text-center text-gray-500 py-10'>
-            No se encontraron eventos que coincidan con los
-            filtros.
-          </p>
-        )}
+        {loading &&
+          eventsList.length === 0 &&
+          Array.from({ length: ITEMS_PER_PAGE }).map(
+            (_, index) => (
+              <EventCardSkeleton
+                key={`initial-skeleton-${index}`}
+              />
+            ),
+          )}
+
+        {!loading &&
+          !fetchError &&
+          eventsList.length === 0 && (
+            <p className='col-span-full text-center text-gray-500 py-10'>
+              No se encontraron eventos que coincidan con
+              los filtros.
+            </p>
+          )}
 
         {eventsList.map((event) => (
           <EventCard
             key={event.id}
             onClick={() => openModal(event)}
-            // ... pass necessary props ...
             title={event.title}
             description={
               event.description
@@ -345,8 +363,8 @@ const EventListView = ({
           />
         ))}
 
-        {/* Loading More Skeletons */}
         {loading &&
+          eventsList.length > 0 &&
           Array.from({ length: 4 }).map((_, index) => (
             <EventCardSkeleton
               key={`loading-more-${index}`}
@@ -354,7 +372,6 @@ const EventListView = ({
           ))}
       </div>
 
-      {/* Load More Button */}
       {!loading && hasMore && (
         <div className='mt-12 text-center'>
           <button
@@ -367,7 +384,6 @@ const EventListView = ({
         </div>
       )}
 
-      {/* Event Detail Modal */}
       <EventDetailModal
         isOpen={isModalOpen}
         onClose={closeModal}
