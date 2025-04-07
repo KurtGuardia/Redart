@@ -2,13 +2,16 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
+import { useVenueData } from '../../../hooks/useVenueData'
 
-const VenuePhotoGallery = ({
-  photos = [],
-  venueName = 'Venue',
-}) => {
+const VenuePhotoGallery = ({ venueId }) => {
   const [selectedImageUrl, setSelectedImageUrl] =
     useState(null)
+  const { venue, loading, error } = useVenueData(venueId)
+  const photos = venue?.photos || []
+  const venueName =
+    venue?.name ||
+    '[Falta nombre, contacta al administrador]'
 
   // Set initial selected image
   useEffect(() => {
@@ -44,7 +47,7 @@ const VenuePhotoGallery = ({
 
         {/* Grid of Thumbnails */}
         {photos.length > 1 && (
-          <div className='grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 md:gap-3'>
+          <div className='grid grid-cols-3 md:grid-cols-5 gap-2 md:gap-3'>
             {photos.map((photoUrl) => (
               <button
                 key={photoUrl}

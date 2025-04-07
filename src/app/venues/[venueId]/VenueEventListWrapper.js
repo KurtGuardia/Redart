@@ -3,10 +3,16 @@
 import { useState } from 'react'
 import VenueEventListItem from '../../../components/VenueEventListItem'
 import EventDetailModal from '../../../components/EventDetailModal'
+import { useEventsByVenue } from '../../../hooks/useEventsByVenue'
+import { useIsIndexPage } from '../../../hooks/useIsIndexPage'
 
-const VenueEventListWrapper = ({ initialEvents = [] }) => {
+const VenueEventListWrapper = ({ venueId }) => {
   const [selectedEvent, setSelectedEvent] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const isIndexPage = useIsIndexPage()
+
+  const { events, loading, error } =
+    useEventsByVenue(venueId)
 
   const openModal = (event) => {
     setSelectedEvent(event)
@@ -18,25 +24,40 @@ const VenueEventListWrapper = ({ initialEvents = [] }) => {
     setIsModalOpen(false)
   }
 
-  if (!initialEvents || initialEvents.length === 0) {
+  if (loading) {
     return (
-      <p className='text-gray-500 text-center py-6'>
-        No hay próximos eventos programados en este lugar.
-      </p>
+      <div className='text-center py-4 text-gray-500'>
+        Cargando eventos...
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className='text-center py-4 text-red-500'>
+        Error al cargar eventos: {error}
+      </div>
+    )
+  }
+
+  if (!events || events.length === 0) {
+    return (
+      <div className='text-center py-4 text-gray-500'>
+        No hay eventos programados en este lugar por el
+        momento.
+      </div>
     )
   }
 
   return (
     <>
       <ul className='space-y-4'>
-        {initialEvents.map((event) => (
+        {events.map((event) => (
           <VenueEventListItem
             key={event.id}
             event={event}
-            // Note: onEdit/onDelete are not relevant on public page
-            // onEdit={() => {}}
-            // onDelete={() => {}}
-            onClickItem={openModal} // Pass the modal open handler
+            onClickItem={openModal}
+            isIndexPage={isIndexPage}
           />
         ))}
       </ul>
