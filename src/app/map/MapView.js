@@ -1,14 +1,15 @@
 'use client'
 
-import { useState } from 'react' // Keep useState if needed for client-side map interactions
+import { useState } from 'react'
 import MapComponent from '../../components/MapComponent'
 import { useVenueLocations } from '../../hooks/useVenueLocations' // Remove if only using initial data
+import Link from 'next/link'
 
 export default function MapView() {
   const { locations, loading, error } = useVenueLocations()
 
   return (
-    <div className='w-full h-[60vh] mx-auto rounded-lg overflow-hidden shadow-lg'>
+    <div className='w-full mx-auto rounded-lg overflow-hidden'>
       {loading ? (
         <div className='flex justify-center items-center h-full bg-gray-100'>
           <div className='animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500'></div>
@@ -23,16 +24,34 @@ export default function MapView() {
       ) : locations && locations.length > 0 ? (
         <>
           <MapComponent
-            center={[-17.389499, -66.156123]} // Or calculate center based on locations
-            zoom={13} // Adjust zoom back to a reasonable default like 13
+            center={[-17.389499, -66.156123]}
+            zoom={13}
             venues={locations}
           />
+
           <div className='bg-[var(--blue-800-transparent)] text-[var(--white)] p-2 my-4 rounded-lg w-fit mx-auto text-sm'>
             Mostrando {locations.length}{' '}
             {locations.length === 1
               ? 'espacio cultural'
               : 'espacios culturales'}
           </div>
+
+          <ul className='list-disc pl-5 text-[var(--primary)]'>
+            {locations.map((location) => (
+              <li key={location.id} className='my-2 p-2'>
+                <Link
+                  href={`/venues/${location.id}`}
+                  className='font-semibold text-[var(--primary)]'
+                >
+                  {location.name}
+                </Link>
+                :{' '}
+                <span className='text-[var(--teal-700)]'>
+                  {location.address}
+                </span>
+              </li>
+            ))}
+          </ul>
         </>
       ) : (
         <div className='text-center h-full flex flex-col justify-center items-center bg-gray-100 p-4'>

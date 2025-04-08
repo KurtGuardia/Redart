@@ -20,7 +20,7 @@ const HomePageMapSection = () => {
         </div>
       ) : locations && locations.length > 0 ? (
         <MapComponent
-          center={[-17.389499, -66.156123]} // Default center          // Adjust zoom
+          center={[-17.389499, -66.156123]}
           venues={locations}
         />
       ) : (
