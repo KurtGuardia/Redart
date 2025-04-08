@@ -29,17 +29,19 @@ export default function FAQ() {
       <Spot colorName={'Indigo'} />
       <Spot colorName={'red'} />
       <Spot colorName={'Indigo'} />
-      <div className='container mx-auto my-24'>
+      <div className='container mx-auto my-24 '>
         <h1 className='text-3xl font-bold text-center mb-12'>
           Preguntas Frecuentes
         </h1>
-        <div className='space-y-4 max-w-3xl mx-auto'>
+        <div className='space-y-4 max-w-9xl mx-auto '>
           {faqs.map((faq, index) => (
-            <FAQItem
-              key={index}
-              question={faq.question}
-              answer={faq.answer}
-            />
+            <div className='transform transition-transform duration-300 hover:translate-y-[-7px]'>
+              <FAQItem
+                key={index}
+                question={faq.question}
+                answer={faq.answer}
+              />
+            </div>
           ))}
         </div>
       </div>

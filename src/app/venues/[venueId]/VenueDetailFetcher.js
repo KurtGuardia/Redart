@@ -233,6 +233,7 @@ export default function VenueDetailFetcher({ venueId }) {
             </div>
           )}
 
+          {/* Amenities */}
           <div>
             <h3 className='font-semibold text-gray-700 mb-2 flex items-center gap-2'>
               <span className='text-xl'>✨</span> Servicios
@@ -290,7 +291,6 @@ export default function VenueDetailFetcher({ venueId }) {
                     title={venue.facebookUrl}
                   >
                     <FaFacebook className='w-5 h-5' />{' '}
-                    {/* Use React Icon */}
                     <span className='truncate'>
                       Facebook
                     </span>
@@ -305,7 +305,6 @@ export default function VenueDetailFetcher({ venueId }) {
                     title={venue.instagramUrl}
                   >
                     <FaInstagram className='w-5 h-5' />{' '}
-                    {/* Use React Icon */}
                     <span className='truncate'>
                       Instagram
                     </span>
@@ -323,7 +322,6 @@ export default function VenueDetailFetcher({ venueId }) {
                     title={venue.whatsappNumber}
                   >
                     <FaWhatsapp className='w-5 h-5' />{' '}
-                    {/* Use React Icon */}
                     <span className='truncate'>
                       {formatWhatsappNumber(
                         venue.whatsappNumber,

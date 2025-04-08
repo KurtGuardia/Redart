@@ -10,13 +10,13 @@ const FAQItem = ({ question, answer }) => {
   }
 
   return (
-    <div className='border-b border-gray-200 pb-4'>
+    <div className='rounded-md bg-white shadow-md'>
       <button
-        className='flex justify-between items-center w-full text-left py-2 focus:outline-none'
+        className='flex justify-between items-center w-full text-left p-4 focus:outline-none'
         onClick={toggleOpen}
         aria-expanded={isOpen}
       >
-        <span className='text-lg font-semibold text-gray-800'>
+        <span className='text-xl font-semibold text-[var(--teal-800)]'>
           {question}
         </span>
         <svg
@@ -37,10 +37,8 @@ const FAQItem = ({ question, answer }) => {
         </svg>
       </button>
       {isOpen && (
-        <div className='mt-2 pr-10'>
-          {' '}
-          {/* Add padding to prevent text bumping icon */}
-          <p className='text-gray-600 leading-relaxed'>
+        <div className='p-4 bg-gray-100 rounded-b-md'>
+          <p className='text-[var(--blue-800)] leading-relaxed'>
             {answer}
           </p>
         </div>
