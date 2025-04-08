@@ -15,7 +15,6 @@ import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAddressSearch } from '../hooks/useAddressSearch'
 
-const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
 const DEFAULT_CENTER = [-17.389499, -66.156123]
 const DEFAULT_ZOOM = 13
 
@@ -247,15 +246,45 @@ export default function Map({
       {!isDashboard && (
         <div className='relative' ref={suggestionsRef}>
           <div className='flex gap-2'>
-            <input
-              type='text'
-              value={searchQuery}
-              onChange={handleInputChange}
-              onFocus={() => setShowSuggestions(true)}
-              placeholder='Busca una ubicación...'
-              className='flex-grow px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
-              disabled={isSearching}
-            />
+            <div className='relative flex-grow'>
+              <input
+                type='text'
+                value={searchQuery}
+                onChange={handleInputChange}
+                onFocus={() => setShowSuggestions(true)}
+                placeholder='Busca una ubicación...'
+                className='w-full px-3 py-2 pr-8 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
+                disabled={isSearching}
+              />
+              {searchQuery && (
+                <button
+                  type='button'
+                  onClick={() => {
+                    handleInputChange({
+                      target: { value: '' },
+                    })
+                    setShowSuggestions(false)
+                  }}
+                  className='absolute inset-y-0 right-0 flex items-center px-2 text-gray-500 hover:text-gray-700 focus:outline-none'
+                  aria-label='Limpiar búsqueda'
+                >
+                  <svg
+                    className='w-5 h-5'
+                    fill='none'
+                    stroke='currentColor'
+                    viewBox='0 0 24 24'
+                    xmlns='http://www.w3.org/2000/svg'
+                  >
+                    <path
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      strokeWidth={2}
+                      d='M6 18L18 6M6 6l12 12'
+                    />
+                  </svg>
+                </button>
+              )}
+            </div>
             <button
               type='button'
               onClick={handleSearchClick}

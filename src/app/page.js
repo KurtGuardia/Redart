@@ -3,7 +3,7 @@ import TypingAnimation from '../components/TypingAnimation'
 import Spot from '../components/ui/Spot'
 import EventCard from '../components/EventCard'
 import HeroBackgroundSlider from '../components/HeroBackgroundSlider'
-import HomePageMapSection from '../components/HomePageMapSection'
+import MapView from './map/MapView'
 
 export default function HomePage() {
   const featuredEvents = [
@@ -148,7 +148,7 @@ export default function HomePage() {
             tuyo preferido y conoce la programación de
             eventos.
           </p>
-          <HomePageMapSection />
+          <MapView />
         </div>
       </section>
 
