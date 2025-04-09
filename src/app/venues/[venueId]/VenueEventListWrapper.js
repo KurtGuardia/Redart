@@ -5,6 +5,7 @@ import VenueEventListItem from '../../../components/VenueEventListItem'
 import EventDetailModal from '../../../components/EventDetailModal'
 import { useEventsByVenue } from '../../../hooks/useEventsByVenue'
 import { useIsIndexPage } from '../../../hooks/useIsIndexPage'
+import { Skeleton } from '../../../components/ui/Skeleton'
 
 const VenueEventListWrapper = ({ venueId }) => {
   const [selectedEvent, setSelectedEvent] = useState(null)
@@ -24,18 +25,19 @@ const VenueEventListWrapper = ({ venueId }) => {
     setIsModalOpen(false)
   }
 
-  if (loading) {
-    return (
-      <div className='text-center py-4 text-gray-500'>
-        Cargando eventos...
-      </div>
-    )
+  if (error) {
+    throw error
   }
 
-  if (error) {
+  if (loading) {
     return (
-      <div className='text-center py-4 text-red-500'>
-        Error al cargar eventos: {error}
+      <div className='space-y-4'>
+        {[...Array(3)].map((_, index) => (
+          <Skeleton
+            key={index}
+            className='h-15 bg-[var(--secondary-color-transparent)] w-full rounded-lg'
+          />
+        ))}
       </div>
     )
   }

@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link' // Needed for the link wrapper potentially
 import { useVenueData } from '../../../hooks/useVenueData'
 import { generateGoogleMapsUrl } from '../../../lib/utils'
+import { Skeleton } from '../../../components/ui/Skeleton' // Import Skeleton
 
 // Simple SVG Icon for location pin (defined locally)
 const LocationPinIcon = () => (
@@ -24,25 +25,20 @@ const LocationPinIcon = () => (
 export default function VenueHeroSection({ venueId }) {
   const { venue, loading, error } = useVenueData(venueId)
 
+  // --- Throw error first if exists ---
+  if (error) {
+    throw error // Let error.js handle it
+  }
+
   // --- Render Loading State ---
   if (loading) {
+    // Render styled Skeleton
     return (
-      <div className='relative w-full h-64 md:h-96 flex items-center justify-center text-center overflow-hidden mb-12 shadow-lg bg-gray-800'>
-        <div className='animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500'></div>
-      </div>
+      <Skeleton className='relative w-full h-64 md:h-96 mb-12 shadow-lg bg-[var(--secondary-color-transparent)]' />
     )
   }
 
-  // --- Render Error State ---
-  if (error) {
-    return (
-      <div className='relative w-full h-64 md:h-96 flex items-center justify-center text-center overflow-hidden mb-12 shadow-lg bg-red-900/50 text-white p-4'>
-        Error al cargar datos del lugar: {error}
-      </div>
-    )
-  }
-
-  // --- Render Empty State ---
+  // --- Render Empty State (if loading finished, no error, but no venue) ---
   if (!venue) {
     return (
       <div className='relative w-full h-64 md:h-96 flex items-center justify-center text-center overflow-hidden mb-12 shadow-lg bg-gray-800 text-gray-400'>

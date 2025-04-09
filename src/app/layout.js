@@ -11,10 +11,6 @@ export const metadata = {
 
 // Make the layout async
 export default async function RootLayout({ children }) {
-  // --- Add temporary delay ---
-  await new Promise((resolve) => setTimeout(resolve, 5000)) // 5-second delay
-  // --- End temporary delay ---
-
   return (
     <html lang='es' suppressHydrationWarning={true}>
       <body className='flex flex-col min-h-screen'>
