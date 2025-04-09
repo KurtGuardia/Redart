@@ -443,46 +443,78 @@ export const formatWhatsappNumber = (number) => {
 }
 
 /**
- * Checks if the given event date/timestamp is in the past.
- * @param {Timestamp|Date|object|string} dateInput - The timestamp, date object {seconds, nanoseconds}, or date string to check.
- * @returns {boolean} True if the date is in the past, false otherwise or if date is invalid.
+ * Checks if an event date has passed compared to the current time.
+ * Handles Firestore Timestamp, Date object, or ISO date string.
+ * @param {Timestamp | Date | string} dateInput The date of the event.
+ * @returns {boolean} True if the event date is in the past, false otherwise.
  */
 export const hasEventPassed = (dateInput) => {
   if (!dateInput) {
-    return false // Cannot determine if no date is provided
+    return false // Consider events without dates as not passed
   }
 
   let eventDate
-
-  // Convert Firestore Timestamp or Date object
-  if (dateInput && typeof dateInput.toDate === 'function') {
-    eventDate = dateInput.toDate()
-  } else if (dateInput instanceof Date) {
-    eventDate = dateInput
-  } else {
-    // Try parsing if it's a string or other type
-    try {
+  try {
+    if (dateInput.toDate) {
+      eventDate = dateInput.toDate()
+    } else {
       eventDate = new Date(dateInput)
-      if (isNaN(eventDate.getTime())) {
-        // Invalid date
-        console.warn(
-          'hasEventPassed: Received invalid date input:',
-          dateInput,
-        )
-        return false
-      }
-    } catch (e) {
-      console.warn(
-        'hasEventPassed: Error parsing date input:',
-        dateInput,
-        e,
-      )
-      return false // Error parsing date
     }
-  }
 
-  const now = new Date()
-  return eventDate < now // Return true if the event date is before now
+    if (isNaN(eventDate.getTime())) {
+      console.warn(
+        'hasEventPassed received an invalid date input:',
+        dateInput,
+      )
+      return false // Treat invalid dates as not passed
+    }
+
+    const now = new Date()
+    return eventDate < now
+  } catch (error) {
+    console.error(
+      'Error determining if event has passed:',
+      error,
+      'Input:',
+      dateInput,
+    )
+    return false // Default to not passed on error
+  }
+}
+
+/**
+ * Generates a Google Maps URL based on location coordinates or address.
+ * Prioritizes coordinates if available.
+ * @param {object} options - The venue details.
+ * @param {object} [options.location] - Optional Firestore GeoPoint or object with latitude/longitude.
+ * @param {number} [options.location.latitude]
+ * @param {number} [options.location.longitude]
+ * @param {string} [options.address] - Venue address.
+ * @param {string} [options.city] - Venue city.
+ * @param {string} [options.country] - Venue country.
+ * @returns {string} The Google Maps URL or '#' if insufficient data.
+ */
+export const generateGoogleMapsUrl = ({
+  location,
+  address,
+  city,
+  country,
+}) => {
+  if (location?.latitude && location?.longitude) {
+    // Use coordinates if available
+    return `https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}`
+  } else if (address && city) {
+    // Use address if coordinates are missing
+    const queryParts = [address, city, country].filter(
+      Boolean,
+    ) // Filter out null/empty parts
+    const googleMapsQuery = encodeURIComponent(
+      queryParts.join(', '),
+    )
+    return `https://www.google.com/maps/search/?api=1&query=${googleMapsQuery}`
+  }
+  // Return a fallback if neither coordinates nor address/city are available
+  return '#'
 }
 
 // --- Image Compression Functions ---

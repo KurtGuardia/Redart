@@ -112,10 +112,12 @@ const EventDetailModal = ({ isOpen, onClose, event }) => {
         <div className='relative'>
           <div
             className={`relative w-full h-56 sm:h-72 md:h-80 rounded-t-xl overflow-hidden group animate-fade-in-up border-[10px] ${
-              isPast
-                ? 'border-[var(--gray-700)]'
-                : status === 'cancelled'
+              status === 'cancelled'
                 ? 'border-[var(--pink-600-transparent)]'
+                : status === 'suspended'
+                ? 'border-[var(--secondary-color-transparent)]'
+                : isPast
+                ? 'border-[var(--gray-700)]'
                 : 'border-[var(--secondary-color-transparent)]'
             }`}
           >

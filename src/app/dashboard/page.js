@@ -1600,6 +1600,7 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
+
             {/* Link to public venue page */}
             <div className='mt-32 text-center'>
               <Link

@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import MapComponent from '../../components/MapComponent'
-import { useVenueLocations } from '../../hooks/useVenueLocations'
+import MapComponent from './MapComponent'
+import { useVenueLocations } from '../hooks/useVenueLocations'
 import Link from 'next/link'
-import { Skeleton } from '../../components/ui/Skeleton'
+import { Skeleton } from './ui/Skeleton'
 import { usePathname } from 'next/navigation'
 import Image from 'next/image'
 
@@ -50,7 +50,7 @@ export default function MapView() {
                 {locations.map((location) => (
                   <li
                     key={location.id}
-                    className='my-2 p-2 relative group'
+                    className='my-2 p-2 relative group w-fit'
                   >
                     <Link
                       href={`/venues/${location.id}`}
@@ -59,7 +59,10 @@ export default function MapView() {
                       {location.name}:{' '}
                       <span className='text-[var(--teal-700)]'>
                         {location.address}
-                      </span>
+                      </span>{' '}
+                      <small className=' text-gray-500'>
+                        {location.city}, {location.country}
+                      </small>
                       {location.logo && (
                         <div className='hidden group-hover:block absolute z-10 -top-24 left-0 w-24 h-24 p-1 bg-white rounded-md shadow-lg border border-gray-200'>
                           <Image

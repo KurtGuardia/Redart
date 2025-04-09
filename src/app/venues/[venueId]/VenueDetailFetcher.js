@@ -11,7 +11,10 @@ import {
   FaInstagram,
   FaFacebook,
 } from 'react-icons/fa'
-import { formatWhatsappNumber } from '../../../lib/utils'
+import {
+  formatWhatsappNumber,
+  generateGoogleMapsUrl,
+} from '../../../lib/utils'
 
 // Simple SVG Icon for location pin (defined locally)
 const LocationPinIcon = () => (
@@ -190,9 +193,19 @@ export default function VenueDetailFetcher({ venueId }) {
             </div>
           )}
           {venue.address && (
-            <p className='text-center text-gray-700 text-sm md:text-base mt-4'>
+            <a
+              href={generateGoogleMapsUrl({
+                location: venue.location,
+                address: venue.address,
+                city: venue.city,
+                country: venue.country,
+              })}
+              target='_blank'
+              rel='noopener noreferrer'
+              className='block text-center text-[var(--teal-800)] hover:text-[var(--teal-600)] hover:underline text-sm md:text-base mt-4'
+            >
               <LocationPinIcon /> {venue.address}
-            </p>
+            </a>
           )}
         </div>
 

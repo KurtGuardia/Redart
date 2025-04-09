@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link' // Needed for the link wrapper potentially
 import { useVenueData } from '../../../hooks/useVenueData'
+import { generateGoogleMapsUrl } from '../../../lib/utils'
 
 // Simple SVG Icon for location pin (defined locally)
 const LocationPinIcon = () => (
@@ -56,20 +57,14 @@ export default function VenueHeroSection({ venueId }) {
       ? venue.photos[0]
       : null
 
-  let googleMapsUrl = '#'
-  if (
-    venue.location?.latitude &&
-    venue.location?.longitude
-  ) {
-    googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${venue.location.latitude},${venue.location.longitude}`
-  } else if (venue.address && venue.city) {
-    const googleMapsQuery = encodeURIComponent(
-      `${venue.address}, ${venue.city}, ${
-        venue.country || ''
-      }`,
-    )
-    googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${googleMapsQuery}`
-  }
+  const { address, city, country, location } = venue
+  // Use the utility function to generate the URL
+  const googleMapsUrl = generateGoogleMapsUrl({
+    location,
+    address,
+    city,
+    country,
+  })
 
   // --- Render Content using the provided JSX ---
   return (

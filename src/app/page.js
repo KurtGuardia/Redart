@@ -3,7 +3,7 @@ import TypingAnimation from '../components/TypingAnimation'
 import Spot from '../components/ui/Spot'
 import EventCard from '../components/EventCard'
 import HeroBackgroundSlider from '../components/HeroBackgroundSlider'
-import MapView from './map/MapView'
+import MapView from '../components/MapView'
 
 export default function HomePage() {
   const featuredEvents = [

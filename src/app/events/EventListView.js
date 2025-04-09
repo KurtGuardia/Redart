@@ -12,10 +12,7 @@ import {
   Timestamp, // Import Timestamp for type checking if needed
 } from 'firebase/firestore'
 import { CATEGORIES } from '../../lib/constants'
-import {
-  hasEventPassed,
-  formatTimestamp,
-} from '../../lib/utils' // formatTimestamp might not be needed here if converted later
+import { hasEventPassed } from '../../lib/utils'
 import EventCard from '../../components/EventCard'
 import EventDetailModal from '../../components/EventDetailModal'
 import EventCardSkeleton from '../../components/EventCardSkeleton'
@@ -232,7 +229,7 @@ const EventListView = () => {
             placeholder='Buscar eventos, lugares, ciudades...'
             value={searchTerm}
             onChange={handleSearchChange}
-            className='w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500 pr-10'
+            className='w-full px-4 py-2 border-2 border-gray-300 rounded-lg shadow-sm  focus:border-teal-500 pr-10 focus-visible:outline-none'
             disabled={loading}
           />
           {searchTerm && (
@@ -263,7 +260,7 @@ const EventListView = () => {
           <select
             value={filter}
             onChange={handleCategoryFilterChange}
-            className='w-full md:w-48 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500 appearance-none bg-white pr-8 cursor-pointer'
+            className='w-full md:w-48 px-4 py-2 border-2 border-gray-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500 appearance-none bg-white pr-8 cursor-pointer'
             disabled={loading}
           >
             <option value='all'>Categorías</option>
@@ -290,7 +287,7 @@ const EventListView = () => {
           <select
             value={filterStatus}
             onChange={handleStatusFilterChange}
-            className='w-full md:w-48 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500 appearance-none bg-white pr-8 cursor-pointer'
+            className='w-full md:w-48 px-4 py-2 border-2 border-gray-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500 appearance-none bg-white pr-8 cursor-pointer'
             disabled={loading}
           >
             {STATUS_FILTERS.map((statusOption) => (

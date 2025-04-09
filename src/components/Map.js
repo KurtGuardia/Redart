@@ -253,7 +253,7 @@ export default function Map({
                 onChange={handleInputChange}
                 onFocus={() => setShowSuggestions(true)}
                 placeholder='Busca una ubicación...'
-                className='w-full px-3 py-2 pr-8 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
+                className='w-full px-3 py-2 pr-8 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-teal-500'
                 disabled={isSearching}
               />
               {searchQuery && (

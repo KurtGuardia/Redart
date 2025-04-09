@@ -88,7 +88,10 @@ const EventCard = ({
             <div className='absolute inset-0 bg-gradient-to-t from-black/70 to-transparent to-30% rounded-lg' />
           )}
         </div>
-        <h3 className={`text-xl font-semibold mb-2`}>
+        <h3
+          className={`text-xl font-semibold mb-2 truncate h-[1.75rem] sm:line-clamp-2 sm:h-[3.5rem] sm:whitespace-normal`}
+          title={title}
+        >
           {title}
         </h3>
         {description && (
