@@ -1,7 +1,7 @@
 import Spot from '../../components/ui/Spot'
 import EventListView from './EventListView'
 
-export default async function EventsPage() {
+export default function EventsPage() {
   return (
     <div className='relative container mx-auto my-24'>
       <Spot colorName={'SlateBlue'} />

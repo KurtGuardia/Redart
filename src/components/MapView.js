@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import MapComponent from './MapComponent'
 import { useVenueLocations } from '../hooks/useVenueLocations'
 import Link from 'next/link'
@@ -12,7 +11,16 @@ export default function MapView() {
   const { locations, loading, error } = useVenueLocations()
   const pathname = usePathname()
   const isHomePage = pathname === '/'
-  console.log(isHomePage)
+
+  if (error) {
+    throw error
+  }
+
+  if (loading || !locations) {
+    return (
+      <Skeleton className='w-full h-[60vh] rounded-3xl animate-pulse bg-[var(--blue-800-transparent)]' />
+    )
+  }
 
   return (
     <div
@@ -20,16 +28,7 @@ export default function MapView() {
         isHomePage ? 'w-[60%]' : 'w-full'
       }`}
     >
-      {loading ? (
-        <Skeleton className='w-full h-[60vh]' />
-      ) : error ? (
-        <div className='text-center text-red-500 h-full flex flex-col justify-center items-center bg-red-50 p-4'>
-          <p>
-            Error al cargar los lugares:{' '}
-            {error.message || error}
-          </p>
-        </div>
-      ) : locations && locations.length > 0 ? (
+      {locations.length > 0 ? (
         <>
           <MapComponent
             center={[-17.389499, -66.156123]}
@@ -82,7 +81,7 @@ export default function MapView() {
           )}
         </>
       ) : (
-        <div className='text-center h-full flex flex-col justify-center items-center bg-gray-100 p-4'>
+        <div className='text-center h-[60vh] flex flex-col justify-center items-center bg-gray-100 p-4'>
           <p className='text-gray-700 mb-4'>
             No hay lugares disponibles para mostrar en el
             mapa.

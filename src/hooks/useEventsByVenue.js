@@ -9,8 +9,6 @@ import {
   query,
   where,
   getDocs,
-  Timestamp,
-  orderBy, // Keep orderBy if you want to sort the final results
 } from 'firebase/firestore'
 
 // Firestore 'in' query limit (currently 30)

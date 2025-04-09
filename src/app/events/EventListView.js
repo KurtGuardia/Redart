@@ -9,7 +9,7 @@ import {
   orderBy,
   limit,
   startAfter,
-  Timestamp, // Import Timestamp for type checking if needed
+  Timestamp,
 } from 'firebase/firestore'
 import { CATEGORIES } from '../../lib/constants'
 import { hasEventPassed } from '../../lib/utils'
@@ -28,12 +28,16 @@ const STATUS_FILTERS = [
 
 const ITEMS_PER_PAGE = 8
 
+// Revert to original component without props
 const EventListView = () => {
+  // Restore original state
   const [eventsList, setEventsList] = useState([])
-  const [loading, setLoading] = useState(true) // Start loading true for initial fetch
   const [lastVisible, setLastVisible] = useState(null)
-  const [hasMore, setHasMore] = useState(true) // Assume has more initially
-  const [fetchError, setFetchError] = useState(null) // Add error state
+  const [loading, setLoading] = useState(true) // Back to initial loading state
+  const [isFetchingMore, setIsFetchingMore] =
+    useState(false)
+  const [hasMore, setHasMore] = useState(true)
+  const [error, setError] = useState(null)
 
   const [searchTerm, setSearchTerm] = useState('')
   const [filter, setFilter] = useState('all')
@@ -41,6 +45,7 @@ const EventListView = () => {
   const [selectedEvent, setSelectedEvent] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
+  // Restore initial fetch useEffect
   useEffect(() => {
     fetchEvents(searchTerm, filter, filterStatus, true)
   }, [])
@@ -55,20 +60,23 @@ const EventListView = () => {
     setIsModalOpen(false)
   }
 
+  // Restore fetchEvents logic with initial loading state
   const fetchEvents = async (
     currentSearchTerm = '',
     currentCategoryFilter = 'all',
     currentStatusFilter = 'all',
     shouldReset = false,
   ) => {
-    setLoading(true)
-    setFetchError(null)
+    if (shouldReset) {
+      setLoading(true)
+    } else {
+      setIsFetchingMore(true)
+    }
+    setError(null)
 
     let currentLastVisible = lastVisible
     if (shouldReset) {
-      setEventsList([])
       currentLastVisible = null
-      setLastVisible(null)
     }
 
     let eventsQuery = query(
@@ -97,7 +105,6 @@ const EventListView = () => {
         (event) => {
           const lowerSearchTerm =
             currentSearchTerm.toLowerCase()
-
           const eventDateTimestamp = event.date
           const isPast = eventDateTimestamp
             ? hasEventPassed(eventDateTimestamp)
@@ -148,6 +155,7 @@ const EventListView = () => {
               matchesStatusFilter = true
               break
           }
+
           const hasValidDate =
             eventDateTimestamp instanceof Timestamp
 
@@ -173,10 +181,10 @@ const EventListView = () => {
           : null,
       }))
 
-      setEventsList((prevEvents) =>
+      setEventsList(
         shouldReset
           ? finalEvents
-          : [...prevEvents, ...finalEvents],
+          : (prevEvents) => [...prevEvents, ...finalEvents],
       )
 
       const lastDocSnapshot =
@@ -185,39 +193,51 @@ const EventListView = () => {
       setHasMore(
         eventsSnapshot.docs.length === ITEMS_PER_PAGE,
       )
-    } catch (error) {
+    } catch (err) {
       console.error(
         'Error fetching events client-side:',
-        error,
+        err,
       )
-      setFetchError(error)
+      setError(
+        err instanceof Error
+          ? err
+          : new Error('Error al cargar eventos.'),
+      )
     } finally {
-      setLoading(false)
+      if (shouldReset) {
+        setLoading(false) // Restore setting loading false for initial load
+      } else {
+        setIsFetchingMore(false)
+      }
     }
   }
 
   const handleSearchChange = (e) => {
     const newSearchTerm = e.target.value
-    setSearchTerm(newSearchTerm)
     fetchEvents(newSearchTerm, filter, filterStatus, true)
+    setSearchTerm(newSearchTerm)
   }
 
   const handleCategoryFilterChange = (e) => {
     const newFilter = e.target.value
-    setFilter(newFilter)
     fetchEvents(searchTerm, newFilter, filterStatus, true)
+    setFilter(newFilter)
   }
 
   const handleStatusFilterChange = (e) => {
     const newStatusFilter = e.target.value
-    setFilterStatus(newStatusFilter)
     fetchEvents(searchTerm, filter, newStatusFilter, true)
+    setFilterStatus(newStatusFilter)
   }
 
   const handleLoadMore = () => {
-    if (!loading && hasMore) {
+    if (!loading && !isFetchingMore && hasMore) {
       fetchEvents(searchTerm, filter, filterStatus, false)
     }
+  }
+
+  if (error) {
+    throw error
   }
 
   return (
@@ -230,7 +250,7 @@ const EventListView = () => {
             value={searchTerm}
             onChange={handleSearchChange}
             className='w-full px-4 py-2 border-2 border-gray-300 rounded-lg shadow-sm  focus:border-teal-500 pr-10 focus-visible:outline-none'
-            disabled={loading}
+            disabled={loading || isFetchingMore}
           />
           {searchTerm && (
             <button
@@ -261,7 +281,7 @@ const EventListView = () => {
             value={filter}
             onChange={handleCategoryFilterChange}
             className='w-full md:w-48 px-4 py-2 border-2 border-gray-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500 appearance-none bg-white pr-8 cursor-pointer'
-            disabled={loading}
+            disabled={loading || isFetchingMore}
           >
             <option value='all'>Categorías</option>
             {CATEGORIES.map((category) => (
@@ -288,7 +308,7 @@ const EventListView = () => {
             value={filterStatus}
             onChange={handleStatusFilterChange}
             className='w-full md:w-48 px-4 py-2 border-2 border-gray-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500 appearance-none bg-white pr-8 cursor-pointer'
-            disabled={loading}
+            disabled={loading || isFetchingMore}
           >
             {STATUS_FILTERS.map((statusOption) => (
               <option
@@ -311,70 +331,64 @@ const EventListView = () => {
         </div>
       </div>
 
-      {fetchError && (
-        <p className='col-span-full text-center text-red-500 py-10'>
-          Error al cargar eventos:{' '}
-          {fetchError.message || 'Error desconocido'}
-        </p>
-      )}
-
-      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8'>
-        {loading &&
-          eventsList.length === 0 &&
-          Array.from({ length: ITEMS_PER_PAGE }).map(
+      {loading && (
+        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8'>
+          {Array.from({ length: ITEMS_PER_PAGE }).map(
             (_, index) => (
               <EventCardSkeleton
                 key={`initial-skeleton-${index}`}
               />
             ),
           )}
+        </div>
+      )}
 
-        {!loading &&
-          !fetchError &&
-          eventsList.length === 0 && (
-            <p className='col-span-full text-center text-gray-500 py-10'>
-              No se encontraron eventos que coincidan con
-              los filtros.
-            </p>
-          )}
-
-        {eventsList.map((event) => (
-          <EventCard
-            key={event.id}
-            onClick={() => openModal(event)}
-            title={event.title}
-            description={
-              event.description
-                ? event.description.substring(0, 100) +
-                  '...'
-                : ''
-            }
-            date={event.date}
-            location={
-              event.city || 'Ubicación no disponible'
-            }
-            image={
-              event.featuredImage || '/placeholder.svg'
-            }
-            status={event.status || 'active'}
-          />
-        ))}
-
-        {loading &&
-          eventsList.length > 0 &&
-          Array.from({ length: 4 }).map((_, index) => (
-            <EventCardSkeleton
-              key={`loading-more-${index}`}
+      {!loading && (
+        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8'>
+          {eventsList.map((event) => (
+            <EventCard
+              key={event.id}
+              onClick={() => openModal(event)}
+              title={event.title}
+              description={
+                event.description
+                  ? event.description.substring(0, 100) +
+                    '...'
+                  : ''
+              }
+              date={event.date}
+              location={
+                event.city || 'Ubicación no disponible'
+              }
+              image={
+                event.featuredImage || '/placeholder.svg'
+              }
+              status={event.status || 'active'}
             />
           ))}
-      </div>
 
-      {!loading && hasMore && (
+          {isFetchingMore &&
+            Array.from({ length: 4 }).map((_, index) => (
+              <EventCardSkeleton
+                key={`loading-more-${index}`}
+              />
+            ))}
+        </div>
+      )}
+
+      {!loading && eventsList.length === 0 && (
+        <p className='col-span-full text-center text-gray-500 py-10'>
+          No se encontraron eventos que coincidan con los
+          filtros.
+        </p>
+      )}
+
+      {!loading && !isFetchingMore && hasMore && (
         <div className='mt-12 text-center'>
           <button
             onClick={handleLoadMore}
             className='bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-6 rounded-full transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed'
-            disabled={loading}
+            disabled={isFetchingMore}
           >
             Cargar más
           </button>
