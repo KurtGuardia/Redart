@@ -31,11 +31,11 @@ const VenueEventListWrapper = ({ venueId }) => {
 
   if (loading) {
     return (
-      <div className='space-y-4'>
+      <div className='space-y-4 min-h-[100px] sm:min-h-[300px]'>
         {[...Array(3)].map((_, index) => (
           <Skeleton
             key={index}
-            className='h-15 bg-[var(--secondary-color-transparent)] w-full rounded-lg'
+            className='h-15 bg-[var(--secondary-color-transparent)] w-full rounded-lg h-[100px]'
           />
         ))}
       </div>
