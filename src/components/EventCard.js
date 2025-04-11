@@ -51,7 +51,7 @@ const EventCard = ({
     // Default active/future styles (can adjust if needed)
     backgroundClass = 'bg-[var(--primary-transparent)]'
   }
-  console.log('image', location)
+
   return (
     <div
       className='relative text-white cursor-pointer'

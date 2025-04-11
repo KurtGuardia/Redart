@@ -56,9 +56,6 @@ export function useFeaturedEvents(maxEvents = 3) {
           })
         })
 
-        console.log(
-          `Fetched ${fetchedEvents.length} featured events.`,
-        )
         setEvents(fetchedEvents)
       } catch (err) {
         console.error(

@@ -48,12 +48,12 @@ import VenueEventListItem from '../../components/VenueEventListItem'
 import EventDetailModal from '../../components/EventDetailModal'
 import Link from 'next/link'
 import {
-  FaExternalLinkAlt,
   FaFacebook,
   FaInstagram,
   FaRegEye,
   FaWhatsapp,
 } from 'react-icons/fa'
+import DashboardSkeleton from '../../components/DashboardSkeleton'
 
 const MapComponent = dynamic(
   () => import('../../components/MapComponent'),
@@ -104,7 +104,6 @@ export default function Dashboard() {
   const [eventFormError, setEventFormError] = useState('')
   const [eventSuccess, setEventSuccess] = useState('')
   const router = useRouter()
-  const [loading, setLoading] = useState(false)
   const [eventsLoading, setEventsLoading] = useState(true)
   const [events, setEvents] = useState([])
   const [venueId, setVenueId] = useState(null)
@@ -119,12 +118,8 @@ export default function Dashboard() {
   const [isDetailModalOpen, setIsDetailModalOpen] =
     useState(false)
   const [filterStatus, setFilterStatus] = useState('all') // Change default state to 'all'
-  const {
-    venue,
-    loading: venueLoading,
-    error: venueError,
-    refreshVenue,
-  } = useVenueData(venueId)
+  const { venue, loading, error, refreshVenue } =
+    useVenueData(venueId)
 
   // Effect to handle authentication state changes and set venue ID
   useEffect(() => {
@@ -136,8 +131,6 @@ export default function Dashboard() {
           // Redirect to login if not authenticated
           router.push('/login')
         }
-        // Only set auth loading to false, not events loading
-        setLoading(false)
       },
     )
 
@@ -236,8 +229,6 @@ export default function Dashboard() {
       return
     }
     try {
-      setLoading(true)
-
       // Delete the event from the main events collection
       const eventRef = doc(db, 'events', eventId)
       await deleteDoc(eventRef)
@@ -313,8 +304,6 @@ export default function Dashboard() {
       setEventFormError(
         'Error al eliminar el evento. Inténtelo de nuevo.',
       )
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -532,7 +521,6 @@ export default function Dashboard() {
 
   const handleAddEvent = async (e) => {
     e.preventDefault()
-    setLoading(true)
     setEventFormError('')
     setEventSuccess('')
 
@@ -668,8 +656,6 @@ export default function Dashboard() {
       document
         .querySelector('form')
         ?.scrollIntoView({ behavior: 'smooth' })
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -718,7 +704,6 @@ export default function Dashboard() {
       }
       // --- End Validation ---
 
-      setLoading(true)
       const venueRef = doc(db, 'venues', venueId)
 
       // Extract location, photos, and logo from updated data
@@ -842,15 +827,11 @@ export default function Dashboard() {
       }, 300)
     } catch (error) {
       console.error('Error updating venue:', error)
-    } finally {
-      setLoading(false)
     }
   }
 
   const handleEditEvent = async (updatedData) => {
     try {
-      setLoading(true)
-
       // Create a copy of the data for formatting
       let formattedData = {
         ...updatedData,
@@ -927,8 +908,6 @@ export default function Dashboard() {
         error.message ||
           'Error al actualizar el evento. Inténtelo de nuevo.',
       )
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -1175,21 +1154,13 @@ export default function Dashboard() {
     })
   }, [events, filterStatus])
 
-  if (loading || venueLoading) {
-    return (
-      <div className='min-h-screen flex justify-center items-center bg-gray-50'>
-        <div className='text-center'>
-          <div className='animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500 mx-auto mb-4'></div>
-          <p className='text-gray-600'>
-            Cargando información...
-          </p>
-        </div>
-      </div>
-    )
+  // Main loading check (uses hook's loading state)
+  if (loading) {
+    return <DashboardSkeleton />
   }
 
-  if (venueError) {
-    return <div>Error: {venueError}</div>
+  if (error) {
+    return <div>Error: {error}</div>
   }
 
   return (
@@ -1900,52 +1871,23 @@ export default function Dashboard() {
               <div className='mt-8'>
                 <button
                   type='submit'
-                  disabled={loading}
                   className='w-full py-3 px-4 bg-gradient-to-r from-teal-500 to-teal-600 text-white font-medium rounded-md hover:from-teal-600 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition duration-200 disabled:opacity-70 disabled:cursor-not-allowed'
                 >
                   <span className='flex items-center justify-center'>
-                    {loading ? (
-                      <>
-                        <svg
-                          className='animate-spin -ml-1 mr-2 h-4 w-4 text-white'
-                          xmlns='http://www.w3.org/2000/svg'
-                          fill='none'
-                          viewBox='0 0 24 24'
-                        >
-                          <circle
-                            className='opacity-25'
-                            cx='12'
-                            cy='12'
-                            r='10'
-                            stroke='currentColor'
-                            strokeWidth='4'
-                          ></circle>
-                          <path
-                            className='opacity-75'
-                            fill='currentColor'
-                            d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'
-                          ></path>
-                        </svg>
-                        Procesando...
-                      </>
-                    ) : (
-                      <>
-                        <svg
-                          className='w-5 h-5 mr-2'
-                          fill='none'
-                          stroke='currentColor'
-                          viewBox='0 0 24 24'
-                        >
-                          <path
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
-                            strokeWidth={2}
-                            d='M12 6v6m0 0v6m0-6h6m-6 0H6'
-                          />
-                        </svg>
-                        Agregar evento
-                      </>
-                    )}
+                    <svg
+                      className='w-5 h-5 mr-2'
+                      fill='none'
+                      stroke='currentColor'
+                      viewBox='0 0 24 24'
+                    >
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        strokeWidth={2}
+                        d='M12 6v6m0 0v6m0-6h6m-6 0H6'
+                      />
+                    </svg>
+                    Agregar evento
                   </span>
                 </button>
               </div>

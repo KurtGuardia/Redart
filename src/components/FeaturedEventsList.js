@@ -78,7 +78,7 @@ export default function FeaturedEventsList() {
       </section>
     )
   }
-  console.log('events', events)
+
   // --- Success State: Render Events ---
   return (
     <>
