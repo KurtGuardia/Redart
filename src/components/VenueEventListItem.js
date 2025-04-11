@@ -62,7 +62,7 @@ const VenueEventListItem = ({
   const isPast = hasEventPassed(event.date)
   const status = event.status || 'active'
 
-  const imageUrl = event.featuredImage || '/placeholder.svg'
+  const imageUrl = event.image || '/placeholder.svg'
   const eventDateTime = formatTimestamp(event.date, {
     dateStyle: 'long',
     timeStyle: undefined,

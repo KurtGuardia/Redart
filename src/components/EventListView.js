@@ -331,6 +331,8 @@ const EventListView = () => {
         </div>
       </div>
 
+      {/* Display loading skeletons while data is being
+      fetched */}
       {loading && (
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8'>
           {Array.from({ length: ITEMS_PER_PAGE }).map(
@@ -343,6 +345,7 @@ const EventListView = () => {
         </div>
       )}
 
+      {/* Display event cards when data is loaded */}
       {!loading && (
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8'>
           {eventsList.map((event) => (
@@ -350,23 +353,17 @@ const EventListView = () => {
               key={event.id}
               onClick={() => openModal(event)}
               title={event.title}
-              description={
-                event.description
-                  ? event.description.substring(0, 100) +
-                    '...'
-                  : ''
-              }
+              description={event.description}
               date={event.date}
               location={
                 event.city || 'Ubicación no disponible'
               }
-              image={
-                event.featuredImage || '/placeholder.svg'
-              }
+              image={event.image || '/placeholder.svg'}
               status={event.status || 'active'}
             />
           ))}
 
+          {/* Display loading skeletons while fetching more */}
           {isFetchingMore &&
             Array.from({ length: 4 }).map((_, index) => (
               <EventCardSkeleton
@@ -376,6 +373,7 @@ const EventListView = () => {
         </div>
       )}
 
+      {/* Show message if no events match the filters */}
       {!loading && eventsList.length === 0 && (
         <p className='col-span-full text-center text-gray-500 py-10'>
           No se encontraron eventos que coincidan con los
@@ -383,6 +381,8 @@ const EventListView = () => {
         </p>
       )}
 
+      {/* Show load more button if there are more events to
+      fetch */}
       {!loading && !isFetchingMore && hasMore && (
         <div className='mt-12 text-center'>
           <button
@@ -394,7 +394,6 @@ const EventListView = () => {
           </button>
         </div>
       )}
-
       <EventDetailModal
         isOpen={isModalOpen}
         onClose={closeModal}

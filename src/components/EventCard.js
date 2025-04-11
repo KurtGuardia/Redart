@@ -35,8 +35,7 @@ const EventCard = ({
   status, // Accept status prop
 }) => {
   const isPast = hasEventPassed(date)
-  const currentStatus = status || 'active' // Ensure status exists
-
+  const currentStatus = status || 'active'
   let backgroundClass = 'bg-[var(--primary-transparent)]'
   let opacityClass = 'opacity-100'
   let badgeInfo = getStatusBadgeInfo(currentStatus, isPast)
@@ -52,7 +51,7 @@ const EventCard = ({
     // Default active/future styles (can adjust if needed)
     backgroundClass = 'bg-[var(--primary-transparent)]'
   }
-
+  console.log('image', location)
   return (
     <div
       className='relative text-white cursor-pointer'
@@ -95,7 +94,10 @@ const EventCard = ({
           {title}
         </h3>
         {description && (
-          <p className={`text-sm mb-4 flex-1`}>
+          <p
+            className={`text-sm mb-4 flex-1 line-clamp-3`}
+            title={description}
+          >
             {description}
           </p>
         )}

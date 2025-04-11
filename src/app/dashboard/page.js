@@ -225,7 +225,7 @@ export default function Dashboard() {
   }, [venueId])
 
   // Function to delete an event
-  const deleteEvent = async (eventId, featuredImage) => {
+  const deleteEvent = async (eventId, image) => {
     if (!venueId || !eventId) {
       console.error(
         'Missing venueId or eventId for deletion',
@@ -249,10 +249,10 @@ export default function Dashboard() {
       })
 
       // Delete the featured image from storage if it exists
-      if (featuredImage) {
+      if (image) {
         try {
           // Use the URL parsing logic directly
-          const url = new URL(featuredImage)
+          const url = new URL(image)
           const pathName = decodeURIComponent(url.pathname)
           // Path format: /v0/b/BUCKET_NAME/o/ENCODED_FILE_PATH
           const parts = pathName.split('/o/')
@@ -283,7 +283,7 @@ export default function Dashboard() {
           } else {
             console.error(
               'Could not extract file path from event image URL:',
-              featuredImage,
+              image,
             )
           }
         } catch (error) {
@@ -292,7 +292,7 @@ export default function Dashboard() {
             'Error deleting event image:',
             error,
             'URL:',
-            featuredImage,
+            image,
           )
           // Don't block the rest of the deletion if image deletion fails
         }
@@ -603,7 +603,7 @@ export default function Dashboard() {
         address: venue?.address || '',
         city: venue?.city || '',
         country: venue?.country || '',
-        featuredImage: null, // Will be updated after we have the eventId
+        image: null, // Will be updated after we have the eventId
         capacity: venue?.capacity || null,
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
@@ -624,9 +624,9 @@ export default function Dashboard() {
         if (imageUrl) {
           const eventRef = doc(db, 'events', eventId)
           await updateDoc(eventRef, {
-            featuredImage: imageUrl,
+            image: imageUrl,
           })
-          newEventData.featuredImage = imageUrl
+          newEventData.image = imageUrl
         }
       }
 
@@ -882,20 +882,20 @@ export default function Dashboard() {
 
       // Handle image upload if a new image was provided
       if (
-        updatedData.featuredImage &&
-        typeof updatedData.featuredImage !== 'string'
+        updatedData.image &&
+        typeof updatedData.image !== 'string'
       ) {
         // If the image is a File object (new upload), upload it
         const imageUrl = await uploadEventImage(
-          updatedData.featuredImage,
+          updatedData.image,
           currentEvent.id,
         )
         if (imageUrl) {
-          formattedData.featuredImage = imageUrl
+          formattedData.image = imageUrl
         }
-      } else if (updatedData.featuredImage === null) {
+      } else if (updatedData.image === null) {
         // If the image was explicitly set to null (removed), set it to null
-        formattedData.featuredImage = null
+        formattedData.image = null
       }
       // Otherwise, keep the existing image URL (it's already a string)
 
@@ -933,13 +933,13 @@ export default function Dashboard() {
   }
 
   // Wrapper function for delete confirmation
-  const triggerDelete = (eventId, featuredImage) => {
+  const triggerDelete = (eventId, image) => {
     if (
       window.confirm(
         '¿Estás seguro de que deseas eliminar este evento? Esta acción no se puede deshacer.',
       )
     ) {
-      deleteEvent(eventId, featuredImage)
+      deleteEvent(eventId, image)
     }
   }
 
@@ -1084,7 +1084,7 @@ export default function Dashboard() {
       required: true,
       maxlength: 999,
     },
-    featuredImage: {
+    image: {
       type: 'image',
       label: 'Imagen',
       description: 'Imagen principal del evento',
@@ -1122,7 +1122,7 @@ export default function Dashboard() {
       status: event.status || 'active', // Keep default logic
     }
 
-    // featuredImage should already be correctly set as a URL string
+    // image should already be correctly set as a URL string
     // No need to modify it for the form
 
     // Set current event and open modal
@@ -2059,10 +2059,7 @@ export default function Dashboard() {
                     event={event}
                     onEdit={() => openEventEditModal(event)}
                     onDelete={() =>
-                      triggerDelete(
-                        event.id,
-                        event.featuredImage,
-                      )
+                      triggerDelete(event.id, event.image)
                     }
                     isIndexPage
                     onClickItem={openDetailModal}

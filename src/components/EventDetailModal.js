@@ -14,7 +14,6 @@ import {
 
 const EventDetailModal = ({ isOpen, onClose, event }) => {
   const [isMounted, setIsMounted] = useState(false)
-  console.log('event', event)
   useEffect(() => {
     setIsMounted(true)
     if (isOpen) {
@@ -122,15 +121,13 @@ const EventDetailModal = ({ isOpen, onClose, event }) => {
             }`}
           >
             <Image
-              src={
-                event.featuredImage || '/placeholder.svg'
-              }
+              src={event.image || '/placeholder.svg'}
               alt={event.title}
               fill
               className='absolute inset-0 object-cover transition-transform duration-500 ease-in-out scale-110 group-hover:scale-100'
-              unoptimized={!event.featuredImage}
+              unoptimized={!event.image}
             />
-            {event.featuredImage && (
+            {event.image && (
               <div className='absolute inset-0 bg-gradient-to-t from-black/70 to-[var(--teal-700-transparent)] scale-110 group-hover:scale-100 transition-all duration-500 ease-in-out'></div>
             )}
           </div>

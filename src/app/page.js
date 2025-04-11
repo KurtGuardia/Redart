@@ -1,43 +1,11 @@
 import Link from 'next/link'
 import TypingAnimation from '../components/TypingAnimation'
 import Spot from '../components/ui/Spot'
-import EventCard from '../components/EventCard'
 import HeroBackgroundSlider from '../components/HeroBackgroundSlider'
 import MapView from '../components/MapView'
+import FeaturedEventsList from '../components/FeaturedEventsList'
 
 export default function HomePage() {
-  const featuredEvents = [
-    {
-      id: 1,
-      title: 'Concierto Nocturno',
-      description:
-        'Una noche de música en vivo con artistas locales, donde podrás disfrutar de una gran variedad de estilos y ritmos. La noche estará llena de energía y pasión, con performances en vivo que te dejarán sin aliento.',
-      date: '3 Mar 2025',
-      location: 'Cochabamba',
-      image: '/placeholder.svg?height=200&width=400',
-      type: 'primary',
-    },
-    {
-      id: 2,
-      title: 'Musica en Vivo',
-      description:
-        'Una noche de música en vivo con artistas locales...',
-      date: '25 Feb 2025',
-      location: 'La Paz',
-      image: '/placeholder.svg?height=200&width=400',
-      type: 'secondary-color',
-    },
-    {
-      id: 3,
-      title: 'Festival de Jazz',
-      description:
-        'Una noche de música en vivo con artistas locales...',
-      date: '24 Sept 2025',
-      location: 'Sta. Cruz',
-      image: '/placeholder.svg?height=200&width=400',
-      type: 'destructive',
-    },
-  ]
   const heroImages = [
     '/theater.jpg',
     '/carnival.jpg',
@@ -75,36 +43,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className='featured-events py-16 my-24'>
-        <div className='relative mx-auto px-4'>
-          <Spot colorName={'FireBrick'} />
-          <Spot colorName={'Magenta'} />
-          <Spot colorName={'Peru'} />
-          <h2 className='text-3xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--blue-600)] to-[var(--blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg'>
-            Eventos destacados
-          </h2>
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-14 justify-items-center'>
-            {featuredEvents.map((event) => (
-              <EventCard
-                key={event.id}
-                title={event.title}
-                description={event.description}
-                date={event.date}
-                location={event.location}
-                image={event.image}
-              />
-            ))}
-          </div>
-          <div className='text-center'>
-            <Link
-              href='/events'
-              className='bg-[var(--secondary-color)] text-[var(--secondary-color-foreground)] px-6 py-2 rounded-full text-lg font-semibold hover:bg-teal-700 hover:text-[var(--white)] transition duration-300'
-            >
-              Ver todos los eventos
-            </Link>
-          </div>
-        </div>
-      </section>
+      <FeaturedEventsList />
 
       <section
         className='about-us img relative my-24'
@@ -124,7 +63,7 @@ export default function HomePage() {
           <div className='text-center'>
             <Link
               href='/faq'
-              className='bg-[var(--secondary-color)] text-[var(--secondary-color-foreground)] px-6 py-2 rounded-full text-lg font-semibold hover:bg-white hover:text-[var(--blue-500)] transition duration-300'
+              className='text-[var(--secondary-color-foreground)] rounded-full text-lg font-semibold bg-[var(--white)] px-8 py-3 shadow-md hover:bg-[#7928ca] hover:text-[var(--secondary-color)] transition duration-300 animate-fade-in-up w-fit mx-auto'
             >
               Preguntas frecuentes
             </Link>
