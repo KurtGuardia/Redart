@@ -23,7 +23,7 @@ const DashboardSkeleton = () => {
           </div>
 
           {/* Map Skeleton */}
-          <Skeleton className='h-80 w-full rounded-lg bg-gray-300' />
+          <Skeleton className='h-64 w-full rounded-lg bg-gray-300' />
 
           {/* Info Sections Skeleton */}
           <div className='bg-gray-100 p-4 rounded-lg space-y-2'>

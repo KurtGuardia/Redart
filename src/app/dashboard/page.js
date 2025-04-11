@@ -54,6 +54,8 @@ import {
   FaWhatsapp,
 } from 'react-icons/fa'
 import DashboardSkeleton from '../../components/DashboardSkeleton'
+import VenueDetailsCard from '../../components/dashboard/VenueDetailsCard'
+import EventManagementSection from '../../components/dashboard/EventManagementSection'
 
 const MapComponent = dynamic(
   () => import('../../components/MapComponent'),
@@ -92,21 +94,9 @@ const syncVenueLocationData = async (
 }
 
 export default function Dashboard() {
-  const [eventTitle, setEventTitle] = useState('')
-  const [eventDate, setEventDate] = useState('')
-  const [eventDescription, setEventDescription] =
-    useState('')
-  const [eventCategory, setEventCategory] = useState('')
-  const [eventPrice, setEventPrice] = useState('')
-  const [eventCurrency, setEventCurrency] = useState('BOB') // Default to Boliviano
-  const [eventTicketUrl, setEventTicketUrl] = useState('')
-  const [eventImage, setEventImage] = useState(null)
-  const [eventFormError, setEventFormError] = useState('')
-  const [eventSuccess, setEventSuccess] = useState('')
-  const router = useRouter()
+  const [venueId, setVenueId] = useState(null)
   const [eventsLoading, setEventsLoading] = useState(true)
   const [events, setEvents] = useState([])
-  const [venueId, setVenueId] = useState(null)
   const [isEditModalOpen, setIsEditModalOpen] =
     useState(false)
   const [isEventEditModalOpen, setIsEventEditModalOpen] =
@@ -117,9 +107,13 @@ export default function Dashboard() {
 
   const [isDetailModalOpen, setIsDetailModalOpen] =
     useState(false)
-  const [filterStatus, setFilterStatus] = useState('all') // Change default state to 'all'
+  const [filterStatus, setFilterStatus] = useState('all')
+  const [eventFormError, setEventFormError] = useState('')
+  const [eventSuccess, setEventSuccess] = useState('')
   const { venue, loading, error, refreshVenue } =
     useVenueData(venueId)
+
+  const router = useRouter()
 
   // Effect to handle authentication state changes and set venue ID
   useEffect(() => {
@@ -519,143 +513,128 @@ export default function Dashboard() {
     }
   }
 
-  const handleAddEvent = async (e) => {
-    e.preventDefault()
+  const handleAddEvent = async (formData, imageFile) => {
     setEventFormError('')
     setEventSuccess('')
-
     try {
-      // Validate required fields
-      if (!eventTitle.trim()) {
+      // --- Validation (use formData properties) ---
+      if (!formData.title?.trim()) {
         throw new Error(
           'El título del evento es obligatorio',
         )
       }
-
-      if (!eventDate) {
+      if (!formData.date) {
+        // Check if date string exists
         throw new Error(
           'La fecha y hora del evento son obligatorias',
         )
       }
-
-      if (!eventDescription.trim()) {
-        throw new Error(
-          'La descripción del evento es obligatoria',
-        )
+      const eventDateTime = new Date(formData.date) // Parse the date string
+      if (isNaN(eventDateTime.getTime())) {
+        // Check if date is valid
+        throw new Error('Formato de fecha y hora inválido')
       }
-
-      if (!eventCategory) {
-        throw new Error(
-          'La categoría del evento es obligatoria',
-        )
-      }
-
-      if (!venueId) {
-        throw new Error(
-          'No se encontró información del local',
-        )
-      }
-
-      // Validate date is in the future
-      const eventDateTime = new Date(eventDate)
       if (eventDateTime < new Date()) {
         throw new Error(
           'La fecha del evento debe ser en el futuro',
         )
       }
-
-      // Validate URL format if provided
-      if (eventTicketUrl && !isValidUrl(eventTicketUrl)) {
+      if (!formData.description?.trim()) {
+        throw new Error(
+          'La descripción del evento es obligatoria',
+        )
+      }
+      if (!formData.category) {
+        throw new Error(
+          'La categoría del evento es obligatoria',
+        )
+      }
+      if (!venueId) {
+        throw new Error(
+          'No se encontró información del local (venueId)',
+        )
+      }
+      if (
+        formData.ticketUrl &&
+        !isValidUrl(formData.ticketUrl)
+      ) {
         throw new Error(
           'El formato de la URL de venta de entradas no es válido',
         )
       }
 
-      // Create new event data with comprehensive information
+      // --- Create newEventData (use formData properties) ---
       const newEventData = {
-        title: eventTitle.trim(),
-        description: eventDescription.trim(),
-        date: Timestamp.fromDate(new Date(eventDate)),
-        category: eventCategory,
-        price: eventPrice
-          ? parseFloat(Number(eventPrice).toFixed(2))
+        title: formData.title.trim(),
+        description: formData.description.trim(),
+        date: Timestamp.fromDate(eventDateTime), // Use parsed date
+        category: formData.category,
+        price: formData.price
+          ? parseFloat(Number(formData.price).toFixed(2))
           : 0,
-        currency: eventCurrency,
-        ticketUrl: eventTicketUrl
-          ? eventTicketUrl.trim()
+        currency: formData.currency || 'BOB',
+        ticketUrl: formData.ticketUrl
+          ? formData.ticketUrl.trim()
           : null,
-        status: 'active',
+        status: 'active', // Default status for new events
         venueId: venueId,
         venueName: venue?.name || '',
         location: venue?.location || null,
         address: venue?.address || '',
         city: venue?.city || '',
         country: venue?.country || '',
-        image: null, // Will be updated after we have the eventId
+        image: null, // Initialize image as null
         capacity: venue?.capacity || null,
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
       }
 
-      // Add the event to Firestore
-      const eventId = await addEvent(newEventData)
+      // Add event to Firestore (this function should handle adding ID to venue array)
+      const eventId = await addEvent(newEventData) // Assuming addEvent returns the new event ID
 
-      // Upload the event image if one was provided, now using the eventId
+      // Upload image if provided (using the separate imageFile parameter)
       let imageUrl = null
-      if (eventImage) {
+      if (imageFile) {
         imageUrl = await uploadEventImage(
-          eventImage,
+          imageFile,
           eventId,
-        )
+        ) // Pass eventId
 
-        // Update the event with the image URL
+        // Update the event document with the image URL if upload was successful
         if (imageUrl) {
           const eventRef = doc(db, 'events', eventId)
-          await updateDoc(eventRef, {
-            image: imageUrl,
-          })
-          newEventData.image = imageUrl
+          await updateDoc(eventRef, { image: imageUrl })
+          newEventData.image = imageUrl // Update local object for immediate display
         }
       }
 
-      // Update local state with new event
+      // Update local state with the new event (including potential image URL)
       setEvents([
         { id: eventId, ...newEventData },
         ...events,
       ])
 
-      // Reset form fields
-      setEventTitle('')
-      setEventDate('')
-      setEventDescription('')
-      setEventCategory('')
-      setEventPrice('')
-      setEventCurrency('BOB')
-      setEventTicketUrl('')
-      setEventImage(null)
+      // Reset form fields is now handled within EventCreateForm itself upon success
 
-      // Show success message
+      // Show success message (managed by this component)
       setEventSuccess('¡Evento agregado exitosamente!')
-
-      // Scroll to top of form
-      document
-        .getElementById('eventTitle')
-        ?.scrollIntoView({ behavior: 'smooth' })
-
-      // Clear success message after 5 seconds
       setTimeout(() => {
         setEventSuccess('')
       }, 5000)
+
+      // Scroll logic might need adjustment or removal if form isn't directly here
+      // document.getElementById('eventTitle')?.scrollIntoView({ behavior: 'smooth' })
+
+      return true // Signal success to EventCreateForm
     } catch (error) {
+      console.error('Error adding event:', error) // Log the full error
       setEventFormError(
         error.message ||
           'Error al agregar el evento. Inténtelo de nuevo.',
       )
-
-      // Scroll to error message
-      document
-        .querySelector('form')
-        ?.scrollIntoView({ behavior: 'smooth' })
+      // Scrolling logic might need adjustment or removal
+      // document.querySelector('form')?.scrollIntoView({ behavior: 'smooth' })
+      return false // Signal failure to EventCreateForm
     }
   }
 
@@ -831,83 +810,190 @@ export default function Dashboard() {
   }
 
   const handleEditEvent = async (updatedData) => {
+    if (!currentEvent) {
+      console.error(
+        'Cannot edit event, currentEvent is not set.',
+      )
+      // Maybe set an error state specific to the edit modal
+      alert(
+        'Error: No hay evento seleccionado para editar.',
+      )
+      return
+    }
     try {
-      // Create a copy of the data for formatting
+      // Create a copy for formatting, start with existing data
       let formattedData = {
+        ...currentEvent,
         ...updatedData,
-        // Format date properly from datetime-local input to Firestore Timestamp
-        date: updatedData.date
-          ? Timestamp.fromDate(new Date(updatedData.date))
-          : currentEvent.date,
-        // Format price as number with 2 decimal places
-        price:
-          updatedData.price !== undefined
-            ? parseFloat(
-                Number(updatedData.price).toFixed(2),
-              )
-            : currentEvent.price,
-        // Ensure currency is properly set
-        currency:
-          updatedData.currency ||
-          currentEvent.currency ||
-          'BOB',
-        // Format ticketUrl to null if empty
-        ticketUrl:
-          updatedData.ticketUrl &&
-          updatedData.ticketUrl.trim() !== ''
-            ? updatedData.ticketUrl.trim()
-            : null,
-        // Add a timestamp for the update
-        updatedAt: Timestamp.now(),
+      } // Merge updates
+
+      // Format date if changed
+      if (
+        updatedData.date &&
+        updatedData.date !== currentEvent.date
+      ) {
+        try {
+          formattedData.date = Timestamp.fromDate(
+            new Date(updatedData.date),
+          )
+        } catch (dateError) {
+          console.error(
+            'Invalid date format provided for update:',
+            updatedData.date,
+            dateError,
+          )
+          alert('Formato de fecha inválido.')
+          return // Stop update if date is invalid
+        }
+      } else {
+        // Keep original date if not changed or update is undefined
+        formattedData.date = currentEvent.date
       }
 
-      // Handle image upload if a new image was provided
+      // Format price if changed
       if (
-        updatedData.image &&
-        typeof updatedData.image !== 'string'
+        updatedData.price !== undefined &&
+        updatedData.price !== currentEvent.price
       ) {
-        // If the image is a File object (new upload), upload it
-        const imageUrl = await uploadEventImage(
+        formattedData.price = updatedData.price
+          ? parseFloat(Number(updatedData.price).toFixed(2))
+          : 0 // Handle empty string or 0
+      } else {
+        formattedData.price = currentEvent.price // Keep original if not changed
+      }
+
+      // Format currency if changed
+      formattedData.currency =
+        updatedData.currency ||
+        currentEvent.currency ||
+        'BOB'
+
+      // Format ticketUrl if changed
+      if (
+        updatedData.ticketUrl !== undefined &&
+        updatedData.ticketUrl !== currentEvent.ticketUrl
+      ) {
+        formattedData.ticketUrl =
+          updatedData.ticketUrl?.trim() || null
+      } else {
+        formattedData.ticketUrl = currentEvent.ticketUrl // Keep original if not changed
+      }
+
+      // Format status if changed
+      formattedData.status =
+        updatedData.status ||
+        currentEvent.status ||
+        'active'
+
+      // Add update timestamp
+      formattedData.updatedAt = Timestamp.now()
+
+      // --- Handle Image Update ---
+      let newImageUrl = formattedData.image // Start with current/updated image value
+      const oldImageUrl = currentEvent.image // Store old image URL for potential deletion
+
+      if (updatedData.image instanceof File) {
+        // New image uploaded (updatedData.image is a File object)
+        console.log('New image file detected for upload.')
+        // Consider deleting the old image *before* uploading the new one
+        if (oldImageUrl) {
+          try {
+            // Assuming deleteEventImage exists and works like deletePhoto/deleteVenueLogo
+            // await deleteEventImage(oldImageUrl, currentEvent.id);
+            console.warn(
+              'Deletion of old event image during update not implemented.',
+            )
+          } catch (deleteError) {
+            console.error(
+              'Error deleting old event image during update:',
+              deleteError,
+            )
+            // Decide if you want to proceed with upload even if deletion fails
+          }
+        }
+
+        newImageUrl = await uploadEventImage(
           updatedData.image,
           currentEvent.id,
         )
-        if (imageUrl) {
-          formattedData.image = imageUrl
+        if (!newImageUrl) {
+          console.warn(
+            'New event image upload failed. Keeping previous image if available.',
+          )
+          newImageUrl = oldImageUrl // Revert to old URL if upload failed
+          // Optionally alert the user about the upload failure
+          // alert("Error al subir la nueva imagen. Se mantuvo la imagen anterior.");
         }
-      } else if (updatedData.image === null) {
-        // If the image was explicitly set to null (removed), set it to null
-        formattedData.image = null
+        formattedData.image = newImageUrl // Update formattedData with the final URL or null
+      } else if (
+        updatedData.image === null &&
+        oldImageUrl
+      ) {
+        // Image explicitly removed (updatedData.image is null)
+        console.log('Event image explicitly removed.')
+        if (oldImageUrl) {
+          try {
+            // await deleteEventImage(oldImageUrl, currentEvent.id);
+            console.warn(
+              'Deletion of old event image upon removal not implemented.',
+            )
+          } catch (deleteError) {
+            console.error(
+              'Error deleting old event image upon removal:',
+              deleteError,
+            )
+            // Optionally alert the user or log
+          }
+        }
+        formattedData.image = null // Ensure it's null in Firestore data
+      } else {
+        // Image not changed (updatedData.image is same string URL or was already null)
+        // Keep the existing value (which is already in formattedData)
+        console.log('Event image not changed.')
       }
-      // Otherwise, keep the existing image URL (it's already a string)
+      // --- End Image Handling ---
 
-      // Update event in the main events collection
+      // Remove properties that shouldn't be directly saved or are handled
+      const { id, ...dataToUpdate } = formattedData
+      // Ensure image is not a File object before saving
+      if (dataToUpdate.image instanceof File) {
+        console.error(
+          'Attempting to save File object to Firestore in handleEditEvent. This should not happen.',
+        )
+        // Fallback: try to use the old image URL? Or set to null?
+        dataToUpdate.image = oldImageUrl
+      }
+
+      // --- Update Firestore ---
       const eventRef = doc(db, 'events', currentEvent.id)
-      await updateDoc(eventRef, formattedData)
+      await updateDoc(eventRef, dataToUpdate)
 
-      // Update the local state
+      // --- Update Local State ---
       setEvents(
         events.map((event) =>
           event.id === currentEvent.id
-            ? { ...event, ...formattedData }
+            ? { ...event, ...dataToUpdate } // Use the final dataToUpdate
             : event,
         ),
       )
 
-      // Show success message
+      // --- Post-Update Actions ---
       setEventSuccess('¡Evento actualizado exitosamente!')
       setTimeout(() => {
         setEventSuccess('')
       }, 3000)
 
-      // Close the modal and reset current event
       setIsEventEditModalOpen(false)
       setCurrentEvent(null)
     } catch (error) {
       console.error('Error updating event:', error)
-      setEventFormError(
-        error.message ||
-          'Error al actualizar el evento. Inténtelo de nuevo.',
+      // Use alert or a dedicated state for edit errors
+      alert(
+        `Error al actualizar el evento: ${
+          error.message || 'Inténtelo de nuevo.'
+        }`,
       )
+      // Keep modal open on error?
     }
   }
 
@@ -1121,39 +1207,6 @@ export default function Dashboard() {
     setIsDetailModalOpen(false)
   }
 
-  // Filter events based on the selected status
-  const filteredEvents = useMemo(() => {
-    if (!events) return []
-    return events.filter((event) => {
-      const isPast = hasEventPassed(event.date)
-      const status = event.status || 'active'
-
-      switch (filterStatus) {
-        case 'suspended': // Changed from postponed
-          return status === 'suspended'
-        case 'cancelled':
-          return status === 'cancelled'
-        case 'past':
-          // Show only past events that aren't cancelled or suspended
-          return (
-            isPast &&
-            status !== 'cancelled' &&
-            status !== 'suspended'
-          )
-        case 'active':
-          // Show only upcoming events that aren't cancelled or suspended
-          return (
-            !isPast &&
-            status !== 'cancelled' &&
-            status !== 'suspended'
-          )
-        case 'all':
-        default:
-          return true // Show all
-      }
-    })
-  }, [events, filterStatus])
-
   // Main loading check (uses hook's loading state)
   if (loading) {
     return <DashboardSkeleton />
@@ -1161,6 +1214,10 @@ export default function Dashboard() {
 
   if (error) {
     return <div>Error: {error}</div>
+  }
+
+  if (!venue) {
+    return <DashboardSkeleton /> // Handle case where venue data is still loading or failed
   }
 
   return (
@@ -1174,865 +1231,53 @@ export default function Dashboard() {
             Bienvenid@, personal de:{' '}
             <span className='font-bold text-5xl'>
               {' '}
-              {venue.name}{' '}
+              {venue.name || 'Cargando nombre...'}{' '}
             </span>
           </h1>
         </div>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
-          <div className='bg-white rounded-lg shadow-lg p-6'>
-            <h2 className='text-2xl font-semibold mb-4 text-gray-800 flex items-center justify-between'>
-              <div className='flex items-center'>
-                <svg
-                  className='w-6 h-6 mr-2'
-                  fill='none'
-                  stroke='currentColor'
-                  viewBox='0 0 24 24'
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z'
-                  />
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='M15 11a3 3 0 11-6 0 3 3 0 016 0z'
-                  />
-                </svg>
-                Mi espacio
-              </div>
-              <button
-                className='text-teal-600 hover:text-teal-800'
-                onClick={() => setIsEditModalOpen(true)}
-              >
-                <svg
-                  className='w-5 h-5'
-                  fill='none'
-                  stroke='currentColor'
-                  viewBox='0 0 24 24'
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z'
-                  />
-                </svg>
-              </button>
-            </h2>
+          <VenueDetailsCard
+            venue={venue}
+            onEdit={() => setIsEditModalOpen(true)}
+          />
 
-            {/* Logo and venue name */}
-            {venue.logo && (
-              <div className='flex items-center mb-4'>
-                <div className='flex items-center'>
-                  <img
-                    src={venue.logo}
-                    alt={`Logo de ${venue.name}`}
-                    className='w-20 h-20 object-cover rounded-full border-2 border-teal-500 shadow-md mr-4'
-                  />
-                  <h3 className='text-xl font-bold text-gray-800'>
-                    {venue.name}
-                  </h3>
-                </div>
-              </div>
-            )}
-
-            {/* Map */}
-            <div className='rounded-lg overflow-hidden mb-4 relative'>
-              <MapComponent
-                venues={[venue]}
-                center={[
-                  venue.location.latitude,
-                  venue.location.longitude,
-                ]}
-                zoom={15}
-                small={true}
-                isDashboard={true}
-                mapId='dashboard-map'
-              />
-            </div>
-
-            {/* Location info */}
-            <div className='bg-gray-50 p-4 rounded-lg mb-4'>
-              <h3 className='font-semibold text-gray-700 mb-2'>
-                <span>Ubicación</span>
-              </h3>
-              <p className='text-sm text-gray-500 flex items-center gap-2 mb-2'>
-                <svg
-                  className='w-4 h-4'
-                  fill='none'
-                  stroke='currentColor'
-                  viewBox='0 0 24 24'
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z'
-                  />
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='M15 11a3 3 0 11-6 0 3 3 0 016 0z'
-                  />
-                </svg>
-                {venue.address}
-              </p>
-              {venue.city && venue.country && (
-                <p className='text-sm text-gray-500 flex items-center gap-2'>
-                  <svg
-                    className='w-4 h-4'
-                    fill='none'
-                    stroke='currentColor'
-                    viewBox='0 0 24 24'
-                  >
-                    <circle
-                      cx='12'
-                      cy='12'
-                      r='10'
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      strokeWidth={2}
-                    />
-                    <path
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      strokeWidth={2}
-                      d='M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z'
-                    />
-                  </svg>
-                  {venue.city}, {venue.country}
-                </p>
-              )}
-            </div>
-
-            {/* Description */}
-            <div className='bg-gray-50 p-4 rounded-lg mb-4'>
-              <h3 className='font-semibold text-gray-700 mb-2'>
-                <span>Descripción</span>
-              </h3>
-              <p className='text-sm text-gray-500 flex items-start gap-2'>
-                <svg
-                  className='w-4 h-4 mt-1 flex-shrink-0'
-                  fill='none'
-                  stroke='currentColor'
-                  viewBox='0 0 24 24'
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='M4 4h16v16H4z'
-                  />
-                  <line
-                    x1='8'
-                    y1='8'
-                    x2='16'
-                    y2='8'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                  />
-                  <line
-                    x1='8'
-                    y1='12'
-                    x2='16'
-                    y2='12'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                  />
-                  <line
-                    x1='8'
-                    y1='16'
-                    x2='12'
-                    y2='16'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                  />
-                </svg>
-                <span>{venue.description}</span>
-              </p>
-            </div>
-
-            {/* Capacity */}
-            {venue.capacity != null && ( // Keep the check if capacity exists at all
-              <div className='bg-gray-50 p-4 rounded-lg mb-4'>
-                <h3 className='font-semibold text-gray-700 mb-2'>
-                  <span>Capacidad</span>
-                </h3>
-                <p className='text-sm text-gray-500 flex items-center gap-2'>
-                  <svg
-                    className='w-4 h-4'
-                    fill='none'
-                    stroke='currentColor'
-                    viewBox='0 0 24 24'
-                  >
-                    <path
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      strokeWidth={2}
-                      d='M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z'
-                    />
-                  </svg>
-                  {/* Conditional display based on capacity value */}
-                  {venue.capacity < 2 ? (
-                    <span className='italic text-gray-400'>
-                      Aun no has especificado la capacidad
-                      maxima
-                    </span>
-                  ) : (
-                    `${venue.capacity} personas`
-                  )}
-                </p>
-              </div>
-            )}
-
-            {/* Amenities */}
-            {venue.amenities &&
-              venue.amenities.length > 0 && (
-                <div className='bg-gray-50 p-4 rounded-lg mb-4'>
-                  <h3 className='font-semibold text-gray-700 mb-2'>
-                    <span>Comodidades</span>
-                  </h3>
-                  <div className='flex flex-wrap gap-2'>
-                    {venue.amenities.map(
-                      (amenity, index) => (
-                        <span
-                          key={index}
-                          className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800'
-                        >
-                          <svg
-                            className='w-3 h-3 mr-1'
-                            fill='none'
-                            stroke='currentColor'
-                            viewBox='0 0 24 24'
-                          >
-                            <path
-                              strokeLinecap='round'
-                              strokeLinejoin='round'
-                              strokeWidth={2}
-                              d='M5 13l4 4L19 7'
-                            />
-                          </svg>
-                          {amenity}
-                        </span>
-                      ),
-                    )}
-                  </div>
-                </div>
-              )}
-
-            {/* Contact */}
-            {venue.email && (
-              <div className='bg-gray-50 p-4 rounded-lg mb-4'>
-                <h3 className='font-semibold text-gray-700 mb-2'>
-                  <span>
-                    Contacto{' '}
-                    <small className='font-normal'>
-                      (sólo para Radart, no será visible
-                      hacia el público)
-                    </small>
-                  </span>
-                </h3>
-                <p className='text-sm text-gray-500 flex items-center gap-2'>
-                  <svg
-                    className='w-4 h-4'
-                    fill='none'
-                    stroke='currentColor'
-                    viewBox='0 0 24 24'
-                  >
-                    <path
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      strokeWidth={2}
-                      d='M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2z'
-                    />
-                  </svg>
-                  {venue.email}
-                </p>
-              </div>
-            )}
-
-            {/* Social Media / WhatsApp */}
-            {(venue.facebookUrl ||
-              venue.instagramUrl ||
-              venue.whatsappNumber) && (
-              <div className='bg-gray-50 p-4 rounded-lg mb-4'>
-                <h3 className='font-semibold text-gray-700 mb-2'>
-                  <span>Redes Sociales / WhatsApp</span>
-                </h3>
-                <div className='space-y-2'>
-                  {venue.facebookUrl && (
-                    <p className='text-sm text-gray-500 flex items-center gap-2'>
-                      <a
-                        href={venue.facebookUrl}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        className='flex items-center gap-2 text-[var(--facebook)] hover:underline'
-                        title={venue.facebookUrl}
-                      >
-                        <FaFacebook className='w-5 h-5' />{' '}
-                        {/* Use React Icon */}
-                        <span className='truncate'>
-                          Facebook
-                        </span>
-                      </a>
-                    </p>
-                  )}
-                  {venue.instagramUrl && (
-                    <p className='text-sm text-gray-500 flex items-center gap-2'>
-                      {venue.instagramUrl && (
-                        <a
-                          href={venue.instagramUrl}
-                          target='_blank'
-                          rel='noopener noreferrer'
-                          className='flex items-center gap-2 text-[var(--instagram)] hover:underline '
-                          title={venue.instagramUrl}
-                        >
-                          <FaInstagram className='w-5 h-5' />{' '}
-                          {/* Use React Icon */}
-                          <span className='truncate'>
-                            Instagram
-                          </span>
-                        </a>
-                      )}
-                    </p>
-                  )}
-                  {venue.whatsappNumber && (
-                    <p className='text-sm text-gray-500 flex items-center gap-2'>
-                      {venue.whatsappNumber && (
-                        <a
-                          href={`https://wa.me/${venue.whatsappNumber}`}
-                          target='_blank'
-                          rel='noopener noreferrer'
-                          className='flex items-center gap-2 text-[var(--whatsapp)] hover:underline'
-                          title={`WhatsApp ${venue.whatsappNumber}`}
-                        >
-                          <FaWhatsapp className='w-5 h-5' />{' '}
-                          {/* Use React Icon */}
-                          <span className='truncate'>
-                            WhatsApp
-                          </span>
-                          {formatWhatsappNumber(
-                            venue.whatsappNumber,
-                          )}
-                        </a>
-                      )}
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Photos gallery */}
-            {venue.photos && venue.photos.length > 0 && (
-              <div className='mt-4'>
-                <h3 className='font-semibold text-gray-700 mb-2'>
-                  <span>Fotos</span>
-                </h3>
-                <div className='flex flex-col gap-2'>
-                  {/* First row - first 3 photos */}
-                  <div className='grid grid-cols-3 gap-2'>
-                    {venue.photos
-                      .slice(0, 3)
-                      .map((photo, index) => (
-                        <img
-                          key={index}
-                          src={photo}
-                          alt={`Foto ${index + 1} de ${
-                            venue.name
-                          }`}
-                          className='w-full h-36 object-cover rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200'
-                        />
-                      ))}
-                  </div>
-                  {/* Second row - next 2 photos */}
-                  {venue.photos.length > 3 && (
-                    <div className='grid grid-cols-2 gap-2 m-auto'>
-                      {venue.photos
-                        .slice(3, 5)
-                        .map((photo, index) => (
-                          <img
-                            key={index + 3}
-                            src={photo}
-                            alt={`Foto ${index + 4} de ${
-                              venue.name
-                            }`}
-                            className='w-full h-36 object-cover rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200'
-                          />
-                        ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Link to public venue page */}
-            <div className='mt-32 text-center'>
-              <Link
-                href={`/venues/${venue.id}`}
-                className='inline-flex items-center gap-2 justify-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[var(--blue-500)] hover:brightness-125 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary)] transition-all duration-200'
-              >
-                <span>Ver Página Pública del Local</span>
-                <FaRegEye />
-              </Link>
-            </div>
-          </div>
-
-          <div className='bg-white rounded-lg shadow-lg p-6'>
-            <h2 className='text-2xl font-semibold mb-4 text-gray-800 flex items-center'>
-              <svg
-                className='w-6 h-6 mr-2'
-                fill='none'
-                stroke='currentColor'
-                viewBox='0 0 24 24'
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth={2}
-                  d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'
-                />
-              </svg>
-              Mis eventos
-            </h2>
-            <form
-              onSubmit={handleAddEvent}
-              className='my-6 bg-white rounded-lg shadow-sm'
-            >
-              <h3 className='text-lg font-semibold w-fit text-gray-800 my-4 border-b pb-2'>
-                Crear Nuevo Evento
-              </h3>
-
-              {/* Error message */}
-              {eventFormError && (
-                <div className='bg-red-50 border-l-4 border-red-500 p-4 mb-4'>
-                  <p className='text-red-700 text-sm'>
-                    {eventFormError}
-                  </p>
-                </div>
-              )}
-
-              {/* Success message */}
-              {eventSuccess && (
-                <div className='bg-green-50 border-l-4 border-green-500 p-4 mb-4'>
-                  <p className='text-green-700 text-sm'>
-                    {eventSuccess}
-                  </p>
-                </div>
-              )}
-
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                {/* Title field */}
-                <div className='col-span-2'>
-                  <label
-                    htmlFor='eventTitle'
-                    className='block text-sm font-medium text-gray-700 mb-1'
-                  >
-                    Título del evento{' '}
-                    <span className='text-red-500'>*</span>
-                  </label>
-                  <input
-                    id='eventTitle'
-                    type='text'
-                    placeholder='Ej: Concierto de Jazz'
-                    value={eventTitle}
-                    onChange={(e) =>
-                      setEventTitle(e.target.value)
-                    }
-                    className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
-                    required
-                  />
-                </div>
-
-                {/* Category field */}
-                <div>
-                  <label
-                    htmlFor='eventCategory'
-                    className='block text-sm font-medium text-gray-700 mb-1'
-                  >
-                    Categoría{' '}
-                    <span className='text-red-500'>*</span>
-                  </label>
-                  <select
-                    id='eventCategory'
-                    value={eventCategory}
-                    onChange={(e) =>
-                      setEventCategory(e.target.value)
-                    }
-                    className='w-full p-2 border bg-white border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
-                    required
-                  >
-                    <option value=''>
-                      Seleccionar categoría
-                    </option>
-                    {CATEGORIES.map((category) => (
-                      <option
-                        key={category.value}
-                        value={category.value}
-                      >
-                        {category.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Date and time field */}
-                <div>
-                  <label
-                    htmlFor='eventDate'
-                    className='block text-sm font-medium text-gray-700 mb-1'
-                  >
-                    Fecha y hora{' '}
-                    <span className='text-red-500'>*</span>
-                  </label>
-                  <input
-                    id='eventDate'
-                    type='datetime-local'
-                    value={eventDate}
-                    onChange={(e) =>
-                      setEventDate(e.target.value)
-                    }
-                    className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
-                    required
-                  />
-                </div>
-
-                {/* Price field */}
-                <div>
-                  <label
-                    htmlFor='eventPrice'
-                    className='block text-sm font-medium text-gray-700 mb-1'
-                  >
-                    Precio
-                  </label>
-                  <div className='flex gap-7 md:gap-2 '>
-                    <div className='relative flex-1'>
-                      <input
-                        id='eventPrice'
-                        type='number'
-                        min='0'
-                        max={9999}
-                        step='0.5'
-                        placeholder='0.00'
-                        value={eventPrice}
-                        onChange={(e) =>
-                          setEventPrice(e.target.value)
-                        }
-                        className='w-full min-w-20 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent '
-                      />
-                    </div>
-                    <select
-                      id='eventCurrency'
-                      value={eventCurrency}
-                      onChange={(e) =>
-                        setEventCurrency(e.target.value)
-                      }
-                      className='w-24 p-2 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
-                    >
-                      <option value='BOB'>Bs (BOB)</option>
-                      <option value='USD'>$ (USD)</option>
-                      <option value='EUR'>€ (EUR)</option>
-                      <option value='GBP'>£ (GBP)</option>
-                      <option value='BRL'>R$ (BRL)</option>
-                      <option value='ARS'>$ (ARS)</option>
-                      <option value='CLP'>$ (CLP)</option>
-                      <option value='COP'>$ (COP)</option>
-                      <option value='MXN'>$ (MXN)</option>
-                      <option value='PEN'>S/ (PEN)</option>
-                      <option value='UYU'>$U (UYU)</option>
-                      <option value='PYG'>₲ (PYG)</option>
-                    </select>
-                  </div>
-                  <p className='text-xs text-gray-500 mt-1'>
-                    Deja en blanco si es gratis
-                  </p>
-                </div>
-
-                {/* Ticket URL field */}
-                <div className='col-span-2'>
-                  <label
-                    htmlFor='eventTicketUrl'
-                    className='block text-sm font-medium text-gray-700 mb-1'
-                  >
-                    URL de venta de entradas
-                  </label>
-                  <input
-                    id='eventTicketUrl'
-                    type='url'
-                    placeholder='https://ejemplo.com/tickets'
-                    value={eventTicketUrl}
-                    onChange={(e) =>
-                      setEventTicketUrl(e.target.value)
-                    }
-                    className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
-                  />
-                  <p className='text-xs text-gray-500 mt-1'>
-                    Opcional: URL donde se pueden comprar
-                    entradas
-                  </p>
-                </div>
-
-                {/* Description field */}
-                <div className='col-span-2'>
-                  <label
-                    htmlFor='eventDescription'
-                    className='block text-sm font-medium text-gray-700 mb-1'
-                  >
-                    Descripción{' '}
-                    <span className='text-red-500'>*</span>
-                  </label>
-                  <textarea
-                    id='eventDescription'
-                    rows='4'
-                    placeholder='Describe el evento, artistas, horarios, etc.'
-                    value={eventDescription}
-                    onChange={(e) =>
-                      setEventDescription(e.target.value)
-                    }
-                    className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
-                    required
-                    maxLength={999}
-                  ></textarea>
-                  <p className='text-xs text-gray-500 text-right mt-1'>
-                    {eventDescription.length} / 999
-                  </p>
-                </div>
-
-                {/* Featured image field */}
-                <div className='col-span-2'>
-                  <label
-                    htmlFor='eventImage'
-                    className='block text-sm font-medium text-gray-700 mb-1'
-                  >
-                    Imagen
-                  </label>
-                  <div className='flex items-center gap-4'>
-                    <input
-                      id='eventImage'
-                      type='file'
-                      accept='image/*'
-                      onChange={(e) => {
-                        if (
-                          e.target.files &&
-                          e.target.files[0]
-                        ) {
-                          setEventImage(e.target.files[0])
-                        }
-                      }}
-                      className='flex-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
-                    />
-                    {eventImage && (
-                      <div className='h-16 w-16 relative border rounded overflow-hidden'>
-                        <img
-                          src={URL.createObjectURL(
-                            eventImage,
-                          )}
-                          alt='Vista previa'
-                          className='h-full w-full object-cover'
-                        />
-                        <button
-                          type='button'
-                          onClick={() =>
-                            setEventImage(null)
-                          }
-                          className='absolute top-0 right-0 bg-red-500 text-white p-1 rounded-bl'
-                        >
-                          <svg
-                            className='w-3 h-3'
-                            fill='none'
-                            viewBox='0 0 24 24'
-                            stroke='currentColor'
-                          >
-                            <path
-                              strokeLinecap='round'
-                              strokeLinejoin='round'
-                              strokeWidth={2}
-                              d='M6 18L18 6M6 6l12 12'
-                            />
-                          </svg>
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                  <p className='text-xs text-gray-500 mt-1'>
-                    Recomendado: imagen en formato 16:9 para
-                    mejor visualización
-                  </p>
-                </div>
-              </div>
-
-              {/* Submit button */}
-              <div className='mt-8'>
-                <button
-                  type='submit'
-                  className='w-full py-3 px-4 bg-gradient-to-r from-teal-500 to-teal-600 text-white font-medium rounded-md hover:from-teal-600 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition duration-200 disabled:opacity-70 disabled:cursor-not-allowed'
-                >
-                  <span className='flex items-center justify-center'>
-                    <svg
-                      className='w-5 h-5 mr-2'
-                      fill='none'
-                      stroke='currentColor'
-                      viewBox='0 0 24 24'
-                    >
-                      <path
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                        strokeWidth={2}
-                        d='M12 6v6m0 0v6m0-6h6m-6 0H6'
-                      />
-                    </svg>
-                    Agregar evento
-                  </span>
-                </button>
-              </div>
-            </form>
-
-            <h3 className='text-lg font-semibold w-fit text-gray-800 mb-4 border-b pb-2'>
-              Listado de eventos
-            </h3>
-
-            {/* Filter Buttons */}
-            {!eventsLoading && events.length > 0 && (
-              <div className='flex flex-wrap gap-2 mb-4 border-b pb-4'>
-                <button
-                  onClick={() => setFilterStatus('all')}
-                  className={`px-3 py-1 rounded-md text-sm ${
-                    filterStatus === 'all'
-                      ? 'bg-teal-600 text-white shadow'
-                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                  }`}
-                >
-                  Todos
-                </button>
-                <button
-                  onClick={() => setFilterStatus('active')}
-                  className={`px-3 py-1 rounded-md text-sm ${
-                    filterStatus === 'active'
-                      ? 'bg-teal-600 text-white shadow'
-                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                  }`}
-                >
-                  Próximos
-                </button>
-                <button
-                  onClick={() => setFilterStatus('past')}
-                  className={`px-3 py-1 rounded-md text-sm ${
-                    filterStatus === 'past'
-                      ? 'bg-teal-600 text-white shadow'
-                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                  }`}
-                >
-                  Pasados
-                </button>
-                <button
-                  onClick={() =>
-                    setFilterStatus('suspended')
-                  }
-                  className={`px-3 py-1 rounded-md text-sm ${
-                    filterStatus === 'suspended'
-                      ? 'bg-teal-600 text-white shadow'
-                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                  }`}
-                >
-                  Suspendidos
-                </button>
-                <button
-                  onClick={() =>
-                    setFilterStatus('cancelled')
-                  }
-                  className={`px-3 py-1 rounded-md text-sm ${
-                    filterStatus === 'cancelled'
-                      ? 'bg-teal-600 text-white shadow'
-                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                  }`}
-                >
-                  Cancelados
-                </button>
-              </div>
-            )}
-
-            {eventsLoading ? (
-              <div className='text-center py-8'>
-                <div className='animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-teal-500 mx-auto mb-4'></div>
-                <p className='text-gray-500'>
-                  Cargando eventos...
-                </p>
-              </div>
-            ) : filteredEvents.length === 0 ? (
-              <div className='text-center py-8 text-gray-500'>
-                <svg
-                  className='w-16 h-16 mx-auto mb-4'
-                  fill='none'
-                  stroke='currentColor'
-                  viewBox='0 0 24 24'
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'
-                  />
-                </svg>
-                <p>
-                  No hay eventos que coincidan con el filtro
-                  seleccionado.
-                </p>
-                {events.length > 0 &&
-                  filterStatus !== 'all' && (
-                    <button
-                      onClick={() => setFilterStatus('all')}
-                      className='mt-4 text-sm text-teal-600 hover:underline'
-                    >
-                      Mostrar todos los eventos
-                    </button>
-                  )}
-              </div>
-            ) : (
-              <ul className='space-y-3 mb-6'>
-                {filteredEvents.map((event) => (
-                  <VenueEventListItem
-                    key={event.id}
-                    event={event}
-                    onEdit={() => openEventEditModal(event)}
-                    onDelete={() =>
-                      triggerDelete(event.id, event.image)
-                    }
-                    isIndexPage
-                    onClickItem={openDetailModal}
-                  />
-                ))}
-              </ul>
-            )}
-          </div>
+          <EventManagementSection
+            venueId={venueId}
+            venue={venue}
+            events={events}
+            eventsLoading={eventsLoading}
+            filterStatus={filterStatus}
+            onFilterChange={setFilterStatus}
+            onAddEvent={handleAddEvent}
+            onEditEvent={openEventEditModal}
+            onDeleteEvent={triggerDelete}
+            onViewDetails={openDetailModal}
+            eventFormError={eventFormError}
+            eventSuccess={eventSuccess}
+            setEventFormError={setEventFormError}
+            setEventSuccess={setEventSuccess}
+          />
         </div>
       </div>
 
       <EditModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
-        title='Editar información'
-        data={venue}
-        fields={venueFormFields}
-        onSave={handleEditVenue}
+        onSubmit={handleEditVenue}
+        formFields={venueFormFields}
+        title='Editar Local'
+        submitButtonText='Guardar Cambios'
+        initialData={venue}
       />
 
       <EditModal
         isOpen={isEventEditModalOpen}
-        onClose={() => {
-          setIsEventEditModalOpen(false)
-          setCurrentEvent(null)
-        }}
-        title='Editar evento'
-        data={currentEvent}
-        fields={eventFormFields}
-        onSave={handleEditEvent}
-        saveButtonText='Actualizar Evento'
+        onClose={() => setIsEventEditModalOpen(false)}
+        onSubmit={handleEditEvent}
+        formFields={eventFormFields}
+        title='Editar Evento'
+        submitButtonText='Guardar Cambios'
+        initialData={currentEvent}
       />
 
       <EventDetailModal
@@ -2041,12 +1286,13 @@ export default function Dashboard() {
         event={selectedEventDetail}
       />
 
+      {/* --- Restore the original Logout Button --- */}
       <div className='w-fit mx-auto p-4'>
         <button
           onClick={async () => {
             try {
               await auth.signOut()
-              router.push('/login')
+              router.push('/login') // Ensure router is available in this scope
             } catch (error) {
               console.error('Error signing out:', error)
             }
