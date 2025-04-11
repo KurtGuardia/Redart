@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { db } from '../../lib/firebase-client'
+import { db } from '../lib/firebase-client'
 import {
   collection,
   getDocs,
@@ -11,11 +11,11 @@ import {
   startAfter,
   Timestamp,
 } from 'firebase/firestore'
-import { CATEGORIES } from '../../lib/constants'
-import { hasEventPassed } from '../../lib/utils'
-import EventCard from '../../components/EventCard'
-import EventDetailModal from '../../components/EventDetailModal'
-import EventCardSkeleton from '../../components/EventCardSkeleton'
+import { CATEGORIES } from '../lib/constants'
+import { hasEventPassed } from '../lib/utils'
+import EventCard from './EventCard'
+import EventDetailModal from './EventDetailModal'
+import EventCardSkeleton from './EventCardSkeleton'
 
 // Define status filter options (duplicated here for now, could be shared)
 const STATUS_FILTERS = [

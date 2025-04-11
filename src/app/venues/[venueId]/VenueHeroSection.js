@@ -66,8 +66,7 @@ export default function VenueHeroSection({ venueId }) {
   return (
     <div className='relative min-w-[80%]'>
       <div
-        className={`relative w-full h-64 md:h-96 flex items-center justify-center text-center overflow-hidden mb-12
-        shadow-lg`}
+        className={`relative w-full h-72 md:h-96 flex items-end justify-center text-center overflow-hidden mb-12 shadow-lg`}
       >
         {heroImageUrl ? (
           <>
@@ -78,31 +77,35 @@ export default function VenueHeroSection({ venueId }) {
               className='absolute inset-0 z-0 object-cover'
               priority
             />
-            <div className='absolute inset-0 bg-black/60 z-10'></div>
+            <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent z-10'></div>
           </>
         ) : (
           <div className='absolute inset-0 bg-gradient-to-br from-[var(--teal-700)] to-[var(--blue-800)] z-0'></div>
         )}
-        <div className='relative z-20 p-4 text-white text-center'>
-          <h1
-            className='inline-block bg-[radial-gradient(var(--white),transparent)] p-8 rounded-full text-4xl
-            md:text-6xl font-extrabold mb-4'
-            style={{ textShadow: '-2px 3px 7px #000' }}
-          >
-            {venue.name}
-          </h1>
-          <div>
-            <a
-              href={googleMapsUrl}
-              target='_blank'
-              rel='noopener noreferrer'
-              className='inline-block text-lg md:text-xl font-medium text-gray-200 hover:text-white hover:underline
-              transition-colors duration-200'
+        <div className='relative z-20 mb-8 p-4 md:mb-12'>
+          <div className='bg-white/10 backdrop-blur-md rounded-lg p-4 md:p-6 shadow-lg'>
+            <h1
+              className='text-3xl md:text-5xl font-bold text-white mb-2'
+              style={{
+                textShadow: '1px 1px 3px rgba(0,0,0,0.5)',
+              }}
             >
-              <LocationPinIcon />
-              {venue.address} - {venue.city},{' '}
-              {venue.country}
-            </a>
+              {venue.name}
+            </h1>
+            <div>
+              <a
+                href={googleMapsUrl}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='inline-flex items-center text-md md:text-lg font-medium text-gray-200 hover:underline transition-colors duration-200'
+              >
+                <LocationPinIcon />
+                <span className='ml-1'>
+                  {venue.address} - {venue.city},{' '}
+                  {venue.country}
+                </span>
+              </a>
+            </div>
           </div>
         </div>
       </div>

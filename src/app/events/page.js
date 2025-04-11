@@ -1,5 +1,5 @@
 import Spot from '../../components/ui/Spot'
-import EventListView from './EventListView'
+import EventListView from '../../components/EventListView'
 
 export default function EventsPage() {
   return (

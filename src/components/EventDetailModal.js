@@ -14,7 +14,7 @@ import {
 
 const EventDetailModal = ({ isOpen, onClose, event }) => {
   const [isMounted, setIsMounted] = useState(false)
-
+  console.log('event', event)
   useEffect(() => {
     setIsMounted(true)
     if (isOpen) {
@@ -258,7 +258,11 @@ const EventDetailModal = ({ isOpen, onClose, event }) => {
         {shouldRenderButton && (
           <div className='bg-[var(--blue-800-transparent)] backdrop-blur-md px-6 sm:px-8 py-4 rounded-b-xl mt-auto border-t border-[#ffffff33]'>
             <a
-              href={event.ticketUrl}
+              href={
+                event.ticketUrl?.startsWith('http')
+                  ? event.ticketUrl
+                  : `https://${event.ticketUrl}`
+              }
               target='_blank'
               rel='noopener noreferrer'
               className='w-full flex items-center justify-center bg-gradient-to-r from-[var(--teal-800)] to-[var(--teal-300)] text-[var(--white)] font-bold py-3 px-6 rounded-lg shadow-md transform hover:from-[var(--teal-300)] hover:to-[var(--teal-800)] transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--teal-500)]'

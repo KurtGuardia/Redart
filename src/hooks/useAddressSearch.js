@@ -31,7 +31,7 @@ export function useAddressSearch(
     setSearchQuery(newQuery)
   }, [initialAddress, initialCity])
 
-  // Fetch suggestions from Mapbox
+  // Fetch suggestions
   const fetchSuggestions = useCallback(async (input) => {
     if (!input.trim()) {
       setSuggestions([])

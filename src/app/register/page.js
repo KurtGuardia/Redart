@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import {
   auth,
   db,
@@ -66,6 +67,9 @@ export default function Register() {
   const [facebookUrl, setFacebookUrl] = useState('')
   const [instagramUrl, setInstagramUrl] = useState('')
   const [whatsappNumber, setWhatsappNumber] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [showRepeatPassword, setShowRepeatPassword] =
+    useState(false)
 
   useEffect(() => {
     setIsClientSide(true)
@@ -122,12 +126,12 @@ export default function Register() {
     return url
   }
 
-  const getFirstTwoWords = (text) => {
-    if (!text) return ''
-    const words = text.trim().split(/\s+/)
-    const firstTwoWords = words.slice(0, 2).join(' ')
-    return firstTwoWords
-  }
+  // const getFirstTwoWords = (text) => {
+  //   if (!text) return ''
+  //   const words = text.trim().split(/\s+/)
+  //   const firstTwoWords = words.slice(0, 2).join(' ')
+  //   return firstTwoWords
+  // }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -310,15 +314,27 @@ export default function Register() {
             >
               Nombre del sitio
             </label>
-            <input
-              type='text'
-              id='name'
-              name='name'
-              className='w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
+            <div className='relative'>
+              <input
+                type='text'
+                id='name'
+                name='name'
+                className='w-full px-3 py-2 pr-8 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+              {name && (
+                <button
+                  type='button'
+                  onClick={() => setName('')}
+                  className='absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600'
+                  aria-label='Clear name input'
+                >
+                  &#x2715;
+                </button>
+              )}
+            </div>
           </div>
           {/* Logo */}
           <div className='mb-4'>
@@ -361,27 +377,45 @@ export default function Register() {
             >
               Descripción del sitio
             </label>
-            <textarea
-              className='w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
-              value={description}
-              name='description'
-              onChange={(e) => {
-                const newValue = e.target.value
-                if (
-                  newValue.length <= DESCRIPTION_MAX_LENGTH
-                ) {
-                  setDescription(newValue)
-                  setDescriptionCharsLeft(
-                    DESCRIPTION_MAX_LENGTH -
-                      newValue.length,
-                  )
-                }
-              }}
-              required
-              placeholder='Una breve presentación, una invitación, una descripción de la identidad del lugar...'
-              rows='3'
-              maxLength={DESCRIPTION_MAX_LENGTH}
-            />
+            <div className='relative'>
+              <textarea
+                className='w-full px-3 py-2 pr-8 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
+                value={description}
+                name='description'
+                onChange={(e) => {
+                  const newValue = e.target.value
+                  if (
+                    newValue.length <=
+                    DESCRIPTION_MAX_LENGTH
+                  ) {
+                    setDescription(newValue)
+                    setDescriptionCharsLeft(
+                      DESCRIPTION_MAX_LENGTH -
+                        newValue.length,
+                    )
+                  }
+                }}
+                required
+                placeholder='Una breve presentación, una invitación, una descripción de la identidad del lugar...'
+                rows='3'
+                maxLength={DESCRIPTION_MAX_LENGTH}
+              />
+              {description && (
+                <button
+                  type='button'
+                  onClick={() => {
+                    setDescription('')
+                    setDescriptionCharsLeft(
+                      DESCRIPTION_MAX_LENGTH,
+                    )
+                  }}
+                  className='absolute right-2 top-2.5 text-gray-400 hover:text-gray-600'
+                  aria-label='Clear description input'
+                >
+                  &#x2715;
+                </button>
+              )}
+            </div>
             <p className='text-sm text-gray-500 mt-1 text-right'>
               {descriptionCharsLeft} caracteres restantes
             </p>
@@ -456,16 +490,28 @@ export default function Register() {
             >
               Nombre de la dirección
             </label>
-            <input
-              type='text'
-              id='address'
-              name='address'
-              className='w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              required
-              placeholder='Ej. Calle ABC, #123, zona 1'
-            />
+            <div className='relative'>
+              <input
+                type='text'
+                id='address'
+                name='address'
+                className='w-full px-3 py-2 pr-8 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                required
+                placeholder='Ej. Calle ABC, #123, zona 1'
+              />
+              {address && (
+                <button
+                  type='button'
+                  onClick={() => setAddress('')}
+                  className='absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600'
+                  aria-label='Clear address input'
+                >
+                  &#x2715;
+                </button>
+              )}
+            </div>
           </div>
           {/* Capacity */}
           <div className='mb-4'>
@@ -475,18 +521,32 @@ export default function Register() {
             >
               Capacidad máxima (opcional)
             </label>
-            <input
-              id='capacity'
-              name='capacity'
-              type='number'
-              min='1'
-              max='99999'
-              className=' px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
-              value={capacity}
-              onChange={(e) => setCapacity(e.target.value)}
-              placeholder='Ej. 200'
-              autoComplete='off'
-            />
+            <div className='relative inline-block'>
+              <input
+                id='capacity'
+                name='capacity'
+                type='number'
+                min='1'
+                max='99999'
+                className='px-3 py-2 pr-8 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
+                value={capacity}
+                onChange={(e) =>
+                  setCapacity(e.target.value)
+                }
+                placeholder='Ej. 200'
+                autoComplete='off'
+              />
+              {capacity && (
+                <button
+                  type='button'
+                  onClick={() => setCapacity('')}
+                  className='absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600'
+                  aria-label='Clear capacity input'
+                >
+                  &#x2715;
+                </button>
+              )}
+            </div>
           </div>
           {/* Facebook URL */}
           <div className='mb-4'>
@@ -496,17 +556,29 @@ export default function Register() {
             >
               Página de Facebook (Opcional)
             </label>
-            <input
-              id='facebookUrl'
-              name='facebookUrl'
-              type='url'
-              placeholder='https://facebook.com/nombre_de_usuario'
-              value={facebookUrl}
-              onChange={(e) =>
-                setFacebookUrl(e.target.value)
-              }
-              className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none'
-            />
+            <div className='relative'>
+              <input
+                id='facebookUrl'
+                name='facebookUrl'
+                type='url'
+                placeholder='https://facebook.com/nombre_de_usuario'
+                value={facebookUrl}
+                onChange={(e) =>
+                  setFacebookUrl(e.target.value)
+                }
+                className='w-full p-2 pr-8 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none'
+              />
+              {facebookUrl && (
+                <button
+                  type='button'
+                  onClick={() => setFacebookUrl('')}
+                  className='absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600'
+                  aria-label='Clear Facebook URL input'
+                >
+                  &#x2715;
+                </button>
+              )}
+            </div>
           </div>
           {/* Instagram URL */}
           <div className='mb-4'>
@@ -516,17 +588,29 @@ export default function Register() {
             >
               Perfil de Instagram (Opcional)
             </label>
-            <input
-              id='instagramUrl'
-              name='instagramUrl'
-              type='url'
-              placeholder='https://instagram.com/nombre_de_usuario'
-              value={instagramUrl}
-              onChange={(e) =>
-                setInstagramUrl(e.target.value)
-              }
-              className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none'
-            />
+            <div className='relative'>
+              <input
+                id='instagramUrl'
+                name='instagramUrl'
+                type='url'
+                placeholder='https://instagram.com/nombre_de_usuario'
+                value={instagramUrl}
+                onChange={(e) =>
+                  setInstagramUrl(e.target.value)
+                }
+                className='w-full p-2 pr-8 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none'
+              />
+              {instagramUrl && (
+                <button
+                  type='button'
+                  onClick={() => setInstagramUrl('')}
+                  className='absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600'
+                  aria-label='Clear Instagram URL input'
+                >
+                  &#x2715;
+                </button>
+              )}
+            </div>
           </div>
           {/* WhatsApp Number */}
           <div className='mb-4'>
@@ -536,17 +620,29 @@ export default function Register() {
             >
               Número de WhatsApp (Opcional)
             </label>
-            <input
-              id='whatsappNumber'
-              name='whatsappNumber'
-              type='tel' // Use type 'tel' for phone numbers
-              placeholder='+1234567890 (Incluir código de país)'
-              value={whatsappNumber}
-              onChange={(e) =>
-                setWhatsappNumber(e.target.value)
-              }
-              className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none'
-            />
+            <div className='relative'>
+              <input
+                id='whatsappNumber'
+                name='whatsappNumber'
+                type='number'
+                placeholder='+1234567890 (Incluir código de país)'
+                value={whatsappNumber}
+                onChange={(e) =>
+                  setWhatsappNumber(e.target.value)
+                }
+                className='w-full p-2 pr-8 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none'
+              />
+              {whatsappNumber && (
+                <button
+                  type='button'
+                  onClick={() => setWhatsappNumber('')}
+                  className='absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600'
+                  aria-label='Clear WhatsApp number input'
+                >
+                  &#x2715;
+                </button>
+              )}
+            </div>
             <p className='mt-1 text-xs text-gray-500'>
               Incluye el código de país (ej. +591 para
               Bolivia).
@@ -609,9 +705,7 @@ export default function Register() {
                 center={[-17.389499, -66.156123]}
                 zoom={12}
                 isEditable={true}
-                registrationAddress={getFirstTwoWords(
-                  address,
-                )}
+                registrationAddress={address}
                 registrationCity={selectedCity}
                 onLocationSelect={(location) =>
                   setGeoPoint(location)
@@ -677,14 +771,26 @@ export default function Register() {
             >
               Correo electrónico
             </label>
-            <input
-              type='email'
-              id='email'
-              className='w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+            <div className='relative'>
+              <input
+                type='email'
+                id='email'
+                className='w-full px-3 py-2 pr-8 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              {email && (
+                <button
+                  type='button'
+                  onClick={() => setEmail('')}
+                  className='absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600'
+                  aria-label='Clear email input'
+                >
+                  &#x2715;
+                </button>
+              )}
+            </div>
           </div>
           {/* Password */}
           <div className='mb-4'>
@@ -694,14 +800,42 @@ export default function Register() {
             >
               Contraseña
             </label>
-            <input
-              type='password'
-              id='password'
-              className='w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <div className='relative'>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                id='password'
+                className='w-full px-3 py-2 pr-16 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500'
+                value={password}
+                onChange={(e) =>
+                  setPassword(e.target.value)
+                }
+                required
+              />
+              {password && (
+                <button
+                  type='button'
+                  onClick={() => setPassword('')}
+                  className='absolute right-10 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600'
+                  aria-label='Clear password input'
+                >
+                  &#x2715;
+                </button>
+              )}
+              <button
+                type='button'
+                onClick={() =>
+                  setShowPassword(!showPassword)
+                }
+                className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600'
+                aria-label={
+                  showPassword
+                    ? 'Hide password'
+                    : 'Show password'
+                }
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
             <p className='text-sm text-gray-500 mt-1'>
               La contraseña debe tener al menos 6 caracteres
               y una letra mayúscula
@@ -717,9 +851,11 @@ export default function Register() {
             </label>
             <div className='relative'>
               <input
-                type='password'
+                type={
+                  showRepeatPassword ? 'text' : 'password'
+                }
                 id='repeatPassword'
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                className={`w-full px-3 py-2 pr-20 border rounded-lg focus:outline-none focus:ring-2 ${
                   passwordsMatch
                     ? 'focus:ring-teal-500'
                     : 'focus:ring-red-500 border-red-300'
@@ -730,6 +866,38 @@ export default function Register() {
                 }}
                 required
               />
+              {repeatPassword && (
+                <button
+                  type='button'
+                  onClick={() => setRepeatPassword('')}
+                  className='absolute right-16 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600'
+                  aria-label='Clear repeat password input'
+                >
+                  &#x2715;
+                </button>
+              )}
+              {repeatPassword && (
+                <button
+                  type='button'
+                  onClick={() =>
+                    setShowRepeatPassword(
+                      !showRepeatPassword,
+                    )
+                  }
+                  className='absolute right-10 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600'
+                  aria-label={
+                    showRepeatPassword
+                      ? 'Hide repeat password'
+                      : 'Show repeat password'
+                  }
+                >
+                  {showRepeatPassword ? (
+                    <FaEyeSlash />
+                  ) : (
+                    <FaEye />
+                  )}
+                </button>
+              )}
               {repeatPassword && (
                 <div className='absolute right-3 top-1/2 transform -translate-y-1/2'>
                   {passwordsMatch ? (

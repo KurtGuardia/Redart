@@ -317,20 +317,18 @@ export default function VenueDetailFetcher({ venueId }) {
               </div>
             )}
 
-            <div className='flex items-center gap-2 pt-2'>
+            {/* <div className='flex items-center gap-2 pt-2'>
               <span
-                className={`h-3 w-3 rounded-full ${
-                  venue.status === 'active'
+                className={`w-3 h-3 rounded-full mr-2 ${
+                  venue.active
                     ? 'bg-green-500'
                     : 'bg-red-500'
                 }`}
               ></span>
               <span className='text-sm text-gray-600'>
-                {venue.status === 'active'
-                  ? 'Activo'
-                  : 'Inactivo'}
+                {venue.active ? 'Activo' : 'Inactivo'}
               </span>
-            </div>
+            </div> */}
           </div>
         </div>
       </section>
