@@ -1,7 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { useRouter } from 'next/navigation'
+import {
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+} from 'firebase/auth'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import {
   auth,
@@ -70,6 +74,21 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false)
   const [showRepeatPassword, setShowRepeatPassword] =
     useState(false)
+  const router = useRouter()
+
+  // Redirect authenticated users
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, redirect them to the dashboard.
+        router.push('/dashboard')
+      }
+      // If user is null, they are not signed in, so stay on the register page.
+    })
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe()
+  }, [router])
 
   useEffect(() => {
     setIsClientSide(true)
@@ -125,13 +144,6 @@ export default function Register() {
     const url = await getDownloadURL(storageRef)
     return url
   }
-
-  // const getFirstTwoWords = (text) => {
-  //   if (!text) return ''
-  //   const words = text.trim().split(/\s+/)
-  //   const firstTwoWords = words.slice(0, 2).join(' ')
-  //   return firstTwoWords
-  // }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
