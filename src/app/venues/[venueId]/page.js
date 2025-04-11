@@ -1,14 +1,14 @@
 import Spot from '../../../components/ui/Spot'
-import VenueDetailFetcher from './VenueDetailFetcher'
-import VenueEventListWrapper from './VenueEventListWrapper'
-import VenuePhotoGallery from './VenuePhotoGallery'
-import VenueHeroSection from './VenueHeroSection'
+import VenueDetailFetcher from '../../../components/venue/VenueDetailFetcher'
+import VenueEventListWrapper from '../../../components/venue/VenueEventListWrapper'
+import VenuePhotoGallery from '../../../components/venue/VenuePhotoGallery'
+import VenueHeroSection from '../../../components/venue/VenueHeroSection'
 
 export default function VenuePage({ params }) {
   const venueId = params.venueId
 
   return (
-    <div className='relative min-h-screen min-w-[80%]'>
+    <div className='relative min-h-screen w-full'>
       {/* Background Spots */}
       <Spot colorName={'Teal'} />
       <Spot colorName={'Cyan'} />

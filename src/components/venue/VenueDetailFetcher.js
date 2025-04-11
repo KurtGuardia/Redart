@@ -1,10 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { db } from '../../../lib/firebase-client'
+import { db } from '../../lib/firebase-client' // Updated path
 import { doc, getDoc } from 'firebase/firestore'
 import Image from 'next/image'
-import MapComponent from '../../../components/MapComponent'
+import MapComponent from '../MapComponent' // Updated path
 import {
   FaWhatsapp,
   FaInstagram,
@@ -13,7 +13,8 @@ import {
 import {
   formatWhatsappNumber,
   generateGoogleMapsUrl,
-} from '../../../lib/utils'
+} from '../../lib/utils' // Updated path
+import { Skeleton } from '../ui/Skeleton' // Make sure Skeleton is imported
 
 // Simple SVG Icon for location pin (defined locally)
 const LocationPinIcon = () => (
@@ -119,9 +120,57 @@ export default function VenueDetailFetcher({ venueId }) {
 
   if (loading) {
     return (
-      <div className='min-h-[60vh] flex justify-center items-center'>
-        <div className='animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-teal-500'></div>
-      </div>
+      <section className='mb-10 md:mb-12 border-b border-gray-200/80 pb-8 animate-pulse'>
+        <div className='flex flex-col lg:flex-row gap-8 lg:gap-12'>
+          {/* Left Column: Map Skeleton */}
+          <div className='lg:w-1/2 flex flex-col space-y-4'>
+            <Skeleton className='h-8 w-3/4 bg-gray-300' />{' '}
+            {/* Title */}
+            <Skeleton className='h-4 w-1/2 bg-gray-300' />{' '}
+            {/* Subtitle */}
+            <Skeleton className='h-80 md:h-96 w-full bg-gray-300 rounded-lg' />{' '}
+            {/* Map Area */}
+            <Skeleton className='h-5 w-3/4 mx-auto bg-gray-300 mt-4' />{' '}
+            {/* Address Link */}
+          </div>
+
+          {/* Right Column: Details Skeleton */}
+          <div className='lg:w-1/2 space-y-6'>
+            <Skeleton className='h-8 w-3/4 bg-gray-300 mb-4' />{' '}
+            {/* Title */}
+            {/* Logo Placeholder */}
+            <div className='flex justify-center md:justify-start mb-4'>
+              <Skeleton className='w-[150px] h-[100px] bg-gray-300 rounded-md' />
+            </div>
+            {/* Capacity Skeleton */}
+            <div className='flex items-center gap-3'>
+              <Skeleton className='h-6 w-6 bg-gray-300 rounded-full' />
+              <div className='space-y-2'>
+                <Skeleton className='h-4 w-20 bg-gray-300' />
+                <Skeleton className='h-4 w-32 bg-gray-300' />
+              </div>
+            </div>
+            {/* Services Skeleton */}
+            <div className='space-y-2'>
+              <Skeleton className='h-5 w-24 bg-gray-300 mb-2' />
+              <div className='flex flex-wrap gap-2 pl-8'>
+                <Skeleton className='h-5 w-16 rounded-full bg-gray-300' />
+                <Skeleton className='h-5 w-20 rounded-full bg-gray-300' />
+                <Skeleton className='h-5 w-14 rounded-full bg-gray-300' />
+              </div>
+            </div>
+            {/* Contact/Social Skeleton */}
+            <div className='space-y-2'>
+              <Skeleton className='h-5 w-32 bg-gray-300 mb-2' />
+              <div className='space-y-2 pl-8'>
+                <Skeleton className='h-5 w-24 bg-gray-300' />
+                <Skeleton className='h-5 w-24 bg-gray-300' />
+                <Skeleton className='h-5 w-24 bg-gray-300' />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     )
   }
 

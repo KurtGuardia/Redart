@@ -2,27 +2,76 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { useVenueData } from '../../../hooks/useVenueData'
+import { useVenueData } from '../../hooks/useVenueData' // Updated import path
+import { Skeleton } from '../ui/Skeleton'
 
 const VenuePhotoGallery = ({ venueId }) => {
   const [selectedImageUrl, setSelectedImageUrl] =
     useState(null)
   const { venue, loading, error } = useVenueData(venueId)
-  const photos = venue?.photos || []
   const venueName =
     venue?.name ||
     '[Falta nombre, contacta al administrador]'
 
-  // Set initial selected image
+  // This useEffect handles setting the initial image *after* data is loaded.
   useEffect(() => {
-    if (photos.length > 0 && !selectedImageUrl) {
-      setSelectedImageUrl(photos[0])
+    // Only run if not loading, venue exists, photos exist, and selected image isn't set yet
+    if (
+      !loading &&
+      venue?.photos &&
+      venue.photos.length > 0 &&
+      !selectedImageUrl
+    ) {
+      setSelectedImageUrl(venue.photos[0])
     }
-  }, [photos, selectedImageUrl])
+    // Depend on loading, venue object (specifically photos), and selectedImageUrl
+  }, [loading, venue?.photos, selectedImageUrl])
 
-  if (!photos || photos.length === 0) {
-    return null // Don't render anything if no photos
+  // Handle Error State
+  if (error) {
+    // Optionally: render an error message or re-throw
+    console.error('Error loading venue photos:', error)
+    return (
+      <div className='text-red-500 p-4'>
+        Error al cargar la galería.
+      </div>
+    )
   }
+
+  // Handle Loading State
+  if (loading) {
+    return (
+      <section className='mb-10 md:mb-12 border-b border-gray-200/80 pb-8 animate-pulse'>
+        <Skeleton className='h-8 w-1/4 bg-gray-300 mb-6' />{' '}
+        {/* Title */}
+        <div className='space-y-4 md:space-y-6'>
+          <Skeleton className='relative w-full aspect-[16/9] rounded-xl bg-gray-300 mb-4' />{' '}
+          {/* Main Image */}
+          <div className='grid grid-cols-3 md:grid-cols-5 gap-2 md:gap-3'>
+            {[...Array(5)].map(
+              (
+                _,
+                index, // Placeholder for 5 thumbnails
+              ) => (
+                <Skeleton
+                  key={index}
+                  className='aspect-square rounded-md bg-gray-300'
+                />
+              ),
+            )}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  // Handle Empty State (No venue data or no photos)
+  if (!venue?.photos || venue.photos.length === 0) {
+    return null // Don't render the gallery section if no photos
+  }
+
+  // Data is loaded, no error, and photos exist
+  const photos = venue.photos // Assign photos now that we know they exist
 
   return (
     <section className='mb-10 md:mb-12 border-b border-gray-200/80 pb-8'>

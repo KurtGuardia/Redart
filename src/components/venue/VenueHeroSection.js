@@ -2,9 +2,9 @@
 
 import Image from 'next/image'
 import Link from 'next/link' // Needed for the link wrapper potentially
-import { useVenueData } from '../../../hooks/useVenueData'
-import { generateGoogleMapsUrl } from '../../../lib/utils'
-import { Skeleton } from '../../../components/ui/Skeleton' // Import Skeleton
+import { useVenueData } from '../../hooks/useVenueData' // Updated import path
+import { generateGoogleMapsUrl } from '../../lib/utils' // Updated import path
+import { Skeleton } from '../ui/Skeleton' // Updated import path
 
 // Simple SVG Icon for location pin (defined locally)
 const LocationPinIcon = () => (
@@ -32,9 +32,23 @@ export default function VenueHeroSection({ venueId }) {
 
   // --- Render Loading State ---
   if (loading) {
-    // Render styled Skeleton
+    // Render detailed Skeleton
     return (
-      <Skeleton className='relative w-full h-64 md:h-96 mb-12 shadow-lg bg-[var(--secondary-color-transparent)]' />
+      <div className='relative min-w-[80%] animate-pulse'>
+        <div className='relative w-full h-72 md:h-96 flex items-end justify-center text-center overflow-hidden mb-12 shadow-lg bg-white'>
+          {/* Mimic image area */}
+          <div className='relative z-20 mb-8 p-4 md:mb-12'>
+            <div className='bg-gray-400/30 backdrop-blur-md rounded-lg p-4 md:p-6 shadow-lg space-y-3'>
+              {/* Mimic Title */}
+              <Skeleton className='h-8 md:h-12 w-64 md:w-72 mx-auto bg-gray-400/50' />
+              {/* Mimic Address */}
+              <Skeleton className='h-5 md:h-6 w-60 md:w-80 mx-auto bg-gray-400/50' />
+            </div>
+          </div>
+        </div>
+        {/* Mimic Description Area (Optional) */}
+        <Skeleton className='h-24 md:h-28 w-[90%] mx-auto mb-12 md:mb-16 rounded-xl bg-white p-8' />
+      </div>
     )
   }
 

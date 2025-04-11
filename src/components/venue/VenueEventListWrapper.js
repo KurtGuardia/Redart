@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import VenueEventListItem from '../../../components/VenueEventListItem'
-import EventDetailModal from '../../../components/EventDetailModal'
-import { useEventsByVenue } from '../../../hooks/useEventsByVenue'
-import { useIsIndexPage } from '../../../hooks/useIsIndexPage'
-import { Skeleton } from '../../../components/ui/Skeleton'
+import VenueEventListItem from '../VenueEventListItem' // Updated import path
+import EventDetailModal from '../EventDetailModal' // Updated import path
+import { useEventsByVenue } from '../../hooks/useEventsByVenue' // Updated import path
+import { useIsIndexPage } from '../../hooks/useIsIndexPage' // Updated import path
+import { Skeleton } from '../ui/Skeleton' // Updated import path
 
 const VenueEventListWrapper = ({ venueId }) => {
   const [selectedEvent, setSelectedEvent] = useState(null)
@@ -35,7 +35,7 @@ const VenueEventListWrapper = ({ venueId }) => {
         {[...Array(3)].map((_, index) => (
           <Skeleton
             key={index}
-            className='h-15 bg-[var(--secondary-color-transparent)] w-full rounded-lg h-[100px]'
+            className='h-15 bg-gray-300 w-full rounded-lg h-[100px]'
           />
         ))}
       </div>
