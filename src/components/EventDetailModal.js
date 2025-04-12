@@ -13,6 +13,7 @@ import {
 } from '../lib/utils'
 
 const EventDetailModal = ({ isOpen, onClose, event }) => {
+  console.log(event)
   const [isMounted, setIsMounted] = useState(false)
   useEffect(() => {
     setIsMounted(true)

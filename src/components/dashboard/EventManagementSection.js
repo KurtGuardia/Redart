@@ -3,8 +3,6 @@ import EventCreateForm from './EventCreateForm'
 import EventList from './EventList'
 
 export default function EventManagementSection({
-  venueId,
-  venue,
   events,
   eventsLoading,
   filterStatus,

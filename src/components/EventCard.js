@@ -65,6 +65,7 @@ const EventCard = ({
           {badgeInfo.label}
         </div>
       )}
+
       <div
         className={`relative text-white overflow-hidden flex flex-col group rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6 max-w-sm mx-auto w-full ${backgroundClass} ${opacityClass}`}
       >

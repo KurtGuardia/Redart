@@ -455,8 +455,6 @@ export default function VenueDetailsCard({
           <Link
             href={`/venues/${venue.id}`}
             className='inline-flex items-center gap-2 justify-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[var(--blue-500)] hover:brightness-125 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--primary)] transition-all duration-200'
-            target='_blank' // Open in new tab
-            rel='noopener noreferrer' // Security best practice for target="_blank"
           >
             <span>Ver Página Pública del Local</span>
             <FaRegEye />

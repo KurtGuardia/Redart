@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import {
   auth,
   db,
@@ -26,7 +26,6 @@ import {
   deleteObject,
 } from 'firebase/storage'
 import { useRouter } from 'next/navigation'
-import dynamic from 'next/dynamic'
 import { useVenueData } from '../../hooks/useVenueData'
 import Spot from '../../components/ui/Spot'
 import EditModal from '../../components/EditModal'
@@ -41,28 +40,11 @@ import {
   validateFacebookUrl,
   validateInstagramUrl,
   validateWhatsappNumber,
-  formatWhatsappNumber,
-  hasEventPassed,
 } from '../../lib/utils'
-import VenueEventListItem from '../../components/VenueEventListItem'
 import EventDetailModal from '../../components/EventDetailModal'
-import Link from 'next/link'
-import {
-  FaFacebook,
-  FaInstagram,
-  FaRegEye,
-  FaWhatsapp,
-} from 'react-icons/fa'
 import DashboardSkeleton from '../../components/DashboardSkeleton'
 import VenueDetailsCard from '../../components/dashboard/VenueDetailsCard'
 import EventManagementSection from '../../components/dashboard/EventManagementSection'
-
-const MapComponent = dynamic(
-  () => import('../../components/MapComponent'),
-  {
-    ssr: false,
-  },
-)
 
 // Function to sync venue data with venues_locations collection
 const syncVenueLocationData = async (
@@ -830,12 +812,16 @@ export default function Dashboard() {
       // Format date if changed
       if (
         updatedData.date &&
-        updatedData.date !== currentEvent.date
+        updatedData.date !== currentEvent.date // Compare against the formatted string used in the form
       ) {
         try {
-          formattedData.date = Timestamp.fromDate(
-            new Date(updatedData.date),
-          )
+          // Convert the ISO string from the form back to a Date object
+          const newDate = new Date(updatedData.date)
+          if (isNaN(newDate.getTime())) {
+            // Validate the date
+            throw new Error('Invalid date format')
+          }
+          formattedData.date = Timestamp.fromDate(newDate) // Convert to Timestamp
         } catch (dateError) {
           console.error(
             'Invalid date format provided for update:',
@@ -845,9 +831,17 @@ export default function Dashboard() {
           alert('Formato de fecha inválido.')
           return // Stop update if date is invalid
         }
+      } else if (currentEvent.date) {
+        // Keep original timestamp if date string wasn't changed or provided
+        // We need to ensure the original Timestamp object is preserved
+        // Find the original event from the 'events' state to get the original Timestamp
+        const originalEvent = events.find(
+          (e) => e.id === currentEvent.id,
+        )
+        formattedData.date = originalEvent?.date || null // Use original Timestamp or null
       } else {
-        // Keep original date if not changed or update is undefined
-        formattedData.date = currentEvent.date
+        // If there was no original date, set to null
+        formattedData.date = null
       }
 
       // Format price if changed
@@ -873,8 +867,16 @@ export default function Dashboard() {
         updatedData.ticketUrl !== undefined &&
         updatedData.ticketUrl !== currentEvent.ticketUrl
       ) {
-        formattedData.ticketUrl =
+        const trimmedUrl =
           updatedData.ticketUrl?.trim() || null
+        // Add validation check using the updated isValidUrl
+        if (trimmedUrl && !isValidUrl(trimmedUrl)) {
+          alert(
+            'El formato de la URL de venta de entradas no es válido.',
+          )
+          return // Stop update if URL is invalid
+        }
+        formattedData.ticketUrl = trimmedUrl
       } else {
         formattedData.ticketUrl = currentEvent.ticketUrl // Keep original if not changed
       }
@@ -1137,7 +1139,7 @@ export default function Dashboard() {
       ],
     },
     ticketUrl: {
-      type: 'url',
+      type: 'text',
       label: 'URL de venta de entradas',
       description:
         'Opcional: URL donde se pueden comprar entradas',
@@ -1169,7 +1171,6 @@ export default function Dashboard() {
 
   // Function to open the event edit modal with current event data
   const openEventEditModal = (event) => {
-    console.log(event)
     // Convert Timestamp to ISO string for the datetime-local input
     const date = event.date?.toDate
       ? event.date.toDate().toISOString().slice(0, 16)
@@ -1263,21 +1264,19 @@ export default function Dashboard() {
       <EditModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
-        onSubmit={handleEditVenue}
-        formFields={venueFormFields}
+        onSave={handleEditVenue}
+        fields={venueFormFields}
         title='Editar Local'
-        submitButtonText='Guardar Cambios'
-        initialData={venue}
+        data={venue}
       />
 
       <EditModal
         isOpen={isEventEditModalOpen}
         onClose={() => setIsEventEditModalOpen(false)}
-        onSubmit={handleEditEvent}
-        formFields={eventFormFields}
+        onSave={handleEditEvent}
+        fields={eventFormFields}
         title='Editar Evento'
-        submitButtonText='Guardar Cambios'
-        initialData={currentEvent}
+        data={currentEvent}
       />
 
       <EventDetailModal

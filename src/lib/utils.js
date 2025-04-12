@@ -110,12 +110,22 @@ export function formatTimestamp(timestampInput, options) {
 export const isValidUrl = (string) => {
   if (!string) return false
   try {
-    // Basic check, doesn't guarantee reachability
-    const url = new URL(string)
-    // Optionally add protocol check if needed: return ['http:', 'https:'].includes(url.protocol);
-    return true
-  } catch (_) {
-    return false
+    // First, try parsing the URL directly
+    new URL(string)
+    return true // If it parses successfully, it's valid
+  } catch (e) {
+    // If direct parsing fails, try prepending 'http://'
+    try {
+      // Check if the string already starts with common schemes or relative paths
+      if (/^(https?:\/\/|ftp:\/\/|\/\/|\/)/i.test(string)) {
+        return false // If it has a scheme or looks like a path, and failed first time, it's invalid
+      }
+      new URL(`http://${string}`)
+      return true // If it parses successfully with 'http://', it's valid
+    } catch (_) {
+      // If it still fails after prepending 'http://', it's invalid
+      return false
+    }
   }
 }
 

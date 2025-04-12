@@ -11,7 +11,6 @@ export default function EventList({
   onDelete,
   onViewDetails,
 }) {
-  // --- Calculate filteredEvents internally ---
   const filteredEvents = useMemo(() => {
     if (!events) return [] // Handle cases where events might not be loaded yet
     return events.filter((event) => {
@@ -42,8 +41,7 @@ export default function EventList({
           return true // Show all
       }
     })
-  }, [events, filterStatus]) // Recalculate when events or filterStatus change
-  // --- End calculation ---
+  }, [events, filterStatus])
 
   // Determine button styles based on active filter
   const getButtonClass = (status) => {
@@ -147,12 +145,15 @@ export default function EventList({
             <VenueEventListItem
               key={event.id}
               event={event}
-              onEdit={() => onEdit(event)} // Pass the specific event to edit handler
+              onEdit={() => onEdit(event)}
               onDelete={() =>
                 onDelete(event.id, event.image)
-              } // Pass ID and image for deletion
-              isIndexPage={false} // Set to false for dashboard view
-              onClickItem={() => onViewDetails(event)} // Pass event to detail view handler
+              }
+              isIndexPage
+              onClickItem={() => onViewDetails(event)}
+              detail
+              view
+              handler
             />
           ))}
         </ul>
