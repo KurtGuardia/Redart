@@ -11,20 +11,14 @@ import {
   startAfter,
   Timestamp,
 } from 'firebase/firestore'
-import { CATEGORIES } from '../lib/constants'
+import {
+  CATEGORIES,
+  STATUS_FILTERS,
+} from '../lib/constants'
 import { hasEventPassed } from '../lib/utils'
 import EventCard from './EventCard'
 import EventDetailModal from './EventDetailModal'
 import EventCardSkeleton from './EventCardSkeleton'
-
-// Define status filter options (duplicated here for now, could be shared)
-const STATUS_FILTERS = [
-  { value: 'all', label: 'Todos' },
-  { value: 'active', label: 'Próximos' },
-  { value: 'past', label: 'Pasados' },
-  { value: 'suspended', label: 'Suspendidos' },
-  { value: 'cancelled', label: 'Cancelados' },
-]
 
 const ITEMS_PER_PAGE = 24
 

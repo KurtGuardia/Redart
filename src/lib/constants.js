@@ -31,3 +31,11 @@ export const AMENITIES_OPTIONS = [
   'Pet friendly',
   'Vestuario',
 ]
+
+export const STATUS_FILTERS = [
+  { value: 'all', label: 'Todos' },
+  { value: 'active', label: 'Próximos' },
+  { value: 'past', label: 'Pasados' },
+  { value: 'suspended', label: 'Suspendidos' },
+  { value: 'cancelled', label: 'Cancelados' },
+]
