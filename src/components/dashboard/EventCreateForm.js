@@ -236,7 +236,6 @@ export default function EventCreateForm({
             className='w-full p-2 border bg-white border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
             required
           >
-            <option value=''>Seleccionar categoría</option>
             {CATEGORIES.map((cat) => (
               <option key={cat.value} value={cat.value}>
                 {cat.label}

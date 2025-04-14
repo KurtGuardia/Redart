@@ -1,5 +1,5 @@
 export const CATEGORIES = [
-  { value: 'all', label: 'Categorias' }, // Keep 'Categorias' or 'Todas' based on preference
+  { value: '', label: '-' }, // Keep 'Categorias' or 'Todas' based on preference
   { value: 'music', label: 'Música' },
   { value: 'art', label: 'Arte' },
   { value: 'theater', label: 'Teatro' },
@@ -27,4 +27,7 @@ export const AMENITIES_OPTIONS = [
   'Comida',
   'Acceso discapacitados',
   'Wi-Fi',
+  'Aire acondicionado',
+  'Pet friendly',
+  'Vestuario',
 ]

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { db } from '../lib/firebase-client'
 import {
   collection,
@@ -26,29 +26,56 @@ const STATUS_FILTERS = [
   { value: 'cancelled', label: 'Cancelados' },
 ]
 
-const ITEMS_PER_PAGE = 8
+const ITEMS_PER_PAGE = 24
 
-// Revert to original component without props
 const EventListView = () => {
-  // Restore original state
   const [eventsList, setEventsList] = useState([])
   const [lastVisible, setLastVisible] = useState(null)
-  const [loading, setLoading] = useState(true) // Back to initial loading state
+  const [loading, setLoading] = useState(true)
   const [isFetchingMore, setIsFetchingMore] =
     useState(false)
   const [hasMore, setHasMore] = useState(true)
   const [error, setError] = useState(null)
-
   const [searchTerm, setSearchTerm] = useState('')
   const [filter, setFilter] = useState('all')
   const [filterStatus, setFilterStatus] = useState('all')
   const [selectedEvent, setSelectedEvent] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [debouncedSearchTerm, setDebouncedSearchTerm] =
+    useState(searchTerm)
+  const isInitialMount = useRef(true)
 
-  // Restore initial fetch useEffect
+  // Effect for initial data fetch on mount
   useEffect(() => {
     fetchEvents(searchTerm, filter, filterStatus, true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Effect to debounce search term
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm)
+    }, 1500)
+
+    return () => {
+      clearTimeout(timerId)
+    }
+  }, [searchTerm])
+
+  // Effect to fetch data based on debounced search term and filters (after initial mount)
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+      return
+    }
+    fetchEvents(
+      debouncedSearchTerm,
+      filter,
+      filterStatus,
+      true,
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearchTerm, filter, filterStatus])
 
   const openModal = (event) => {
     setSelectedEvent(event)
@@ -214,7 +241,6 @@ const EventListView = () => {
 
   const handleSearchChange = (e) => {
     const newSearchTerm = e.target.value
-    fetchEvents(newSearchTerm, filter, filterStatus, true)
     setSearchTerm(newSearchTerm)
   }
 
@@ -283,7 +309,7 @@ const EventListView = () => {
             className='w-full md:w-48 px-4 py-2 border-2 border-gray-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500 appearance-none bg-white pr-8 cursor-pointer'
             disabled={loading || isFetchingMore}
           >
-            <option value='all'>Categorías</option>
+            <option value='all'>Todas</option>
             {CATEGORIES.map((category) => (
               <option
                 key={category.value}

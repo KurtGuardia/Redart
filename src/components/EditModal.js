@@ -357,10 +357,6 @@ const EditModal = ({
                           className='w-full p-2 border bg-white border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none'
                           required={field.required}
                         >
-                          <option value=''>
-                            {field.placeholder ||
-                              'Seleccionar...'}
-                          </option>
                           {field.options &&
                             field.options.map((option) => (
                               <option
