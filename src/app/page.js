@@ -35,7 +35,7 @@ export default function HomePage () {
       <FeaturedEventsList />
 
       <section
-        className='about-us img relative my-24'
+        className='about-us img relative mt-24'
         style={{ backgroundImage: `url(${'/crowd.jpg'})` }}
       >
         <div className='relative z-10 py-28 mx-auto px-4 text-center text-white h-[500px]'>
@@ -61,7 +61,7 @@ export default function HomePage () {
         <div className='w-full absolute top-0 left-0 bg-[var(--teal-700)] opacity-70  h-[500px]' />
       </section>
 
-      <section className='map py-16 my-24'>
+      <section className='map mt-24'>
         <div className='relative container mx-auto px-4'>
           <Spot colorName={'OliveDrab'} />
           <Spot colorName={'Teal'} />
@@ -80,7 +80,7 @@ export default function HomePage () {
         </div>
       </section>
 
-      <section className='join text-center container mx-auto mb-48'>
+      <section className='join text-center container mx-auto mb-48 mt-24'>
         <h2 className='text-3xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--blue-600)] to-[var(--blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg transform-gpu hover:scale-105 transition-transform'>
           ¿Quieres unirte a la comunidad de Radart?
         </h2>

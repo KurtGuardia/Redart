@@ -27,7 +27,7 @@ export default function FeaturedEventsList () {
   // --- Success State: Render Events ---
   return (
     <>
-      <section className='featured-events py-16 my-24'>
+      <section className='featured-events py-16 mt-24'>
         <div className='relative mx-auto px-4'>
           {/* Keep Spots if they belong logically to this section */}
           <Spot colorName={'FireBrick'} />
