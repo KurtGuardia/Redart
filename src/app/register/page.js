@@ -27,8 +27,10 @@ import {
   uploadBytes,
 } from 'firebase/storage'
 import Image from 'next/image'
-import { countriesAndCities } from './countriesAndCities'
-import { AMENITIES_OPTIONS } from '../../lib/constants'
+import {
+  AMENITIES_OPTIONS,
+  COUNTRIES_AND_CITIES,
+} from '../../lib/constants'
 import {
   compressImage,
   compressMultipleImages,
@@ -97,7 +99,7 @@ export default function Register() {
   const handleCountryChange = (e) => {
     const country = e.target.value
     setSelectedCountry(country)
-    setCities(countriesAndCities[country] || [])
+    setCities(COUNTRIES_AND_CITIES[country] || [])
     setSelectedCity('')
   }
 
@@ -449,7 +451,7 @@ export default function Register() {
               required
             >
               <option value=''>Selecciona un país</option>
-              {Object.keys(countriesAndCities).map(
+              {Object.keys(COUNTRIES_AND_CITIES).map(
                 (country) => (
                   <option key={country} value={country}>
                     {country}

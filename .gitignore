@@ -26,6 +26,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Firebase Admin SDK
-.radart-7067c-firebase-adminsdk-fbsvc-16cf666e27.json
-
+# external
+.ext

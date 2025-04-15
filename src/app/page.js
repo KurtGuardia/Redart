@@ -1,11 +1,10 @@
 import Link from 'next/link'
-import TypingAnimation from '../components/TypingAnimation'
 import Spot from '../components/ui/Spot'
 import HeroBackgroundSlider from '../components/HeroBackgroundSlider'
 import MapView from '../components/MapView'
 import FeaturedEventsList from '../components/FeaturedEventsList'
 
-export default function HomePage() {
+export default function HomePage () {
   const heroImages = [
     '/theater.jpg',
     '/carnival.jpg',
@@ -39,7 +38,6 @@ export default function HomePage() {
         <Spot colorName={'peru'} />
 
         <div className='container mx-auto px-4 text-center min-h-[250px] flex items-center justify-center bg-[rgba(255,255,255,0.5)] rounded-3xl'>
-          <TypingAnimation text='¡Estamos dando vida a una herramienta para impulsar la cultura! Ya estamos registrando espacios en todo el país. Si tu espacio acoge obras, conciertos, exposiciones o cualquier expresión artística, y está  abierto al público, crea tu cuenta y sé parte de esta red cultural en crecimiento.' />
         </div>
       </section>
 
