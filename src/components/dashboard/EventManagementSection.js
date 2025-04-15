@@ -1,8 +1,9 @@
-import React from 'react'
+'use client'
+
 import EventCreateForm from './EventCreateForm'
 import EventList from './EventList'
 
-export default function EventManagementSection({
+export default function EventManagementSection ( {
   events,
   eventsLoading,
   filterStatus,
@@ -15,7 +16,7 @@ export default function EventManagementSection({
   eventSuccess,
   setEventFormError,
   setEventSuccess,
-}) {
+} ) {
   return (
     <div className='bg-white rounded-lg shadow-lg p-6'>
       <h2 className='text-2xl font-semibold mb-4 text-gray-800 flex items-center'>

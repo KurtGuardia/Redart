@@ -20,7 +20,7 @@ import {
 } from 'firebase/firestore'
 import Link from 'next/link'
 import Spot from '../../components/ui/Spot'
-import MapComponent from '../../components/MapComponent'
+import MapComponent from '../../components/map/MapComponent'
 import {
   getDownloadURL,
   ref,

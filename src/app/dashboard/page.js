@@ -28,6 +28,7 @@ import {
 import { useRouter } from 'next/navigation'
 import { useVenueData } from '../../hooks/useVenueData'
 import Spot from '../../components/ui/Spot'
+import MapComponent from '../../components/map/MapComponent'
 import EditModal from '../../components/EditModal'
 import {
   CATEGORIES,
@@ -41,7 +42,7 @@ import {
   validateInstagramUrl,
   validateWhatsappNumber,
 } from '../../lib/utils'
-import EventDetailModal from '../../components/EventDetailModal'
+import EventDetailModal from '../../components/event/EventDetailModal'
 import DashboardSkeleton from '../../components/DashboardSkeleton'
 import VenueDetailsCard from '../../components/dashboard/VenueDetailsCard'
 import EventManagementSection from '../../components/dashboard/EventManagementSection'

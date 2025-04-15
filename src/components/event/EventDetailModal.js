@@ -10,7 +10,7 @@ import {
   formatTimestamp, // Renamed from formatDateTime
   getCategoryLabel,
   hasEventPassed, // Import hasEventPassed
-} from '../lib/utils'
+} from '../../lib/utils'
 
 const EventDetailModal = ({ isOpen, onClose, event }) => {
   console.log(event)

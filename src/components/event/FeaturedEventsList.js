@@ -1,29 +1,29 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useFeaturedEvents } from '../hooks/useFeaturedEvents'
+import { useFeaturedEvents } from '../../hooks/useFeaturedEvents'
 import EventCard from './EventCard'
-import Spot from './ui/Spot'
+import Spot from '../ui/Spot'
 import Link from 'next/link'
 import EventDetailModal from './EventDetailModal'
 
-export default function FeaturedEventsList() {
+export default function FeaturedEventsList () {
   const { events, loading, error } = useFeaturedEvents()
-  const [selectedEvent, setSelectedEvent] = useState(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedEvent, setSelectedEvent] = useState( null )
+  const [isModalOpen, setIsModalOpen] = useState( false )
 
-  const openModal = (event) => {
-    setSelectedEvent(event)
-    setIsModalOpen(true)
+  const openModal = ( event ) => {
+    setSelectedEvent( event )
+    setIsModalOpen( true )
   }
 
   const closeModal = () => {
-    setSelectedEvent(null)
-    setIsModalOpen(false)
+    setSelectedEvent( null )
+    setIsModalOpen( false )
   }
 
   // --- Loading State ---
-  if (loading) {
+  if ( loading ) {
     // Optional: Add a more sophisticated loading skeleton
     return (
       <section className='featured-events py-16 my-24'>
@@ -39,7 +39,7 @@ export default function FeaturedEventsList() {
   }
 
   // --- Error State ---
-  if (error) {
+  if ( error ) {
     return (
       <section className='featured-events py-16 my-24'>
         <div className='relative mx-auto px-4'>
@@ -55,7 +55,7 @@ export default function FeaturedEventsList() {
   }
 
   // --- No Events State ---
-  if (!events || events.length === 0) {
+  if ( !events || events.length === 0 ) {
     return (
       <section className='featured-events py-16 my-24'>
         <div className='relative mx-auto px-4'>
@@ -92,7 +92,7 @@ export default function FeaturedEventsList() {
             Eventos destacados
           </h2>
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-14 justify-items-center'>
-            {events.map((event) => (
+            {events.map( ( event ) => (
               <EventCard
                 key={event.id}
                 title={event.name || event.title}
@@ -105,9 +105,9 @@ export default function FeaturedEventsList() {
                 }
                 image={event.imageUrl || event.image}
                 status={event.status}
-                onClick={() => openModal(event)}
+                onClick={() => openModal( event )}
               />
-            ))}
+            ) )}
           </div>
           <div className='text-center'>
             <Link

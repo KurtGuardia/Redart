@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { db } from '../lib/firebase-client'
+import { db } from '../../lib/firebase-client'
 import {
   collection,
   getDocs,
@@ -15,7 +15,7 @@ import {
   CATEGORIES,
   STATUS_FILTERS,
 } from '../lib/constants'
-import { hasEventPassed } from '../lib/utils'
+import { hasEventPassed } from '../../lib/utils'
 import EventCard from './EventCard'
 import EventDetailModal from './EventDetailModal'
 import EventCardSkeleton from './EventCardSkeleton'
@@ -23,42 +23,42 @@ import EventCardSkeleton from './EventCardSkeleton'
 const ITEMS_PER_PAGE = 24
 
 const EventListView = () => {
-  const [eventsList, setEventsList] = useState([])
-  const [lastVisible, setLastVisible] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [eventsList, setEventsList] = useState( [] )
+  const [lastVisible, setLastVisible] = useState( null )
+  const [loading, setLoading] = useState( true )
   const [isFetchingMore, setIsFetchingMore] =
-    useState(false)
-  const [hasMore, setHasMore] = useState(true)
-  const [error, setError] = useState(null)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [filter, setFilter] = useState('all')
-  const [filterStatus, setFilterStatus] = useState('all')
-  const [selectedEvent, setSelectedEvent] = useState(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+    useState( false )
+  const [hasMore, setHasMore] = useState( true )
+  const [error, setError] = useState( null )
+  const [searchTerm, setSearchTerm] = useState( '' )
+  const [filter, setFilter] = useState( 'all' )
+  const [filterStatus, setFilterStatus] = useState( 'all' )
+  const [selectedEvent, setSelectedEvent] = useState( null )
+  const [isModalOpen, setIsModalOpen] = useState( false )
   const [debouncedSearchTerm, setDebouncedSearchTerm] =
-    useState(searchTerm)
-  const isInitialMount = useRef(true)
+    useState( searchTerm )
+  const isInitialMount = useRef( true )
 
   // Effect for initial data fetch on mount
-  useEffect(() => {
-    fetchEvents(searchTerm, filter, filterStatus, true)
+  useEffect( () => {
+    fetchEvents( searchTerm, filter, filterStatus, true )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [] )
 
   // Effect to debounce search term
-  useEffect(() => {
-    const timerId = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm)
-    }, 1500)
+  useEffect( () => {
+    const timerId = setTimeout( () => {
+      setDebouncedSearchTerm( searchTerm )
+    }, 1500 )
 
     return () => {
-      clearTimeout(timerId)
+      clearTimeout( timerId )
     }
-  }, [searchTerm])
+  }, [searchTerm] )
 
   // Effect to fetch data based on debounced search term and filters (after initial mount)
-  useEffect(() => {
-    if (isInitialMount.current) {
+  useEffect( () => {
+    if ( isInitialMount.current ) {
       isInitialMount.current = false
       return
     }
@@ -69,16 +69,16 @@ const EventListView = () => {
       true,
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearchTerm, filter, filterStatus])
+  }, [debouncedSearchTerm, filter, filterStatus] )
 
-  const openModal = (event) => {
-    setSelectedEvent(event)
-    setIsModalOpen(true)
+  const openModal = ( event ) => {
+    setSelectedEvent( event )
+    setIsModalOpen( true )
   }
 
   const closeModal = () => {
-    setSelectedEvent(null)
-    setIsModalOpen(false)
+    setSelectedEvent( null )
+    setIsModalOpen( false )
   }
 
   // Restore fetchEvents logic with initial loading state
@@ -88,47 +88,47 @@ const EventListView = () => {
     currentStatusFilter = 'all',
     shouldReset = false,
   ) => {
-    if (shouldReset) {
-      setLoading(true)
+    if ( shouldReset ) {
+      setLoading( true )
     } else {
-      setIsFetchingMore(true)
+      setIsFetchingMore( true )
     }
-    setError(null)
+    setError( null )
 
     let currentLastVisible = lastVisible
-    if (shouldReset) {
+    if ( shouldReset ) {
       currentLastVisible = null
     }
 
     let eventsQuery = query(
-      collection(db, 'events'),
-      orderBy('date', 'desc'),
-      limit(ITEMS_PER_PAGE),
+      collection( db, 'events' ),
+      orderBy( 'date', 'desc' ),
+      limit( ITEMS_PER_PAGE ),
     )
 
-    if (currentLastVisible && !shouldReset) {
+    if ( currentLastVisible && !shouldReset ) {
       eventsQuery = query(
         eventsQuery,
-        startAfter(currentLastVisible),
+        startAfter( currentLastVisible ),
       )
     }
 
     try {
-      const eventsSnapshot = await getDocs(eventsQuery)
+      const eventsSnapshot = await getDocs( eventsQuery )
       const newEventsData = eventsSnapshot.docs.map(
-        (doc) => ({
+        ( doc ) => ( {
           id: doc.id,
           ...doc.data(),
-        }),
+        } ),
       )
 
       const filteredEvents = newEventsData.filter(
-        (event) => {
+        ( event ) => {
           const lowerSearchTerm =
             currentSearchTerm.toLowerCase()
           const eventDateTimestamp = event.date
           const isPast = eventDateTimestamp
-            ? hasEventPassed(eventDateTimestamp)
+            ? hasEventPassed( eventDateTimestamp )
             : false
           const status = event.status || 'active'
 
@@ -136,23 +136,23 @@ const EventListView = () => {
             !currentSearchTerm ||
             event.title
               ?.toLowerCase()
-              .includes(lowerSearchTerm) ||
+              .includes( lowerSearchTerm ) ||
             event.description
               ?.toLowerCase()
-              .includes(lowerSearchTerm) ||
+              .includes( lowerSearchTerm ) ||
             event.venueName
               ?.toLowerCase()
-              .includes(lowerSearchTerm) ||
+              .includes( lowerSearchTerm ) ||
             event.city
               ?.toLowerCase()
-              .includes(lowerSearchTerm)
+              .includes( lowerSearchTerm )
 
           const matchesCategoryFilter =
             currentCategoryFilter === 'all' ||
             event.category === currentCategoryFilter
 
           let matchesStatusFilter = false
-          switch (currentStatusFilter) {
+          switch ( currentStatusFilter ) {
             case 'suspended':
               matchesStatusFilter = status === 'suspended'
               break
@@ -189,7 +189,7 @@ const EventListView = () => {
         },
       )
 
-      const finalEvents = filteredEvents.map((event) => ({
+      const finalEvents = filteredEvents.map( ( event ) => ( {
         ...event,
         date: event.date?.toDate
           ? event.date.toDate().toISOString()
@@ -200,21 +200,21 @@ const EventListView = () => {
         updatedAt: event.updatedAt?.toDate
           ? event.updatedAt.toDate().toISOString()
           : null,
-      }))
+      } ) )
 
       setEventsList(
         shouldReset
           ? finalEvents
-          : (prevEvents) => [...prevEvents, ...finalEvents],
+          : ( prevEvents ) => [...prevEvents, ...finalEvents],
       )
 
       const lastDocSnapshot =
         eventsSnapshot.docs[eventsSnapshot.docs.length - 1]
-      setLastVisible(lastDocSnapshot || null)
+      setLastVisible( lastDocSnapshot || null )
       setHasMore(
         eventsSnapshot.docs.length === ITEMS_PER_PAGE,
       )
-    } catch (err) {
+    } catch ( err ) {
       console.error(
         'Error fetching events client-side:',
         err,
@@ -222,41 +222,41 @@ const EventListView = () => {
       setError(
         err instanceof Error
           ? err
-          : new Error('Error al cargar eventos.'),
+          : new Error( 'Error al cargar eventos.' ),
       )
     } finally {
-      if (shouldReset) {
-        setLoading(false) // Restore setting loading false for initial load
+      if ( shouldReset ) {
+        setLoading( false ) // Restore setting loading false for initial load
       } else {
-        setIsFetchingMore(false)
+        setIsFetchingMore( false )
       }
     }
   }
 
-  const handleSearchChange = (e) => {
+  const handleSearchChange = ( e ) => {
     const newSearchTerm = e.target.value
-    setSearchTerm(newSearchTerm)
+    setSearchTerm( newSearchTerm )
   }
 
-  const handleCategoryFilterChange = (e) => {
+  const handleCategoryFilterChange = ( e ) => {
     const newFilter = e.target.value
-    fetchEvents(searchTerm, newFilter, filterStatus, true)
-    setFilter(newFilter)
+    fetchEvents( searchTerm, newFilter, filterStatus, true )
+    setFilter( newFilter )
   }
 
-  const handleStatusFilterChange = (e) => {
+  const handleStatusFilterChange = ( e ) => {
     const newStatusFilter = e.target.value
-    fetchEvents(searchTerm, filter, newStatusFilter, true)
-    setFilterStatus(newStatusFilter)
+    fetchEvents( searchTerm, filter, newStatusFilter, true )
+    setFilterStatus( newStatusFilter )
   }
 
   const handleLoadMore = () => {
-    if (!loading && !isFetchingMore && hasMore) {
-      fetchEvents(searchTerm, filter, filterStatus, false)
+    if ( !loading && !isFetchingMore && hasMore ) {
+      fetchEvents( searchTerm, filter, filterStatus, false )
     }
   }
 
-  if (error) {
+  if ( error ) {
     throw error
   }
 
@@ -275,8 +275,8 @@ const EventListView = () => {
           {searchTerm && (
             <button
               onClick={() => {
-                setSearchTerm('')
-                fetchEvents('', filter, filterStatus, true)
+                setSearchTerm( '' )
+                fetchEvents( '', filter, filterStatus, true )
               }}
               className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none'
               aria-label='Clear search'
@@ -304,14 +304,14 @@ const EventListView = () => {
             disabled={loading || isFetchingMore}
           >
             <option value='all'>Todas</option>
-            {CATEGORIES.map((category) => (
+            {CATEGORIES.map( ( category ) => (
               <option
                 key={category.value}
                 value={category.value}
               >
                 {category.label}
               </option>
-            ))}
+            ) )}
           </select>
           <div className='pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700'>
             <svg
@@ -330,14 +330,14 @@ const EventListView = () => {
             className='w-full md:w-48 px-4 py-2 border-2 border-gray-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500 appearance-none bg-white pr-8 cursor-pointer'
             disabled={loading || isFetchingMore}
           >
-            {STATUS_FILTERS.map((statusOption) => (
+            {STATUS_FILTERS.map( ( statusOption ) => (
               <option
                 key={statusOption.value}
                 value={statusOption.value}
               >
                 {statusOption.label}
               </option>
-            ))}
+            ) )}
           </select>
           <div className='pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700'>
             <svg
@@ -355,8 +355,8 @@ const EventListView = () => {
       fetched */}
       {loading && (
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8'>
-          {Array.from({ length: ITEMS_PER_PAGE }).map(
-            (_, index) => (
+          {Array.from( { length: ITEMS_PER_PAGE } ).map(
+            ( _, index ) => (
               <EventCardSkeleton
                 key={`initial-skeleton-${index}`}
               />
@@ -368,10 +368,10 @@ const EventListView = () => {
       {/* Display event cards when data is loaded */}
       {!loading && (
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8'>
-          {eventsList.map((event) => (
+          {eventsList.map( ( event ) => (
             <EventCard
               key={event.id}
-              onClick={() => openModal(event)}
+              onClick={() => openModal( event )}
               title={event.title}
               description={event.description}
               date={event.date}
@@ -381,15 +381,15 @@ const EventListView = () => {
               image={event.image || '/placeholder.svg'}
               status={event.status || 'active'}
             />
-          ))}
+          ) )}
 
           {/* Display loading skeletons while fetching more */}
           {isFetchingMore &&
-            Array.from({ length: 4 }).map((_, index) => (
+            Array.from( { length: 4 } ).map( ( _, index ) => (
               <EventCardSkeleton
                 key={`loading-more-${index}`}
               />
-            ))}
+            ) )}
         </div>
       )}
 

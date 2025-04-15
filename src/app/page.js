@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import Spot from '../components/ui/Spot'
 import HeroBackgroundSlider from '../components/HeroBackgroundSlider'
-import MapView from '../components/MapView'
-import FeaturedEventsList from '../components/FeaturedEventsList'
+import MapView from '../components/map/MapView'
+import FeaturedEventsList from '../components/event/FeaturedEventsList'
 
 export default function HomePage () {
   const heroImages = [

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Spot from '../../components/ui/Spot'
-import MapView from '../../components/MapView'
+import MapView from '../../components/map/MapView'
 
 export default async function MapPage() {
   return (

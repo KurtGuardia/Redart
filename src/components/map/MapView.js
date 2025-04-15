@@ -1,22 +1,22 @@
 'use client'
 
-import MapComponent from './MapComponent'
-import { useVenueLocations } from '../hooks/useVenueLocations'
+import MapComponent from '../map/MapComponent'
+import { useVenueLocations } from '../../hooks/useVenueLocations'
 import Link from 'next/link'
-import { Skeleton } from './ui/Skeleton'
+import { Skeleton } from '../ui/Skeleton'
 import { usePathname } from 'next/navigation'
 import Image from 'next/image'
 
-export default function MapView() {
+export default function MapView () {
   const { locations, loading, error } = useVenueLocations()
   const pathname = usePathname()
   const isHomePage = pathname === '/'
 
-  if (error) {
+  if ( error ) {
     throw error
   }
 
-  if (loading || !locations) {
+  if ( loading || !locations ) {
     return (
       <Skeleton className='w-full h-[60vh] rounded-3xl animate-pulse bg-[var(--blue-800-transparent)]' />
     )
@@ -24,9 +24,8 @@ export default function MapView() {
 
   return (
     <div
-      className={`mx-auto rounded-lg overflow-hidden ${
-        isHomePage ? 'w-[60%]' : 'w-full'
-      }`}
+      className={`mx-auto rounded-lg overflow-hidden ${isHomePage ? 'w-[60%]' : 'w-full'
+        }`}
     >
       {locations.length > 0 ? (
         <>
@@ -46,7 +45,7 @@ export default function MapView() {
               </div>
 
               <ul className='list-disc pl-5 text-[var(--primary)]'>
-                {locations.map((location) => (
+                {locations.map( ( location ) => (
                   <li
                     key={location.id}
                     className='my-2 p-2 relative group w-fit'
@@ -75,7 +74,7 @@ export default function MapView() {
                       )}
                     </Link>
                   </li>
-                ))}
+                ) )}
               </ul>
             </>
           )}

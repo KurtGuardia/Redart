@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { db } from '../../lib/firebase-client' // Updated path
 import { doc, getDoc } from 'firebase/firestore'
 import Image from 'next/image'
-import MapComponent from '../MapComponent' // Updated path
+import MapComponent from '../map/MapComponent' // Updated path
 import {
   FaWhatsapp,
   FaInstagram,

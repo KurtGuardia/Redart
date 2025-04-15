@@ -1,23 +1,22 @@
 import Image from 'next/image'
-import React from 'react'
 import {
   formatTimestamp,
   hasEventPassed,
-} from '../lib/utils'
+} from '../../lib/utils'
 
 // Helper for status badge styling
-const getStatusBadgeInfo = (status, isPast) => {
-  if (status === 'cancelled') {
+const getStatusBadgeInfo = ( status, isPast ) => {
+  if ( status === 'cancelled' ) {
     return {
       label: 'CANCELADO',
       classes: 'bg-red-500',
     }
-  } else if (status === 'suspended') {
+  } else if ( status === 'suspended' ) {
     return {
       label: 'SUSPENDIDO',
       classes: 'bg-yellow-500',
     }
-  } else if (isPast) {
+  } else if ( isPast ) {
     // Optionally add a past badge, or handle via background only
     // return { label: 'FINALIZADO', classes: 'bg-gray-500 text-white' };
     return null
@@ -25,7 +24,7 @@ const getStatusBadgeInfo = (status, isPast) => {
   return null // No badge for active, future events
 }
 
-const EventCard = ({
+const EventCard = ( {
   title,
   description,
   date,
@@ -33,19 +32,19 @@ const EventCard = ({
   image,
   onClick,
   status, // Accept status prop
-}) => {
-  const isPast = hasEventPassed(date)
+} ) => {
+  const isPast = hasEventPassed( date )
   const currentStatus = status || 'active'
   let backgroundClass = 'bg-[var(--primary-transparent)]'
   let opacityClass = 'opacity-100'
-  let badgeInfo = getStatusBadgeInfo(currentStatus, isPast)
+  let badgeInfo = getStatusBadgeInfo( currentStatus, isPast )
 
-  if (currentStatus === 'cancelled') {
+  if ( currentStatus === 'cancelled' ) {
     backgroundClass = 'bg-[var(--pink-600-transparent)]'
     opacityClass = 'opacity-60' // Add opacity to cancelled cards
-  } else if (currentStatus === 'suspended') {
+  } else if ( currentStatus === 'suspended' ) {
     opacityClass = 'opacity-50'
-  } else if (isPast) {
+  } else if ( isPast ) {
     backgroundClass = 'bg-gray-400/30'
   } else {
     // Default active/future styles (can adjust if needed)
@@ -107,10 +106,10 @@ const EventCard = ({
             {date && (
               <span className='bg-gray-100 px-2 py-1 rounded-md text-[11px] whitespace-nowrap'>
                 📅{' '}
-                {formatTimestamp(date, {
+                {formatTimestamp( date, {
                   dateStyle: 'medium',
                   timeStyle: undefined,
-                })}
+                } )}
               </span>
             )}
             {location && (

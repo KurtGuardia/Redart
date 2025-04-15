@@ -7,7 +7,7 @@ import {
   getCategoryLabel,
   getCurrencySymbol,
   hasEventPassed,
-} from '../lib/utils'
+} from '../../lib/utils'
 
 // Function to get category color classes
 const getCategoryColor = (category) => {

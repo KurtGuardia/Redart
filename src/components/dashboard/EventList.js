@@ -1,8 +1,10 @@
+'use client'
+
 import React, { useMemo } from 'react'
-import VenueEventListItem from '../VenueEventListItem' // Adjust path if necessary
+import VenueEventListItem from '../event/VenueEventListItem'
 import { hasEventPassed } from '../../lib/utils' // Import hasEventPassed
 
-export default function EventList({
+export default function EventList ( {
   events, // Original list (useful for checking if *any* events exist)
   loading,
   filterStatus,
@@ -10,14 +12,14 @@ export default function EventList({
   onEdit,
   onDelete,
   onViewDetails,
-}) {
-  const filteredEvents = useMemo(() => {
-    if (!events) return [] // Handle cases where events might not be loaded yet
-    return events.filter((event) => {
-      const isPast = hasEventPassed(event.date)
+} ) {
+  const filteredEvents = useMemo( () => {
+    if ( !events ) return [] // Handle cases where events might not be loaded yet
+    return events.filter( ( event ) => {
+      const isPast = hasEventPassed( event.date )
       const status = event.status || 'active'
 
-      switch (filterStatus) {
+      switch ( filterStatus ) {
         case 'suspended':
           return status === 'suspended'
         case 'cancelled':
@@ -40,16 +42,15 @@ export default function EventList({
         default:
           return true // Show all
       }
-    })
-  }, [events, filterStatus])
+    } )
+  }, [events, filterStatus] )
 
   // Determine button styles based on active filter
-  const getButtonClass = (status) => {
-    return `px-3 py-1 rounded-md text-sm ${
-      filterStatus === status
+  const getButtonClass = ( status ) => {
+    return `px-3 py-1 rounded-md text-sm ${filterStatus === status
         ? 'bg-teal-600 text-white shadow'
         : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-    }`
+      }`
   }
 
   return (
@@ -63,32 +64,32 @@ export default function EventList({
       {!loading && events && events.length > 0 && (
         <div className='flex flex-wrap gap-2 mb-4 border-b pb-4'>
           <button
-            onClick={() => onFilterChange('all')}
-            className={getButtonClass('all')}
+            onClick={() => onFilterChange( 'all' )}
+            className={getButtonClass( 'all' )}
           >
             Todos
           </button>
           <button
-            onClick={() => onFilterChange('active')}
-            className={getButtonClass('active')}
+            onClick={() => onFilterChange( 'active' )}
+            className={getButtonClass( 'active' )}
           >
             Próximos
           </button>
           <button
-            onClick={() => onFilterChange('past')}
-            className={getButtonClass('past')}
+            onClick={() => onFilterChange( 'past' )}
+            className={getButtonClass( 'past' )}
           >
             Pasados
           </button>
           <button
-            onClick={() => onFilterChange('suspended')}
-            className={getButtonClass('suspended')}
+            onClick={() => onFilterChange( 'suspended' )}
+            className={getButtonClass( 'suspended' )}
           >
             Suspendidos
           </button>
           <button
-            onClick={() => onFilterChange('cancelled')}
-            className={getButtonClass('cancelled')}
+            onClick={() => onFilterChange( 'cancelled' )}
+            className={getButtonClass( 'cancelled' )}
           >
             Cancelados
           </button>
@@ -130,7 +131,7 @@ export default function EventList({
           {/* Show "Show All" button only if filters are active and resulted in empty */}
           {events.length > 0 && filterStatus !== 'all' && (
             <button
-              onClick={() => onFilterChange('all')}
+              onClick={() => onFilterChange( 'all' )}
               className='mt-4 text-sm text-teal-600 hover:underline'
             >
               Mostrar todos los eventos
@@ -141,21 +142,21 @@ export default function EventList({
       {/* Event List Items - Use the calculated filteredEvents */}
       {!loading && filteredEvents.length > 0 && (
         <ul className='space-y-3 mb-6'>
-          {filteredEvents.map((event) => (
+          {filteredEvents.map( ( event ) => (
             <VenueEventListItem
               key={event.id}
               event={event}
-              onEdit={() => onEdit(event)}
+              onEdit={() => onEdit( event )}
               onDelete={() =>
-                onDelete(event.id, event.image)
+                onDelete( event.id, event.image )
               }
               isIndexPage
-              onClickItem={() => onViewDetails(event)}
+              onClickItem={() => onViewDetails( event )}
               detail
               view
               handler
             />
-          ))}
+          ) )}
         </ul>
       )}
     </div>

@@ -1,11 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import VenueEventListItem from '../VenueEventListItem' // Updated import path
-import EventDetailModal from '../EventDetailModal' // Updated import path
+import VenueEventListItem from '../event/VenueEventListItem' // Updated import path
+import EventDetailModal from '../event/EventDetailModal' // Updated import path
 import { useEventsByVenue } from '../../hooks/useEventsByVenue' // Updated import path
 import { useIsIndexPage } from '../../hooks/useIsIndexPage' // Updated import path
 import { Skeleton } from '../ui/Skeleton' // Updated import path
+import MapComponent from '../map/MapComponent' // Updated import path
 
 const VenueEventListWrapper = ({ venueId }) => {
   const [selectedEvent, setSelectedEvent] = useState(null)

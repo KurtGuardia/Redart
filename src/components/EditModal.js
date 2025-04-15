@@ -10,7 +10,7 @@ import {
 
 // Import MapComponent dynamically to avoid SSR issues
 const MapComponent = dynamic(
-  () => import('./MapComponent'),
+  () => import('./map/MapComponent'),
   {
     ssr: false,
   },

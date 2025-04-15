@@ -13,7 +13,7 @@ import { Icon } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAddressSearch } from '../hooks/useAddressSearch'
+import { useAddressSearch } from '../../hooks/useAddressSearch'
 
 const DEFAULT_CENTER = [-17.389499, -66.156123]
 const DEFAULT_ZOOM = 13
