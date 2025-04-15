@@ -3,7 +3,7 @@
 import Link from 'next/link'
 
 const Footer = () => (
-  <footer className='bg-[var(--teal-500)] rounded-t-[5rem] mx-20 p-5 sm:px-20'>
+  <footer className='bg-[var(--blue-800)] py-10'>
     <div className='max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8'>
       {/* Contact Section */}
       <div className='flex flex-col items-center md:items-start space-y-4'>
@@ -11,15 +11,15 @@ const Footer = () => (
           Contacto
         </h3>
         <a
-          href='mailto:info@radarte.com?subject=Consulta%20sobre%20Radarte&body=Hola%20equipo%20Radarte%2C%0A%0AMe%20gustar%C3%ADa%20obtener%20m%C3%A1s%20informaci%C3%B3n%20sobre...'
+          href='mailto:info@Radart.com?subject=Consulta%20sobre%20Radart&body=Hola%20equipo%20Radart%2C%0A%0AMe%20gustar%C3%ADa%20obtener%20m%C3%A1s%20informaci%C3%B3n%20sobre...'
           className='text-white hover:text-[var(--secondary-color)] transition-colors'
           target='_blank'
           rel='noopener noreferrer'
         >
-          info@radarte.com
+          info@Radart.com
         </a>
         <a
-          href='https://wa.me/5911234567?text=Hola%20Radarte%2C%20me%20gustar%C3%ADa%20obtener%20m%C3%A1s%20informaci%C3%B3n%20sobre...'
+          href='https://wa.me/5911234567?text=Hola%20Radart%2C%20me%20gustar%C3%ADa%20obtener%20m%C3%A1s%20informaci%C3%B3n%20sobre...'
           className='text-white hover:text-[var(--secondary-color)] transition-colors'
           target='_blank'
           rel='noopener noreferrer'
@@ -28,7 +28,7 @@ const Footer = () => (
         </a>
         <div className='flex space-x-4'>
           <a
-            href='https://www.facebook.com/Radarte-105795649568595'
+            href='https://www.facebook.com/Radart-105795649568595'
             className='text-[var(--facebook)] hover:text-[var(--primary)] transition-all duration-300'
           >
             <span className='sr-only'>Facebook</span>
@@ -46,7 +46,7 @@ const Footer = () => (
             </svg>
           </a>
           <a
-            href='https://www.instagram.com/radarte/'
+            href='https://www.instagram.com/Radart/'
             className='text-[var(--instagram)] hover:text-[var(--primary)] transition-all duration-300'
           >
             <span className='sr-only'>Instagram</span>
@@ -64,7 +64,7 @@ const Footer = () => (
             </svg>
           </a>
           <a
-            href='https://twitter.com/radarte'
+            href='https://twitter.com/Radart'
             className='text-[var(--twitter)] hover:text-[var(--primary)] transition-all duration-300'
           >
             <span className='sr-only'>Twitter</span>
@@ -84,7 +84,7 @@ const Footer = () => (
       <div className='flex flex-col items-center'>
         <div className='w-32 h-32 bg-white/20 rounded-full mb-4 flex items-center justify-center'>
           <span className='text-white text-2xl font-bold'>
-            Radarte
+            Radart
           </span>
         </div>
         <p className='text-white text-sm text-center'>
@@ -121,15 +121,8 @@ const Footer = () => (
     {/* Copyright Section */}
     <div className='mt-8 border-t border-white/20 pt-6 text-center'>
       <p className='text-white'>
-        &copy; {new Date().getFullYear()} Developed by{' '}
-        <Link
-          href='https://kurtguardia.com'
-          className='text-[var(--teal-300)] font-bold hover:text-[var(--blue-600)] transition-all duration-300'
-          target='_blank'
-          rel='noopener noreferrer'
-        >
-          Kurt Guardia
-        </Link>
+        &copy; {new Date().getFullYear()} {' '}
+        Radart - Todos los derechos reservados.
       </p>
     </div>
   </footer>

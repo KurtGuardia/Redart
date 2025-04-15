@@ -4,16 +4,16 @@ import Footer from '../components/ui/Footer'
 
 // Metadata for the app
 export const metadata = {
-  title: 'Radarte - Plataforma Cultural',
+  title: 'Radart - Plataforma Cultural',
   description:
     'Encuentra espacios culturales y eventos en tu ciudad',
 }
 
 // Make the layout async
-export default async function RootLayout({ children }) {
+export default async function RootLayout ( { children } ) {
   return (
     <html lang='es' suppressHydrationWarning={true}>
-      <body className='flex flex-col min-h-screen'>
+      <body>
         <Navbar />
         <main className='relative flex flex-col justify-between items-center flex-grow'>
           {children}

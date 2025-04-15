@@ -14,7 +14,7 @@ import {
 import {
   CATEGORIES,
   STATUS_FILTERS,
-} from '../lib/constants'
+} from '../../lib/constants'
 import { hasEventPassed } from '../../lib/utils'
 import EventCard from './EventCard'
 import EventDetailModal from './EventDetailModal'
@@ -81,7 +81,6 @@ const EventListView = () => {
     setIsModalOpen( false )
   }
 
-  // Restore fetchEvents logic with initial loading state
   const fetchEvents = async (
     currentSearchTerm = '',
     currentCategoryFilter = 'all',
@@ -226,7 +225,7 @@ const EventListView = () => {
       )
     } finally {
       if ( shouldReset ) {
-        setLoading( false ) // Restore setting loading false for initial load
+        setLoading( false )
       } else {
         setIsFetchingMore( false )
       }
@@ -414,6 +413,7 @@ const EventListView = () => {
           </button>
         </div>
       )}
+
       <EventDetailModal
         isOpen={isModalOpen}
         onClose={closeModal}

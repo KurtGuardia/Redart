@@ -3,24 +3,24 @@ import FAQItem from '../../components/FAQItem'
 
 const faqs = [
   {
-    question: '¿Qué es Radarte?',
+    question: '¿Qué es Radart?',
     answer:
-      'Radarte es una plataforma boliviana diseñada para mostrar espacios y eventos relacionados con el arte y la cultura en todo el país.',
+      'Radart es una plataforma boliviana diseñada para mostrar espacios y eventos relacionados con el arte y la cultura en todo el país.',
   },
   {
     question: '¿Cómo puedo registrar mi espacio cultural?',
     answer:
-      'Para registrar tu espacio cultural, crea una cuenta en Radarte y sigue las instrucciones en el panel de control para agregar la información de tu espacio.',
+      'Para registrar tu espacio cultural, crea una cuenta en Radart y sigue las instrucciones en el panel de control para agregar la información de tu espacio.',
   },
   {
-    question: '¿Es gratis usar Radarte?',
+    question: '¿Es gratis usar Radart?',
     answer:
-      'Sí, Radarte es gratuito para los usuarios que buscan eventos y espacios culturales. Para los organizadores de eventos y espacios culturales, ofrecemos opciones gratuitas y de pago con características adicionales.',
+      'Sí, Radart es gratuito para los usuarios que buscan eventos y espacios culturales. Para los organizadores de eventos y espacios culturales, ofrecemos opciones gratuitas y de pago con características adicionales.',
   },
   // Add more FAQs as needed
 ]
 
-export default function FAQ() {
+export default function FAQ () {
   return (
     <>
       <Spot colorName={'SlateBlue'} />
@@ -34,7 +34,7 @@ export default function FAQ() {
           Preguntas Frecuentes
         </h1>
         <div className='space-y-4 max-w-9xl mx-auto '>
-          {faqs.map((faq, index) => (
+          {faqs.map( ( faq, index ) => (
             <div className='transform transition-transform duration-300 hover:translate-y-[-7px]'>
               <FAQItem
                 key={index}
@@ -42,7 +42,7 @@ export default function FAQ() {
                 answer={faq.answer}
               />
             </div>
-          ))}
+          ) )}
         </div>
       </div>
     </>

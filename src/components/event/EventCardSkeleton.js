@@ -1,8 +1,8 @@
-import { Skeleton } from './ui/Skeleton'
+import { Skeleton } from '../ui/Skeleton'
 
 const EventCardSkeleton = () => {
   return (
-    <div className='flex flex-col bg-gray-100/50 rounded-xl shadow-md p-6 max-w-sm mx-auto w-full animate-pulse'>
+    <div className='flex flex-col bg-gray-100/50 rounded-xl shadow-md p-6 mx-auto w-full animate-pulse'>
       {/* Image Skeleton */}
       <Skeleton className='relative overflow-hidden rounded-lg mb-4 aspect-[4/3] w-full bg-gray-300' />
       {/* Text Skeletons */}

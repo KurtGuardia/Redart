@@ -2,16 +2,16 @@
 
 import { requireAuth } from '../../lib/auth-middleware'
 
-export async function generateMetadata() {
+export async function generateMetadata () {
   const authCheck = await requireAuth()
-  if (authCheck.redirect) {
+  if ( authCheck.redirect ) {
     return authCheck
   }
 
   return {
-    title: 'Dashboard - Radarte',
+    title: 'Dashboard - Radart',
     description:
-      'Gestiona tu espacio cultural, eventos y perfil en Radarte.',
+      'Gestiona tu espacio cultural, eventos y perfil en Radart.',
     robots: {
       index: false, // Prevent search engines from indexing this page
       follow: false, // Prevent search engines from following links from this page
@@ -19,6 +19,6 @@ export async function generateMetadata() {
   }
 }
 
-export default function DashboardLayout({ children }) {
+export default function DashboardLayout ( { children } ) {
   return <>{children}</>
 }

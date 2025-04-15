@@ -18,7 +18,16 @@ export default function MapView () {
 
   if ( loading || !locations ) {
     return (
-      <Skeleton className='w-full h-[60vh] rounded-3xl animate-pulse bg-[var(--blue-800-transparent)]' />
+      <div className="flex flex-col gap-4 w-full max-w-3xl mx-auto bg-gray-100/50 rounded-xl shadow-md p-6 animate-pulse">
+        {/* Search bar skeleton */}
+        <div className="flex gap-2 mb-4">
+          <Skeleton className="h-10 w-full rounded-md bg-gray-300" /> {/* Input */}
+          <Skeleton className="h-10 w-24 rounded-md bg-gray-300" />   {/* Button */}
+        </div>
+        {/* Map area skeleton */}
+        <Skeleton className="w-full h-[350px] rounded-lg bg-gray-300" />
+      </div>
+
     )
   }
 

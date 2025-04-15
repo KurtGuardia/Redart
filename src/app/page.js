@@ -12,7 +12,7 @@ export default function HomePage () {
   ]
 
   return (
-    <div className='flex flex-col min-h-screen'>
+    <>
       <div className='absolute top-0 left-0 right-0 opacity-80 bg-gradient-to-r from-[var(--secondary-color)] to-[var(--primary)] h-[80vh]' />
       <HeroBackgroundSlider images={heroImages}>
         <div className='container mx-auto px-4 z-10 text-center flex flex-col justify-between gap-4 bg-white bg-opacity-25 rounded-3xl py-10'>
@@ -32,15 +32,6 @@ export default function HomePage () {
         </div>
       </HeroBackgroundSlider>
 
-      <section className='intro relative py-16 my-16'>
-        <Spot colorName={'red'} />
-        <Spot colorName={'indigo'} />
-        <Spot colorName={'peru'} />
-
-        <div className='container mx-auto px-4 text-center min-h-[250px] flex items-center justify-center bg-[rgba(255,255,255,0.5)] rounded-3xl'>
-        </div>
-      </section>
-
       <FeaturedEventsList />
 
       <section
@@ -52,7 +43,7 @@ export default function HomePage () {
             Sobre nosotros
           </h2>
           <p className='text-2xl font-semibold mx-auto mb-14 leading-relaxed px-8 text-center'>
-            Radarte conecta artistas, espacios y amantes del
+            Radart conecta artistas, espacios y amantes del
             arte en Bolivia. Nuestra misión es visibilizar
             la cultura y crear una comunidad que celebre la
             creatividad. Únete a nosotros y construyamos
@@ -80,7 +71,7 @@ export default function HomePage () {
             Explora los espacios culturales
           </h2>
           <p className='text-center text-xl font-light mb-12'>
-            En Radarte te damos la oportunidad de explorar
+            En Radart te damos la oportunidad de explorar
             los espacios culturales de Bolivia. Encuentra el
             tuyo preferido y conoce la programación de
             eventos.
@@ -91,7 +82,7 @@ export default function HomePage () {
 
       <section className='join text-center container mx-auto mb-48'>
         <h2 className='text-3xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--blue-600)] to-[var(--blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg transform-gpu hover:scale-105 transition-transform'>
-          ¿Quieres unirte a la comunidad de Radarte?
+          ¿Quieres unirte a la comunidad de Radart?
         </h2>
         <p className='text-center text-xl font-semibold max-w-2xl mx-auto mb-8 animate-fade-in-up'>
           ¡Únete a la movida cultural y muestra tus
@@ -107,6 +98,6 @@ export default function HomePage () {
           Crear cuenta
         </Link>
       </section>
-    </div>
+    </>
   )
 }
