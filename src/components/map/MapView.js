@@ -19,12 +19,10 @@ export default function MapView () {
   if ( loading || !locations ) {
     return (
       <div className="flex flex-col gap-4 w-full max-w-4xl mx-auto bg-gray-100/50 rounded-xl shadow-md p-6 animate-pulse">
-        {/* Search bar skeleton */}
         <div className="flex gap-2 mb-4">
-          <Skeleton className="h-10 w-full rounded-md bg-gray-300" /> {/* Input */}
-          <Skeleton className="h-10 w-24 rounded-md bg-gray-300" />   {/* Button */}
+          <Skeleton className="h-10 w-full rounded-md bg-gray-300" />
+          <Skeleton className="h-10 w-24 rounded-md bg-gray-300" />
         </div>
-        {/* Map area skeleton */}
         <Skeleton className="w-full h-[350px] rounded-lg bg-gray-300" />
       </div>
 
@@ -33,7 +31,7 @@ export default function MapView () {
 
   return (
     <div
-      className={`mx-auto rounded-lg overflow-hidden ${isHomePage ? 'w-[60%]' : 'w-full'
+      className={`mx-auto rounded-lg overflow-hidden ${isHomePage ? 'w-[80%]' : 'w-full'
         }`}
     >
       {locations.length > 0 ? (

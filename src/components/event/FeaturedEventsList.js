@@ -24,7 +24,6 @@ export default function FeaturedEventsList () {
     setIsModalOpen( false )
   }
 
-  // --- Success State: Render Events ---
   return (
     <>
       <section className='featured-events py-16 mt-24'>

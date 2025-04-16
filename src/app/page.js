@@ -15,11 +15,11 @@ export default function HomePage () {
     <>
       <div className='absolute top-0 left-0 right-0 opacity-80 bg-gradient-to-r from-[var(--secondary-color)] to-[var(--primary)] h-[80vh]' />
       <HeroBackgroundSlider images={heroImages}>
-        <div className='container mx-auto px-4 z-10 text-center flex flex-col justify-between gap-4 bg-white bg-opacity-25 rounded-3xl py-10'>
-          <h1 className='text-3xl text-[var(--white)] md:text-4xl font-bold md:leading-[150%] mb-4 animate-fade-in-up'>
+        <div className='mx-auto z-10 text-center flex flex-col justify-between align-center bg-white bg-opacity-25 rounded-3xl py-8'>
+          <h1 className='text-3xl text-[var(--white)] md:text-4xl font-bold w-[70%] animate-fade-in-up'>
             Descubre la vibrante escena artística de Bolivia
           </h1>
-          <p className='font-semibold text-lg max-w-2xl mx-auto mb-8 animate-fade-in-up'>
+          <p className='font-semibold text-xl max-w-2xl mx-auto mb-8 animate-fade-in-up'>
             Encuentra eventos, espacios y artistas en tu
             ciudad
           </p>
@@ -34,15 +34,14 @@ export default function HomePage () {
 
       <FeaturedEventsList />
 
-      <section
-        className='about-us img relative mt-24'
+      <section className='about-us img relative mt-24'
         style={{ backgroundImage: `url(${'/crowd.jpg'})` }}
       >
-        <div className='relative z-10 py-28 mx-auto px-4 text-center text-white h-[500px]'>
+        <div className='w-[80%] relative min-h-[60vh] flex flex-col z-10 py-12 mx-auto px-4 text-center text-white'>
           <h2 className='text-3xl font-bold mb-12'>
             Sobre nosotros
           </h2>
-          <p className='text-lg font-semibold mx-auto mb-14 leading-relaxed px-8 text-center'>
+          <p className='flex-1 text-lg  font-semibold mx-auto mb-14 leading-relaxed px-8 text-center'>
             Radart conecta artistas, espacios y amantes del
             arte en Bolivia. Nuestra misión es visibilizar
             la cultura y crear una comunidad que celebre la
@@ -58,11 +57,11 @@ export default function HomePage () {
             </Link>
           </div>
         </div>
-        <div className='w-full absolute top-0 left-0 bg-[var(--teal-700)] opacity-70  h-[500px]' />
+        <div className='w-full absolute top-0 left-0 bg-[var(--teal-700)] opacity-70 h-full' />
       </section>
 
       <section className='map mt-24'>
-        <div className='relative container mx-auto px-4'>
+        <div className='relative container mx-auto px-4 w-[80%]'>
           <Spot colorName={'OliveDrab'} />
           <Spot colorName={'Teal'} />
           <Spot colorName={'Chartreuse'} />

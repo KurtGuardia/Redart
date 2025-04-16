@@ -1221,7 +1221,7 @@ export default function Dashboard () {
 
   return (
     <>
-      <div className='relative container mx-auto my-24'>
+      <div className='relative container mx-auto px-8 my-24'>
         <Spot colorName={'red'} />
         <Spot colorName={'indigo'} />
         <Spot colorName={'peru'} />
@@ -1234,7 +1234,8 @@ export default function Dashboard () {
             </span>
           </h1>
         </div>
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
+
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4 xl:gap-8'>
           <VenueDetailsCard
             venue={venue}
             onEdit={() => setIsEditModalOpen( true )}

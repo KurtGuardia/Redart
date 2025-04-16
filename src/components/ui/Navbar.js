@@ -36,8 +36,8 @@ export default function Navbar () {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 shadow-md z-[1001] h-16 transition-all duration-300 ${hasScrolled
-          ? 'bg-white shadow-md'
-          : 'bg-transparent'
+        ? 'bg-white shadow-md'
+        : 'bg-transparent'
         } ${isIndexPage
           ? hasScrolled
             ? 'bg-white/80 backdrop-blur-sm'
@@ -54,9 +54,9 @@ export default function Navbar () {
         </Link>
         <div className='space-x-6 flex items-center'>
           <Link
-            className={`text-lg ${isIndexPage && !hasScrolled
-                ? 'text-white'
-                : 'text-foreground'
+            className={`xl:text-lg text-md ${isIndexPage && !hasScrolled
+              ? 'text-white'
+              : 'text-foreground'
               } ${isIndexPage && !hasScrolled
                 ? 'hover:text-white'
                 : 'hover:text-primary'
@@ -66,9 +66,9 @@ export default function Navbar () {
             Inicio
           </Link>
           <Link
-            className={`text-lg ${isIndexPage && !hasScrolled
-                ? 'text-white'
-                : 'text-foreground'
+            className={`xl:text-lg text-md  ${isIndexPage && !hasScrolled
+              ? 'text-white'
+              : 'text-foreground'
               } ${isIndexPage && !hasScrolled
                 ? 'hover:text-white'
                 : 'hover:text-primary'
@@ -78,9 +78,9 @@ export default function Navbar () {
             Eventos
           </Link>
           <Link
-            className={`text-lg ${isIndexPage && !hasScrolled
-                ? 'text-white'
-                : 'text-foreground'
+            className={`xl:text-lg text-md  ${isIndexPage && !hasScrolled
+              ? 'text-white'
+              : 'text-foreground'
               } ${isIndexPage && !hasScrolled
                 ? 'hover:text-white'
                 : 'hover:text-primary'
@@ -90,9 +90,9 @@ export default function Navbar () {
             Locaciones
           </Link>
           <Link
-            className={`text-lg ${isIndexPage && !hasScrolled
-                ? 'text-white'
-                : 'text-foreground'
+            className={`xl:text-lg text-md  ${isIndexPage && !hasScrolled
+              ? 'text-white'
+              : 'text-foreground'
               } ${isIndexPage && !hasScrolled
                 ? 'hover:text-white'
                 : 'hover:text-primary'
@@ -125,8 +125,8 @@ export default function Navbar () {
           {!user && (
             <Link
               className={`text-lg ${isIndexPage && !hasScrolled
-                  ? 'text-white'
-                  : 'text-foreground'
+                ? 'text-white'
+                : 'text-foreground'
                 } ${isIndexPage && !hasScrolled
                   ? 'hover:text-white'
                   : 'hover:text-primary'
