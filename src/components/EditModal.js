@@ -171,7 +171,7 @@ const EditModal = ({
           </button>
 
           {/* Title */}
-          <h2 className='text-2xl font-bold text-gray-800 mb-6'>
+          <h2 className='text-xl font-bold text-gray-800 mb-6'>
             {title}
           </h2>
 
@@ -268,12 +268,12 @@ const EditModal = ({
                           maxLength={field.maxlength}
                         />
                         {field.description && (
-                          <p className='mt-1 text-xs text-gray-500'>
+                          <p className='mt-1 text-base text-gray-500'>
                             {field.description}
                           </p>
                         )}
                         {field.maxlength && (
-                          <p className='text-xs text-gray-500 text-right mt-1'>
+                          <p className='text-base text-gray-500 text-right mt-1'>
                             {formData[key]?.length || 0} /{' '}
                             {field.maxlength}
                           </p>
@@ -368,7 +368,7 @@ const EditModal = ({
                             ))}
                         </select>
                         {field.description && (
-                          <p className='mt-1 text-xs text-gray-500'>
+                          <p className='mt-1 text-base text-gray-500'>
                             {field.description}
                           </p>
                         )}
@@ -417,14 +417,14 @@ const EditModal = ({
                           )}
                         </label>
                         {field.description && (
-                          <p className='text-xs text-gray-500 mb-2'>
+                          <p className='text-base text-gray-500 mb-2'>
                             {field.description}
                           </p>
                         )}
 
                         {/* Show instruction message when no location is set */}
                         {!hasLocation && (
-                          <div className='bg-blue-50 p-2 mb-3 text-blue-700 text-sm rounded-md'>
+                          <div className='bg-blue-50 p-2 mb-3 text-base text-gray-700 text-base rounded-md'>
                             <p className='flex items-center'>
                               <svg
                                 className='h-5 w-5 mr-1'
@@ -517,7 +517,7 @@ const EditModal = ({
                         <label className='block text-sm font-medium text-gray-700 mb-2'>
                           {field.label}
                           {field.description && (
-                            <span className='text-gray-500 text-sm ml-1'>
+                            <span className='text-gray-500 text-base ml-1'>
                               ({field.description})
                             </span>
                           )}
@@ -529,7 +529,7 @@ const EditModal = ({
                           (p) => typeof p === 'string',
                         ).length > 0 ? (
                           <div className='mb-4'>
-                            <p className='text-sm font-medium text-gray-700 mb-2'>
+                            <p className='text-lg font-medium text-gray-700 mb-2'>
                               Fotos actuales:
                             </p>
                             <div className='grid grid-cols-3 gap-3'>
@@ -588,7 +588,7 @@ const EditModal = ({
                             </div>
                           </div>
                         ) : (
-                          <p className='text-sm text-gray-500 mb-4'>
+                          <p className='text-lg text-gray-500 mb-4'>
                             No hay fotos actualmente. Añade
                             algunas abajo.
                           </p>
@@ -596,7 +596,7 @@ const EditModal = ({
 
                         {/* Upload new photos */}
                         <div className='mt-3'>
-                          <p className='text-sm font-medium text-gray-700 mb-2'>
+                          <p className='text-lg font-medium text-gray-700 mb-2'>
                             Añadir nuevas fotos:
                           </p>
                           <input
@@ -638,7 +638,7 @@ const EditModal = ({
                             className='w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 outline-none'
                           />
                           {field.maxPhotos && (
-                            <p className='text-xs text-gray-500 mt-1'>
+                            <p className='text-base text-gray-500 mt-1'>
                               Máximo {field.maxPhotos}{' '}
                               fotos.
                               {formData[key] &&
@@ -662,7 +662,7 @@ const EditModal = ({
                               typeof photo !== 'string',
                           ) && (
                             <div className='mt-4'>
-                              <p className='text-sm font-medium text-gray-700 mb-2'>
+                              <p className='text-lg font-medium text-gray-700 mb-2'>
                                 Vista previa de nuevas
                                 fotos:
                               </p>
@@ -944,7 +944,7 @@ const EditModal = ({
                             )}
 
                           {field.description && (
-                            <p className='text-sm text-gray-500 mt-1'>
+                            <p className='text-lg text-gray-500 mt-1'>
                               {field.description}
                             </p>
                           )}

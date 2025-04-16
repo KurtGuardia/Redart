@@ -5,14 +5,14 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Spot from '../../components/ui/Spot'
 
-function LoginForm() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState(null)
+function LoginForm () {
+  const [email, setEmail] = useState( '' )
+  const [password, setPassword] = useState( '' )
+  const [error, setError] = useState( null )
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async ( e ) => {
     e.preventDefault()
     try {
       const { signInWithEmailAndPassword } = await import(
@@ -29,10 +29,10 @@ function LoginForm() {
       )
       await auth.authStateReady() // Wait for state propagation
       const redirect =
-        searchParams.get('redirect') || '/dashboard'
-      router.push(redirect)
-    } catch (error) {
-      setError(error.message)
+        searchParams.get( 'redirect' ) || '/dashboard'
+      router.push( redirect )
+    } catch ( error ) {
+      setError( error.message )
       console.error(
         'Login error:',
         error.code,
@@ -47,13 +47,13 @@ function LoginForm() {
         Iniciar sesión
       </h2>
       {error && (
-        <p className='text-red-500 mb-4'>{error}</p>
+        <p className='text-red-600 text-xl'>{error}</p>
       )}
       <form onSubmit={handleSubmit}>
         <div className='mb-4'>
           <label
             htmlFor='email'
-            className='block text-gray-700 font-bold mb-2'
+            className='block text-gray-700 font-bold mb-2 text-lg'
           >
             Correo electrónico
           </label>
@@ -61,7 +61,7 @@ function LoginForm() {
             type='email'
             id='email'
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={( e ) => setEmail( e.target.value )}
             className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500'
             required
           />
@@ -69,7 +69,7 @@ function LoginForm() {
         <div className='mb-6'>
           <label
             htmlFor='password'
-            className='block text-gray-700 font-bold mb-2'
+            className='block text-gray-700 font-bold mb-2 text-lg'
           >
             Contraseña
           </label>
@@ -77,7 +77,7 @@ function LoginForm() {
             type='password'
             id='password'
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={( e ) => setPassword( e.target.value )}
             className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500'
             required
           />
@@ -89,7 +89,7 @@ function LoginForm() {
           Iniciar sesión
         </button>
       </form>
-      <p className='mt-4 text-center'>
+      <p className='mt-4 text-xl'>
         ¿No tienes una cuenta? | {''}
         <Link
           className='text-teal-600 hover:underline'
@@ -104,7 +104,7 @@ function LoginForm() {
 
 //TODO: delete when actual login is implemented
 // Loading fallback component
-function LoginFormFallback() {
+function LoginFormFallback () {
   return (
     <div className='p-6'>
       <h2 className='text-2xl font-bold mb-6 text-center'>
@@ -114,7 +114,7 @@ function LoginFormFallback() {
   )
 }
 
-export default function Login() {
+export default function Login () {
   return (
     <>
       <Spot colorName={'red'} />

@@ -30,9 +30,9 @@ export default function FAQ () {
       <Spot colorName={'red'} />
       <Spot colorName={'Indigo'} />
       <div className='container mx-auto my-24 '>
-        <h1 className='text-3xl font-bold text-center mb-12'>
+        <p className='text-xl font-bold text-center mb-12'>
           Preguntas Frecuentes
-        </h1>
+        </p>
         <div className='space-y-4 max-w-9xl mx-auto '>
           {faqs.map( ( faq, index ) => (
             <div className='transform transition-transform duration-300 hover:translate-y-[-7px]'>

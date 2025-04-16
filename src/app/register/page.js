@@ -324,7 +324,7 @@ export default function Register() {
           <div className='mb-4'>
             <label
               htmlFor='name'
-              className='block text-gray-700 font-bold mb-2'
+              className='block text-gray-700 font-bold mb-2 text-lg'
             >
               Nombre del sitio
             </label>
@@ -354,7 +354,7 @@ export default function Register() {
           <div className='mb-4'>
             <label
               htmlFor='logo'
-              className='block text-gray-700 font-bold mb-2'
+              className='block text-gray-700 font-bold mb-2 text-lg'
             >
               Logo
             </label>
@@ -387,7 +387,7 @@ export default function Register() {
           <div className='mb-4'>
             <label
               htmlFor='description'
-              className='block text-gray-700 font-bold mb-2'
+              className='block text-gray-700 font-bold mb-2 text-lg'
             >
               Descripción del sitio
             </label>
@@ -430,7 +430,7 @@ export default function Register() {
                 </button>
               )}
             </div>
-            <p className='text-sm text-gray-500 mt-1 text-right'>
+            <p className='text-lg text-gray-500 mt-1 text-right'>
               {descriptionCharsLeft} caracteres restantes
             </p>
           </div>
@@ -810,7 +810,7 @@ export default function Register() {
           <div className='mb-4'>
             <label
               htmlFor='password'
-              className='block text-gray-700 font-bold mb-2'
+              className='block text-gray-700 font-bold mb-2 text-lg'
             >
               Contraseña
             </label>
@@ -850,7 +850,7 @@ export default function Register() {
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
-            <p className='text-sm text-gray-500 mt-1'>
+            <p className='text-lg text-gray-500 mt-1'>
               La contraseña debe tener al menos 6 caracteres
               y una letra mayúscula
             </p>
@@ -859,7 +859,7 @@ export default function Register() {
           <div className='mb-6'>
             <label
               htmlFor='repeatPassword'
-              className='block text-gray-700 font-bold mb-2'
+              className='block text-gray-700 font-bold mb-2 text-lg'
             >
               Repetir contraseña
             </label>
@@ -947,7 +947,7 @@ export default function Register() {
               )}
             </div>
             {!passwordsMatch && repeatPassword && (
-              <p className='text-sm text-red-500 mt-1'>
+              <p className='text-lg text-red-500 mt-1'>
                 Las contraseñas no coinciden
               </p>
             )}
@@ -962,7 +962,7 @@ export default function Register() {
               : 'Registrarse'}
           </button>
         </form>
-        <p className='mt-4 text-center'>
+        <p className='mt-4 text-sm'>
           ¿Ya tienes una cuenta?{' '}
           <Link
             className='text-teal-600 hover:underline'

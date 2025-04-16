@@ -26,19 +26,19 @@ export default function NotFound() {
       {/* Content Area */}
       <div className='relative z-10 text-center p-8 max-w-lg w-full'>
         {/* Large 404 Text */}
-        <h1 className='text-8xl md:text-9xl font-extrabold mb-4'>
+        <h1 className='text-7xl md:text-8xl font-extrabold mb-4'>
           <span className='bg-gradient-to-r from-teal-500 via-blue-500 to-purple-600 text-transparent bg-clip-text'>
             404
           </span>
         </h1>
 
         {/* Main Message */}
-        <h2 className='text-2xl md:text-3xl font-bold text-gray-800 mb-3'>
+        <h2 className='text-lg md:text-2xl font-bold text-gray-800 mb-3'>
           Página No Encontrada
         </h2>
 
         {/* Sub Message */}
-        <p className='text-md md:text-lg text-gray-600 mb-8'>
+        <p className='text-lg md:text-lg text-gray-600 mb-8'>
           ¡Ups! Parece que la página que buscas se perdió en
           el universo digital.
         </p>

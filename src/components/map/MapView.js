@@ -18,7 +18,7 @@ export default function MapView () {
 
   if ( loading || !locations ) {
     return (
-      <div className="flex flex-col gap-4 w-full max-w-3xl mx-auto bg-gray-100/50 rounded-xl shadow-md p-6 animate-pulse">
+      <div className="flex flex-col gap-4 w-full max-w-4xl mx-auto bg-gray-100/50 rounded-xl shadow-md p-6 animate-pulse">
         {/* Search bar skeleton */}
         <div className="flex gap-2 mb-4">
           <Skeleton className="h-10 w-full rounded-md bg-gray-300" /> {/* Input */}

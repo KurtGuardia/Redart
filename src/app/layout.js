@@ -13,7 +13,7 @@ export const metadata = {
 export default async function RootLayout ( { children } ) {
   return (
     <html lang='es' suppressHydrationWarning={true}>
-      <body>
+      <body className='flex flex-col min-h-screen'>
         <Navbar />
         <main className='relative flex flex-col justify-between items-center flex-grow'>
           {children}

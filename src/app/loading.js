@@ -1,45 +1,30 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Spot from '../components/ui/Spot'
 
-export default function Loading() {
-  const [progress, setProgress] = useState(0)
+export default function Loading () {
+  const [progress, setProgress] = useState( 0 )
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(timer)
+  useEffect( () => {
+
+    const timer = setInterval( () => {
+      setProgress( ( prev ) => {
+        if ( prev >= 100 ) {
+          clearInterval( timer )
           return 100
         }
         return prev + 1
-      })
-    }, 20)
+      } )
+    }, 50 )
 
-    return () => clearInterval(timer)
-  }, [])
+    return () => clearInterval( timer )
+  }, [] )
 
   return (
     <div className='fixed inset-0 flex flex-col items-center justify-center bg-black/10 backdrop-blur-md z-[9999]'>
-      {/* Decorative Spots in background */}
-      <div className='pointer-events-none absolute inset-0 overflow-hidden opacity-50'>
-        <Spot
-          colorName='teal'
-          customClass='top-1/4 -left-40 opacity-60'
-        />
-        <Spot
-          colorName='Indigo'
-          customClass='bottom-1/4 -right-40 opacity-60'
-        />
-        <Spot
-          colorName='purple'
-          customClass='top-1/2 left-1/2 opacity-60'
-        />
-      </div>
 
       {/* Main loading animation */}
-      <div className='relative'>
+      <div className='relative flex flex-col items-center'>
         {/* Pulsing circle */}
         <div className='absolute inset-0 flex items-center justify-center'>
           <div
@@ -78,31 +63,29 @@ export default function Loading() {
         </div>
 
         {/* Loading text animation */}
-        <div className='text-center mt-4 font-medium text-gray-700'>
-          <div className='inline-flex items-baseline'>
-            <span>Cargando</span>
-            <span className='ml-1 flex space-x-1'>
-              <span
-                className='inline-block w-1 h-1 bg-teal-500 rounded-full animate-bounce'
-                style={{ animationDelay: '0ms' }}
-              ></span>
-              <span
-                className='inline-block w-1 h-1 bg-teal-500 rounded-full animate-bounce'
-                style={{ animationDelay: '150ms' }}
-              ></span>
-              <span
-                className='inline-block w-1 h-1 bg-teal-500 rounded-full animate-bounce'
-                style={{ animationDelay: '300ms' }}
-              ></span>
-            </span>
-          </div>
+        <div className='text-center text-xl mt-4 font-bold text-[var(--teal-500)] inline-flex items-baseline'>
+          <span>Cargando</span>
+          <span className='ml-1 flex space-x-1'>
+            <span
+              className='inline-block w-2 h-2 bg-teal-500 rounded-full animate-bounce'
+              style={{ animationDelay: '0ms' }}
+            ></span>
+            <span
+              className='inline-block w-2 h-2 bg-teal-500 rounded-full animate-bounce'
+              style={{ animationDelay: '150ms' }}
+            ></span>
+            <span
+              className='inline-block w-2 h-2 bg-teal-500 rounded-full animate-bounce'
+              style={{ animationDelay: '300ms' }}
+            ></span>
+          </span>
         </div>
       </div>
 
       {/* Animated phrases */}
-      <div className='mt-12 text-center max-w-md text-gray-500 italic opacity-80'>
+      <div className='mt-12 text-center max-w-md bg-black/10 rounded-xl p-4 text-[var(--accent)] italic opacity-80'>
         <p
-          className='animate-fade-in-up'
+          className='animate-blink'
           style={{ animationDelay: '1s' }}
         >
           Creando experiencias inolvidables

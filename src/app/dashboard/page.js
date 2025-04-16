@@ -55,7 +55,7 @@ const syncVenueLocationData = async (
   try {
     // Create a simplified venue location document
     await setDoc(
-      doc(db, 'venues_locations', venueId),
+      doc( db, 'venues_locations', venueId ),
       {
         name: venueData.name,
         address: venueData.address,
@@ -68,7 +68,7 @@ const syncVenueLocationData = async (
       },
       { merge: true },
     )
-  } catch (error) {
+  } catch ( error ) {
     console.error(
       'Error syncing venue location data:',
       error,
@@ -76,62 +76,62 @@ const syncVenueLocationData = async (
   }
 }
 
-export default function Dashboard() {
-  const [venueId, setVenueId] = useState(null)
-  const [eventsLoading, setEventsLoading] = useState(true)
-  const [events, setEvents] = useState([])
+export default function Dashboard () {
+  const [venueId, setVenueId] = useState( null )
+  const [eventsLoading, setEventsLoading] = useState( true )
+  const [events, setEvents] = useState( [] )
   const [isEditModalOpen, setIsEditModalOpen] =
-    useState(false)
+    useState( false )
   const [isEventEditModalOpen, setIsEventEditModalOpen] =
-    useState(false)
-  const [currentEvent, setCurrentEvent] = useState(null)
+    useState( false )
+  const [currentEvent, setCurrentEvent] = useState( null )
   const [selectedEventDetail, setSelectedEventDetail] =
-    useState(null)
+    useState( null )
 
   const [isDetailModalOpen, setIsDetailModalOpen] =
-    useState(false)
-  const [filterStatus, setFilterStatus] = useState('all')
-  const [eventFormError, setEventFormError] = useState('')
-  const [eventSuccess, setEventSuccess] = useState('')
+    useState( false )
+  const [filterStatus, setFilterStatus] = useState( 'all' )
+  const [eventFormError, setEventFormError] = useState( '' )
+  const [eventSuccess, setEventSuccess] = useState( '' )
   const { venue, loading, error, refreshVenue } =
-    useVenueData(venueId)
+    useVenueData( venueId )
 
   const router = useRouter()
 
   // Effect to handle authentication state changes and set venue ID
-  useEffect(() => {
+  useEffect( () => {
     const unsubscribe = auth.onAuthStateChanged(
-      (currentVenue) => {
-        if (currentVenue) {
-          setVenueId(currentVenue.uid)
+      ( currentVenue ) => {
+        if ( currentVenue ) {
+          setVenueId( currentVenue.uid )
         } else {
           // Redirect to login if not authenticated
-          router.push('/login')
+          router.push( '/login' )
         }
       },
     )
 
     return () => unsubscribe()
-  }, [])
+  }, [] )
 
   // Fetch events from Firestore when component initializes or venueId changes
-  useEffect(() => {
+  useEffect( () => {
     const fetchEvents = async () => {
-      if (!venueId) return
+      if ( !venueId ) return
 
       try {
-        setEventsLoading(true)
+        setEventsLoading( true )
 
         // 1. Fetch the main venue document
-        const venueRef = doc(db, 'venues', venueId)
-        const venueSnap = await getDoc(venueRef)
+        const venueRef = doc( db, 'venues', venueId )
+        const venueSnap = await getDoc( venueRef )
 
-        if (!venueSnap.exists()) {
+        if ( !venueSnap.exists() ) {
           console.log(
             'Venue document not found, cannot fetch events.',
           )
-          setEvents([])
-          setEventsLoading(false)
+          setEvents( [] )
+          setEventsLoading( false )
           return
         }
 
@@ -141,31 +141,31 @@ export default function Dashboard() {
 
         // If no event IDs found in the array, return empty
         if (
-          !Array.isArray(eventIds) ||
+          !Array.isArray( eventIds ) ||
           eventIds.length === 0
         ) {
           console.log(
             "No event IDs found in the venue's event array.",
           )
-          setEvents([])
-          setEventsLoading(false)
+          setEvents( [] )
+          setEventsLoading( false )
           return
         }
 
         // 3. Fetch full event details from the main events collection based on IDs
         const fetchedEvents = []
         await Promise.all(
-          eventIds.map(async (eventId) => {
-            if (!eventId || typeof eventId !== 'string')
+          eventIds.map( async ( eventId ) => {
+            if ( !eventId || typeof eventId !== 'string' )
               return // Skip invalid IDs
-            const eventDocRef = doc(db, 'events', eventId)
-            const eventSnapshot = await getDoc(eventDocRef)
+            const eventDocRef = doc( db, 'events', eventId )
+            const eventSnapshot = await getDoc( eventDocRef )
 
-            if (eventSnapshot.exists()) {
-              fetchedEvents.push({
+            if ( eventSnapshot.exists() ) {
+              fetchedEvents.push( {
                 id: eventId,
                 ...eventSnapshot.data(),
-              })
+              } )
             } else {
               console.warn(
                 `Event document with ID ${eventId} not found.`,
@@ -173,30 +173,30 @@ export default function Dashboard() {
               // Optional: You might want to clean up this ID from the venue's array here
               // if an event doc is missing but its ID is still in the array.
             }
-          }),
+          } ),
         )
 
         // 4. Sort events by date (most recent first)
         fetchedEvents.sort(
-          (a, b) =>
-            (b.date?.seconds || 0) - (a.date?.seconds || 0), // Safe sorting
+          ( a, b ) =>
+            ( b.date?.seconds || 0 ) - ( a.date?.seconds || 0 ), // Safe sorting
         )
 
-        setEvents(fetchedEvents)
-      } catch (error) {
-        console.error('Error fetching events:', error)
-        setEvents([]) // Reset events on error
+        setEvents( fetchedEvents )
+      } catch ( error ) {
+        console.error( 'Error fetching events:', error )
+        setEvents( [] ) // Reset events on error
       } finally {
-        setEventsLoading(false)
+        setEventsLoading( false )
       }
     }
 
     fetchEvents()
-  }, [venueId])
+  }, [venueId] )
 
   // Function to delete an event
-  const deleteEvent = async (eventId, image) => {
-    if (!venueId || !eventId) {
+  const deleteEvent = async ( eventId, image ) => {
+    if ( !venueId || !eventId ) {
       console.error(
         'Missing venueId or eventId for deletion',
       )
@@ -207,35 +207,35 @@ export default function Dashboard() {
     }
     try {
       // Delete the event from the main events collection
-      const eventRef = doc(db, 'events', eventId)
-      await deleteDoc(eventRef)
+      const eventRef = doc( db, 'events', eventId )
+      await deleteDoc( eventRef )
 
       // Remove event ID from the venue's events array field
-      const venueRef = doc(db, 'venues', venueId)
-      await updateDoc(venueRef, {
-        events: arrayRemove(eventId),
-      })
+      const venueRef = doc( db, 'venues', venueId )
+      await updateDoc( venueRef, {
+        events: arrayRemove( eventId ),
+      } )
 
       // Delete the featured image from storage if it exists
-      if (image) {
+      if ( image ) {
         try {
           // Use the URL parsing logic directly
-          const url = new URL(image)
-          const pathName = decodeURIComponent(url.pathname)
+          const url = new URL( image )
+          const pathName = decodeURIComponent( url.pathname )
           // Path format: /v0/b/BUCKET_NAME/o/ENCODED_FILE_PATH
-          const parts = pathName.split('/o/')
-          if (parts.length > 1) {
+          const parts = pathName.split( '/o/' )
+          if ( parts.length > 1 ) {
             const encodedFilePath = parts[1]
             const filePath =
-              decodeURIComponent(encodedFilePath)
+              decodeURIComponent( encodedFilePath )
             // Optional: Double check it's within the expected events folder
             if (
               filePath.startsWith(
                 `venues/${venueId}/events/${eventId}/`,
               )
             ) {
-              const imageRef = ref(storage, filePath)
-              await deleteObject(imageRef)
+              const imageRef = ref( storage, filePath )
+              await deleteObject( imageRef )
               console.log(
                 'Event image deleted successfully from storage:',
                 filePath,
@@ -254,7 +254,7 @@ export default function Dashboard() {
               image,
             )
           }
-        } catch (error) {
+        } catch ( error ) {
           // Keep this catch block for errors during the URL parsing/deletion attempt
           console.error(
             'Error deleting event image:',
@@ -268,16 +268,16 @@ export default function Dashboard() {
 
       // Update local state to remove the deleted event
       setEvents(
-        events.filter((event) => event.id !== eventId),
+        events.filter( ( event ) => event.id !== eventId ),
       )
 
       // Show success message
-      setEventSuccess('¡Evento eliminado exitosamente!')
-      setTimeout(() => {
-        setEventSuccess('')
-      }, 3000)
-    } catch (error) {
-      console.error('Error deleting event:', error)
+      setEventSuccess( '¡Evento eliminado exitosamente!' )
+      setTimeout( () => {
+        setEventSuccess( '' )
+      }, 3000 )
+    } catch ( error ) {
+      console.error( 'Error deleting event:', error )
       setEventFormError(
         'Error al eliminar el evento. Inténtelo de nuevo.',
       )
@@ -285,21 +285,21 @@ export default function Dashboard() {
   }
 
   // Helper function to upload new photos to Firebase Storage
-  const uploadPhotos = async (photos, venueId) => {
-    if (!photos || photos.length === 0) return []
+  const uploadPhotos = async ( photos, venueId ) => {
+    if ( !photos || photos.length === 0 ) return []
 
     const urls = []
 
     // First add all existing photo URLs (strings)
-    for (const photo of photos) {
-      if (typeof photo === 'string') {
-        urls.push(photo)
+    for ( const photo of photos ) {
+      if ( typeof photo === 'string' ) {
+        urls.push( photo )
       }
     }
 
     // Collect all new photos (File objects)
     const newPhotos = photos.filter(
-      (photo) => typeof photo !== 'string',
+      ( photo ) => typeof photo !== 'string',
     )
 
     // Compress all new photos before uploading
@@ -308,7 +308,7 @@ export default function Dashboard() {
     )
 
     // Upload the compressed photos
-    for (const photo of compressedPhotos) {
+    for ( const photo of compressedPhotos ) {
       try {
         // Add timestamp to filename to avoid cache issues
         const timestamp = new Date().getTime()
@@ -318,11 +318,11 @@ export default function Dashboard() {
           `venues/${venueId}/photos/${fileName}`,
         )
 
-        await uploadBytes(storageRef, photo)
-        const url = await getDownloadURL(storageRef)
-        urls.push(url)
-      } catch (error) {
-        console.error('Error uploading photo:', error)
+        await uploadBytes( storageRef, photo )
+        const url = await getDownloadURL( storageRef )
+        urls.push( url )
+      } catch ( error ) {
+        console.error( 'Error uploading photo:', error )
       }
     }
 
@@ -330,24 +330,24 @@ export default function Dashboard() {
   }
 
   // Helper function to delete a photo from Firebase Storage
-  const deletePhoto = async (photoUrl) => {
-    if (!photoUrl || !venueId) return // Also check venueId just in case
+  const deletePhoto = async ( photoUrl ) => {
+    if ( !photoUrl || !venueId ) return // Also check venueId just in case
     try {
       // Correctly extract the storage path from the URL
-      const url = new URL(photoUrl)
-      const pathName = decodeURIComponent(url.pathname)
+      const url = new URL( photoUrl )
+      const pathName = decodeURIComponent( url.pathname )
 
       // Path format: /v0/b/BUCKET_NAME/o/ENCODED_FILE_PATH
-      const parts = pathName.split('/o/')
-      if (parts.length > 1) {
+      const parts = pathName.split( '/o/' )
+      if ( parts.length > 1 ) {
         const encodedFilePath = parts[1]
-        const filePath = decodeURIComponent(encodedFilePath)
+        const filePath = decodeURIComponent( encodedFilePath )
         // Optional: Add a check to ensure it's within the expected photos folder
         if (
-          filePath.startsWith(`venues/${venueId}/photos/`)
+          filePath.startsWith( `venues/${venueId}/photos/` )
         ) {
-          const photoRef = ref(storage, filePath)
-          await deleteObject(photoRef)
+          const photoRef = ref( storage, filePath )
+          await deleteObject( photoRef )
           console.log(
             'Venue photo deleted successfully from storage:',
             filePath,
@@ -364,7 +364,7 @@ export default function Dashboard() {
           photoUrl,
         )
       }
-    } catch (error) {
+    } catch ( error ) {
       console.error(
         'Error deleting venue photo from storage:',
         error,
@@ -376,21 +376,20 @@ export default function Dashboard() {
   }
 
   // Function to upload event image to Firebase Storage
-  const uploadEventImage = async (file, eventId = null) => {
+  const uploadEventImage = async ( file, eventId = null ) => {
     try {
-      if (!file || !venueId) return null
+      if ( !file || !venueId ) return null
 
       // Compress the image before uploading
-      const compressedFile = await compressImage(file)
+      const compressedFile = await compressImage( file )
 
       // Create a unique filename
-      const filename = `${Date.now()}_${
-        compressedFile.name
-      }`
+      const filename = `${Date.now()}_${compressedFile.name
+        }`
 
       // Create the storage path based on whether eventId is provided
       let storagePath
-      if (eventId) {
+      if ( eventId ) {
         // New structure with eventId folder
         storagePath = `venues/${venueId}/events/${eventId}/${filename}`
       } else {
@@ -398,87 +397,86 @@ export default function Dashboard() {
         storagePath = `venues/${venueId}/events/temp/${filename}`
       }
 
-      const storageRef = ref(storage, storagePath)
+      const storageRef = ref( storage, storagePath )
 
       // Upload the compressed file
-      await uploadBytes(storageRef, compressedFile)
+      await uploadBytes( storageRef, compressedFile )
 
       // Get download URL
-      const downloadURL = await getDownloadURL(storageRef)
+      const downloadURL = await getDownloadURL( storageRef )
       return downloadURL
-    } catch (error) {
-      console.error('Error uploading event image:', error)
+    } catch ( error ) {
+      console.error( 'Error uploading event image:', error )
       return null
     }
   }
 
   // Helper function to upload a new venue logo
-  const uploadVenueLogo = async (file, venueId) => {
-    if (!file || !venueId) return null
+  const uploadVenueLogo = async ( file, venueId ) => {
+    if ( !file || !venueId ) return null
     try {
       // Compress the image before uploading
-      const compressedFile = await compressImage(file)
+      const compressedFile = await compressImage( file )
       // Create a unique filename (using timestamp to avoid cache issues)
-      const filename = `${Date.now()}_${
-        compressedFile.name
-      }`
+      const filename = `${Date.now()}_${compressedFile.name
+        }`
       const storagePath = `venues/${venueId}/logo/${filename}`
-      const storageRef = ref(storage, storagePath)
+      const storageRef = ref( storage, storagePath )
 
-      await uploadBytes(storageRef, compressedFile)
-      const downloadURL = await getDownloadURL(storageRef)
+      await uploadBytes( storageRef, compressedFile )
+      const downloadURL = await getDownloadURL( storageRef )
       return downloadURL
-    } catch (error) {
-      console.error('Error uploading venue logo:', error)
+    } catch ( error ) {
+      console.error( 'Error uploading venue logo:', error )
       // Optionally set an error state here
       return null
     }
   }
 
   // Helper function to delete venue logo from Storage
-  const deleteVenueLogo = async (logoUrl, venueId) => {
-    if (!logoUrl || !venueId) return
+  const deleteVenueLogo = async ( logoUrl, venueId ) => {
+    if ( !logoUrl || !venueId ) return
     // Extract the file path from the URL
     try {
-      const url = new URL(logoUrl)
-      const pathName = decodeURIComponent(url.pathname)
-      const parts = pathName.split('/o/')
-      if (parts.length > 1) {
+      const url = new URL( logoUrl )
+      const pathName = decodeURIComponent( url.pathname )
+      const parts = pathName.split( '/o/' )
+      if ( parts.length > 1 ) {
         const encodedFilePath = parts[1]
-        const filePath = decodeURIComponent(encodedFilePath)
+        const filePath = decodeURIComponent( encodedFilePath )
         // Double check it's actually in the expected logo path
         if (
-          filePath.startsWith(`venues/${venueId}/logo/`)
+          filePath.startsWith( `venues/${venueId}/logo/` )
         ) {
-          const logoRef = ref(storage, filePath)
-          await deleteObject(logoRef)
-          console.log('Old venue logo deleted successfully')
+          const logoRef = ref( storage, filePath )
+          await deleteObject( logoRef )
+          console.log( 'Old venue logo deleted successfully' )
         }
       }
-    } catch (error) {
-      console.error('Error deleting old venue logo:', error)
+    } catch ( error ) {
+      console.error( 'Error deleting old venue logo:', error )
       // Don't block the main operation if deletion fails, just log it.
     }
   }
 
   // Function to add a new event to Firestore
-  const addEvent = async (eventData) => {
+  const addEvent = async ( eventData ) => {
     try {
       // Add event to Firestore events collection
       const eventRef = await addDoc(
-        collection(db, 'events'),
+        collection( db, 'events' ),
         eventData,
       )
 
       const eventId = eventRef.id
 
       // Add the eventId to the venue's 'events' array field
-      if (venueId) {
+      if ( venueId ) {
         // Ensure venueId is available
-        const venueRef = doc(db, 'venues', venueId)
-        await updateDoc(venueRef, {
-          events: arrayUnion(eventId),
-        })
+        const venueRef = doc( db, 'venues', venueId )
+        await updateDoc( venueRef, {
+          events: arrayUnion( eventId ),
+        } )
       } else {
         console.error(
           "Cannot update venue's event array: venueId is missing.",
@@ -489,57 +487,57 @@ export default function Dashboard() {
 
       // Return the ID of the newly created event
       return eventId
-    } catch (error) {
-      console.error('Error in addEvent function:', error)
+    } catch ( error ) {
+      console.error( 'Error in addEvent function:', error )
       // Rethrow the error so handleAddEvent can catch it
       throw error
     }
   }
 
-  const handleAddEvent = async (formData, imageFile) => {
-    setEventFormError('')
-    setEventSuccess('')
+  const handleAddEvent = async ( formData, imageFile ) => {
+    setEventFormError( '' )
+    setEventSuccess( '' )
     try {
       // --- Validation (use formData properties) ---
-      if (!formData.title?.trim()) {
+      if ( !formData.title?.trim() ) {
         throw new Error(
           'El título del evento es obligatorio',
         )
       }
-      if (!formData.date) {
+      if ( !formData.date ) {
         // Check if date string exists
         throw new Error(
           'La fecha y hora del evento son obligatorias',
         )
       }
-      const eventDateTime = new Date(formData.date) // Parse the date string
-      if (isNaN(eventDateTime.getTime())) {
+      const eventDateTime = new Date( formData.date ) // Parse the date string
+      if ( isNaN( eventDateTime.getTime() ) ) {
         // Check if date is valid
-        throw new Error('Formato de fecha y hora inválido')
+        throw new Error( 'Formato de fecha y hora inválido' )
       }
-      if (eventDateTime < new Date()) {
+      if ( eventDateTime < new Date() ) {
         throw new Error(
           'La fecha del evento debe ser en el futuro',
         )
       }
-      if (!formData.description?.trim()) {
+      if ( !formData.description?.trim() ) {
         throw new Error(
           'La descripción del evento es obligatoria',
         )
       }
-      if (!formData.category) {
+      if ( !formData.category ) {
         throw new Error(
           'La categoría del evento es obligatoria',
         )
       }
-      if (!venueId) {
+      if ( !venueId ) {
         throw new Error(
           'No se encontró información del local (venueId)',
         )
       }
       if (
         formData.ticketUrl &&
-        !isValidUrl(formData.ticketUrl)
+        !isValidUrl( formData.ticketUrl )
       ) {
         throw new Error(
           'El formato de la URL de venta de entradas no es válido',
@@ -550,10 +548,10 @@ export default function Dashboard() {
       const newEventData = {
         title: formData.title.trim(),
         description: formData.description.trim(),
-        date: Timestamp.fromDate(eventDateTime), // Use parsed date
+        date: Timestamp.fromDate( eventDateTime ), // Use parsed date
         category: formData.category,
         price: formData.price
-          ? parseFloat(Number(formData.price).toFixed(2))
+          ? parseFloat( Number( formData.price ).toFixed( 2 ) )
           : 0,
         currency: formData.currency || 'BOB',
         ticketUrl: formData.ticketUrl
@@ -573,47 +571,47 @@ export default function Dashboard() {
       }
 
       // Add event to Firestore (this function should handle adding ID to venue array)
-      const eventId = await addEvent(newEventData) // Assuming addEvent returns the new event ID
+      const eventId = await addEvent( newEventData ) // Assuming addEvent returns the new event ID
 
       // Upload image if provided (using the separate imageFile parameter)
       let imageUrl = null
-      if (imageFile) {
+      if ( imageFile ) {
         imageUrl = await uploadEventImage(
           imageFile,
           eventId,
         ) // Pass eventId
 
         // Update the event document with the image URL if upload was successful
-        if (imageUrl) {
-          const eventRef = doc(db, 'events', eventId)
-          await updateDoc(eventRef, { image: imageUrl })
+        if ( imageUrl ) {
+          const eventRef = doc( db, 'events', eventId )
+          await updateDoc( eventRef, { image: imageUrl } )
           newEventData.image = imageUrl // Update local object for immediate display
         }
       }
 
       // Update local state with the new event (including potential image URL)
-      setEvents([
+      setEvents( [
         { id: eventId, ...newEventData },
         ...events,
-      ])
+      ] )
 
       // Reset form fields is now handled within EventCreateForm itself upon success
 
       // Show success message (managed by this component)
-      setEventSuccess('¡Evento agregado exitosamente!')
-      setTimeout(() => {
-        setEventSuccess('')
-      }, 5000)
+      setEventSuccess( '¡Evento agregado exitosamente!' )
+      setTimeout( () => {
+        setEventSuccess( '' )
+      }, 5000 )
 
       // Scroll logic might need adjustment or removal if form isn't directly here
       // document.getElementById('eventTitle')?.scrollIntoView({ behavior: 'smooth' })
 
       return true // Signal success to EventCreateForm
-    } catch (error) {
-      console.error('Error adding event:', error) // Log the full error
+    } catch ( error ) {
+      console.error( 'Error adding event:', error ) // Log the full error
       setEventFormError(
         error.message ||
-          'Error al agregar el evento. Inténtelo de nuevo.',
+        'Error al agregar el evento. Inténtelo de nuevo.',
       )
       // Scrolling logic might need adjustment or removal
       // document.querySelector('form')?.scrollIntoView({ behavior: 'smooth' })
@@ -621,12 +619,12 @@ export default function Dashboard() {
     }
   }
 
-  const handleEditVenue = async (updatedData) => {
+  const handleEditVenue = async ( updatedData ) => {
     try {
       // --- Start Validation ---
       if (
         updatedData.facebookUrl &&
-        !validateFacebookUrl(updatedData.facebookUrl)
+        !validateFacebookUrl( updatedData.facebookUrl )
       ) {
         console.error(
           'Validation failed: Invalid Facebook URL provided.',
@@ -640,7 +638,7 @@ export default function Dashboard() {
       }
       if (
         updatedData.instagramUrl &&
-        !validateInstagramUrl(updatedData.instagramUrl)
+        !validateInstagramUrl( updatedData.instagramUrl )
       ) {
         console.error(
           'Validation failed: Invalid Instagram URL provided.',
@@ -653,7 +651,7 @@ export default function Dashboard() {
       }
       if (
         updatedData.whatsappNumber &&
-        !validateWhatsappNumber(updatedData.whatsappNumber)
+        !validateWhatsappNumber( updatedData.whatsappNumber )
       ) {
         console.error(
           'Validation failed: Invalid WhatsApp number provided.',
@@ -666,7 +664,7 @@ export default function Dashboard() {
       }
       // --- End Validation ---
 
-      const venueRef = doc(db, 'venues', venueId)
+      const venueRef = doc( db, 'venues', venueId )
 
       // Extract location, photos, and logo from updated data
       const {
@@ -683,18 +681,18 @@ export default function Dashboard() {
       }
 
       // --- Handle Logo Update ---
-      if (updatedLogo && typeof updatedLogo !== 'string') {
+      if ( updatedLogo && typeof updatedLogo !== 'string' ) {
         // If a new logo file is provided (it's a File object)
         // 1. Delete the old logo if it exists
-        if (venue.logo) {
-          await deleteVenueLogo(venue.logo, venueId)
+        if ( venue.logo ) {
+          await deleteVenueLogo( venue.logo, venueId )
         }
         // 2. Upload the new logo
         const newLogoUrl = await uploadVenueLogo(
           updatedLogo,
           venueId,
         )
-        if (newLogoUrl) {
+        if ( newLogoUrl ) {
           formattedData.logo = newLogoUrl
         } else {
           // Handle upload error? Maybe keep old logo?
@@ -704,11 +702,11 @@ export default function Dashboard() {
           )
           formattedData.logo = venue.logo
         }
-      } else if (updatedLogo === null && venue.logo) {
+      } else if ( updatedLogo === null && venue.logo ) {
         // If logo was explicitly removed (set to null) and an old logo exists
-        await deleteVenueLogo(venue.logo, venueId)
+        await deleteVenueLogo( venue.logo, venueId )
         formattedData.logo = null
-      } else if (updatedLogo) {
+      } else if ( updatedLogo ) {
         // If updatedLogo is a string, it means the existing logo wasn't changed
         formattedData.logo = updatedLogo
       } else {
@@ -726,25 +724,25 @@ export default function Dashboard() {
           location.lat,
           location.lng,
         )
-      } else if (!location && venue.location) {
+      } else if ( !location && venue.location ) {
         formattedData.location = venue.location
       }
 
       // --- Process Photos --- (Existing logic)
-      if (updatedPhotos) {
+      if ( updatedPhotos ) {
         try {
           // Process deleted photos
-          if (venue.photos) {
+          if ( venue.photos ) {
             const deletedPhotos = venue.photos.filter(
-              (photoUrl) =>
+              ( photoUrl ) =>
                 !updatedPhotos.some(
-                  (photo) =>
+                  ( photo ) =>
                     typeof photo === 'string' &&
                     photo === photoUrl,
                 ),
             )
-            for (const photoUrl of deletedPhotos) {
-              await deletePhoto(photoUrl)
+            for ( const photoUrl of deletedPhotos ) {
+              await deletePhoto( photoUrl )
             }
           }
           // Upload new photos
@@ -753,8 +751,8 @@ export default function Dashboard() {
             venueId,
           )
           formattedData.photos = finalPhotoUrls
-        } catch (error) {
-          console.error('Error processing photos:', error)
+        } catch ( error ) {
+          console.error( 'Error processing photos:', error )
           // Keep old photos if processing fails
           formattedData.photos = venue.photos || []
         }
@@ -764,10 +762,10 @@ export default function Dashboard() {
       }
 
       // Update the venue in Firestore
-      await updateDoc(venueRef, formattedData)
+      await updateDoc( venueRef, formattedData )
 
       // Also sync to venues_locations collection
-      await syncVenueLocationData(venueId, {
+      await syncVenueLocationData( venueId, {
         ...formattedData, // Use the fully processed data
         active: formattedData.active !== false, // Ensure active status is carried over
         // Include potentially missing fields needed for sync
@@ -776,24 +774,24 @@ export default function Dashboard() {
         city: formattedData.city || venue.city,
         country: formattedData.country || venue.country,
         location: formattedData.location || venue.location,
-      })
+      } )
 
       // First close the modal
-      setIsEditModalOpen(false)
+      setIsEditModalOpen( false )
 
       // Then refresh the venue data
-      setTimeout(() => {
-        if (refreshVenue) {
+      setTimeout( () => {
+        if ( refreshVenue ) {
           refreshVenue()
         }
-      }, 300)
-    } catch (error) {
-      console.error('Error updating venue:', error)
+      }, 300 )
+    } catch ( error ) {
+      console.error( 'Error updating venue:', error )
     }
   }
 
-  const handleEditEvent = async (updatedData) => {
-    if (!currentEvent) {
+  const handleEditEvent = async ( updatedData ) => {
+    if ( !currentEvent ) {
       console.error(
         'Cannot edit event, currentEvent is not set.',
       )
@@ -817,27 +815,27 @@ export default function Dashboard() {
       ) {
         try {
           // Convert the ISO string from the form back to a Date object
-          const newDate = new Date(updatedData.date)
-          if (isNaN(newDate.getTime())) {
+          const newDate = new Date( updatedData.date )
+          if ( isNaN( newDate.getTime() ) ) {
             // Validate the date
-            throw new Error('Invalid date format')
+            throw new Error( 'Invalid date format' )
           }
-          formattedData.date = Timestamp.fromDate(newDate) // Convert to Timestamp
-        } catch (dateError) {
+          formattedData.date = Timestamp.fromDate( newDate ) // Convert to Timestamp
+        } catch ( dateError ) {
           console.error(
             'Invalid date format provided for update:',
             updatedData.date,
             dateError,
           )
-          alert('Formato de fecha inválido.')
+          alert( 'Formato de fecha inválido.' )
           return // Stop update if date is invalid
         }
-      } else if (currentEvent.date) {
+      } else if ( currentEvent.date ) {
         // Keep original timestamp if date string wasn't changed or provided
         // We need to ensure the original Timestamp object is preserved
         // Find the original event from the 'events' state to get the original Timestamp
         const originalEvent = events.find(
-          (e) => e.id === currentEvent.id,
+          ( e ) => e.id === currentEvent.id,
         )
         formattedData.date = originalEvent?.date || null // Use original Timestamp or null
       } else {
@@ -851,7 +849,7 @@ export default function Dashboard() {
         updatedData.price !== currentEvent.price
       ) {
         formattedData.price = updatedData.price
-          ? parseFloat(Number(updatedData.price).toFixed(2))
+          ? parseFloat( Number( updatedData.price ).toFixed( 2 ) )
           : 0 // Handle empty string or 0
       } else {
         formattedData.price = currentEvent.price // Keep original if not changed
@@ -871,7 +869,7 @@ export default function Dashboard() {
         const trimmedUrl =
           updatedData.ticketUrl?.trim() || null
         // Add validation check using the updated isValidUrl
-        if (trimmedUrl && !isValidUrl(trimmedUrl)) {
+        if ( trimmedUrl && !isValidUrl( trimmedUrl ) ) {
           alert(
             'El formato de la URL de venta de entradas no es válido.',
           )
@@ -895,18 +893,18 @@ export default function Dashboard() {
       let newImageUrl = formattedData.image // Start with current/updated image value
       const oldImageUrl = currentEvent.image // Store old image URL for potential deletion
 
-      if (updatedData.image instanceof File) {
+      if ( updatedData.image instanceof File ) {
         // New image uploaded (updatedData.image is a File object)
-        console.log('New image file detected for upload.')
+        console.log( 'New image file detected for upload.' )
         // Consider deleting the old image *before* uploading the new one
-        if (oldImageUrl) {
+        if ( oldImageUrl ) {
           try {
             // Assuming deleteEventImage exists and works like deletePhoto/deleteVenueLogo
             // await deleteEventImage(oldImageUrl, currentEvent.id);
             console.warn(
               'Deletion of old event image during update not implemented.',
             )
-          } catch (deleteError) {
+          } catch ( deleteError ) {
             console.error(
               'Error deleting old event image during update:',
               deleteError,
@@ -919,7 +917,7 @@ export default function Dashboard() {
           updatedData.image,
           currentEvent.id,
         )
-        if (!newImageUrl) {
+        if ( !newImageUrl ) {
           console.warn(
             'New event image upload failed. Keeping previous image if available.',
           )
@@ -933,14 +931,14 @@ export default function Dashboard() {
         oldImageUrl
       ) {
         // Image explicitly removed (updatedData.image is null)
-        console.log('Event image explicitly removed.')
-        if (oldImageUrl) {
+        console.log( 'Event image explicitly removed.' )
+        if ( oldImageUrl ) {
           try {
             // await deleteEventImage(oldImageUrl, currentEvent.id);
             console.warn(
               'Deletion of old event image upon removal not implemented.',
             )
-          } catch (deleteError) {
+          } catch ( deleteError ) {
             console.error(
               'Error deleting old event image upon removal:',
               deleteError,
@@ -952,14 +950,14 @@ export default function Dashboard() {
       } else {
         // Image not changed (updatedData.image is same string URL or was already null)
         // Keep the existing value (which is already in formattedData)
-        console.log('Event image not changed.')
+        console.log( 'Event image not changed.' )
       }
       // --- End Image Handling ---
 
       // Remove properties that shouldn't be directly saved or are handled
       const { id, ...dataToUpdate } = formattedData
       // Ensure image is not a File object before saving
-      if (dataToUpdate.image instanceof File) {
+      if ( dataToUpdate.image instanceof File ) {
         console.error(
           'Attempting to save File object to Firestore in handleEditEvent. This should not happen.',
         )
@@ -968,12 +966,12 @@ export default function Dashboard() {
       }
 
       // --- Update Firestore ---
-      const eventRef = doc(db, 'events', currentEvent.id)
-      await updateDoc(eventRef, dataToUpdate)
+      const eventRef = doc( db, 'events', currentEvent.id )
+      await updateDoc( eventRef, dataToUpdate )
 
       // --- Update Local State ---
       setEvents(
-        events.map((event) =>
+        events.map( ( event ) =>
           event.id === currentEvent.id
             ? { ...event, ...dataToUpdate } // Use the final dataToUpdate
             : event,
@@ -981,19 +979,18 @@ export default function Dashboard() {
       )
 
       // --- Post-Update Actions ---
-      setEventSuccess('¡Evento actualizado exitosamente!')
-      setTimeout(() => {
-        setEventSuccess('')
-      }, 3000)
+      setEventSuccess( '¡Evento actualizado exitosamente!' )
+      setTimeout( () => {
+        setEventSuccess( '' )
+      }, 3000 )
 
-      setIsEventEditModalOpen(false)
-      setCurrentEvent(null)
-    } catch (error) {
-      console.error('Error updating event:', error)
+      setIsEventEditModalOpen( false )
+      setCurrentEvent( null )
+    } catch ( error ) {
+      console.error( 'Error updating event:', error )
       // Use alert or a dedicated state for edit errors
       alert(
-        `Error al actualizar el evento: ${
-          error.message || 'Inténtelo de nuevo.'
+        `Error al actualizar el evento: ${error.message || 'Inténtelo de nuevo.'
         }`,
       )
       // Keep modal open on error?
@@ -1001,13 +998,13 @@ export default function Dashboard() {
   }
 
   // Wrapper function for delete confirmation
-  const triggerDelete = (eventId, image) => {
+  const triggerDelete = ( eventId, image ) => {
     if (
       window.confirm(
         '¿Estás seguro de que deseas eliminar este evento? Esta acción no se puede deshacer.',
       )
     ) {
-      deleteEvent(eventId, image)
+      deleteEvent( eventId, image )
     }
   }
 
@@ -1171,11 +1168,11 @@ export default function Dashboard() {
   }
 
   // Function to open the event edit modal with current event data
-  const openEventEditModal = (event) => {
+  const openEventEditModal = ( event ) => {
     // Convert Timestamp to ISO string for the datetime-local input
     const date = event.date?.toDate
-      ? event.date.toDate().toISOString().slice(0, 16)
-      : new Date(event.date).toISOString().slice(0, 16)
+      ? event.date.toDate().toISOString().slice( 0, 16 )
+      : new Date( event.date ).toISOString().slice( 0, 16 )
 
     // Make sure ticketUrl is a string
     const ticketUrl = event.ticketUrl || ''
@@ -1193,32 +1190,32 @@ export default function Dashboard() {
     // No need to modify it for the form
 
     // Set current event and open modal
-    setCurrentEvent(formattedEvent)
-    setIsEventEditModalOpen(true)
+    setCurrentEvent( formattedEvent )
+    setIsEventEditModalOpen( true )
   }
 
   // Function to open the detail modal
-  const openDetailModal = (event) => {
-    setSelectedEventDetail(event)
-    setIsDetailModalOpen(true)
+  const openDetailModal = ( event ) => {
+    setSelectedEventDetail( event )
+    setIsDetailModalOpen( true )
   }
 
   // Function to close the detail modal
   const closeDetailModal = () => {
-    setSelectedEventDetail(null)
-    setIsDetailModalOpen(false)
+    setSelectedEventDetail( null )
+    setIsDetailModalOpen( false )
   }
 
   // Main loading check (uses hook's loading state)
-  if (loading) {
+  if ( loading ) {
     return <DashboardSkeleton />
   }
 
-  if (error) {
+  if ( error ) {
     return <div>Error: {error}</div>
   }
 
-  if (!venue) {
+  if ( !venue ) {
     return <DashboardSkeleton /> // Handle case where venue data is still loading or failed
   }
 
@@ -1231,7 +1228,7 @@ export default function Dashboard() {
         <div className='bg-gradient-to-r from-teal-500 to-blue-500 rounded-lg shadow-lg p-6 mb-8'>
           <h1 className='text-3xl font-bold text-white'>
             Bienvenid@, personal de:{' '}
-            <span className='font-bold text-5xl'>
+            <span className='font-bold text-4xl'>
               {' '}
               {venue.name || 'Cargando nombre...'}{' '}
             </span>
@@ -1240,7 +1237,7 @@ export default function Dashboard() {
         <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
           <VenueDetailsCard
             venue={venue}
-            onEdit={() => setIsEditModalOpen(true)}
+            onEdit={() => setIsEditModalOpen( true )}
           />
 
           <EventManagementSection
@@ -1264,7 +1261,7 @@ export default function Dashboard() {
 
       <EditModal
         isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
+        onClose={() => setIsEditModalOpen( false )}
         onSave={handleEditVenue}
         fields={venueFormFields}
         title='Editar Local'
@@ -1273,7 +1270,7 @@ export default function Dashboard() {
 
       <EditModal
         isOpen={isEventEditModalOpen}
-        onClose={() => setIsEventEditModalOpen(false)}
+        onClose={() => setIsEventEditModalOpen( false )}
         onSave={handleEditEvent}
         fields={eventFormFields}
         title='Editar Evento'
@@ -1292,9 +1289,9 @@ export default function Dashboard() {
           onClick={async () => {
             try {
               await auth.signOut()
-              router.push('/login') // Ensure router is available in this scope
-            } catch (error) {
-              console.error('Error signing out:', error)
+              router.push( '/login' ) // Ensure router is available in this scope
+            } catch ( error ) {
+              console.error( 'Error signing out:', error )
             }
           }}
           className='w-full py-2 px-4 bg-red-500 text-white font-medium rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2'

@@ -62,10 +62,11 @@ export default function FeaturedEventsList () {
               />
             ) )}
           </div>
+
           <div className='text-center'>
             <Link
               href='/events'
-              className='bg-[var(--secondary-color)] text-[var(--secondary-color-foreground)] px-6 py-2 rounded-full text-lg font-semibold hover:bg-teal-700 hover:text-[var(--white)] transition duration-300'
+              className='bg-[var(--secondary-color)] text-[var(--secondary-color-foreground)] px-6 py-2 rounded-full  hover:bg-teal-700 hover:text-[var(--white)] transition duration-300 text-sm font-semibold shadow-md hover:bg-[#7928ca] mx-auto'
             >
               Ver todos los eventos
             </Link>
