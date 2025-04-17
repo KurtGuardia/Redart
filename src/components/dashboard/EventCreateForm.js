@@ -1,14 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { CATEGORIES } from '../../lib/constants' // Adjust path
-import { isValidUrl } from '../../lib/utils' // Import isValidUrl
+import { CATEGORIES } from '../../lib/constants'
+import { isValidUrl } from '../../lib/utils'
 
 export default function EventCreateForm ( {
   onAddEvent,
-  eventFormError, // Receive props from parent
+  eventFormError,
   eventSuccess,
-  setEventFormError, // Receive setters if errors/success are managed by parent
+  setEventFormError,
   setEventSuccess,
 } ) {
   const [title, setTitle] = useState( '' )
@@ -18,8 +18,9 @@ export default function EventCreateForm ( {
   const [price, setPrice] = useState( '' )
   const [currency, setCurrency] = useState( 'BOB' )
   const [ticketUrl, setTicketUrl] = useState( '' )
-  const [image, setImage] = useState( null ) // File object or null
+  const [image, setImage] = useState( null )
   const [isSubmitting, setIsSubmitting] = useState( false )
+  const [duration, setDuration] = useState( null )
 
   const MAX_IMAGE_SIZE_MB = 2
   const MAX_IMAGE_SIZE_BYTES =
@@ -150,6 +151,7 @@ export default function EventCreateForm ( {
       price,
       currency,
       ticketUrl: ticketUrl.trim(),
+      duration
     }
 
     // Call the handler passed from the parent component
@@ -164,6 +166,7 @@ export default function EventCreateForm ( {
       setPrice( '' )
       setCurrency( 'BOB' )
       setTicketUrl( '' )
+      setDuration( '' )
       handleRemoveImage() // Clear image state and file input
     }
     // Error/Success message display is handled by the parent based on the return value
@@ -246,26 +249,6 @@ export default function EventCreateForm ( {
           </select>
         </div>
 
-        {/* Date */}
-        <div>
-          <label
-            htmlFor='eventDate'
-            className='block text-sm font-medium text-gray-700 mb-1'
-          >
-            Fecha y hora{' '}
-            <span className='text-red-500'>*</span>
-          </label>
-          <input
-            id='eventDate'
-            type='datetime-local'
-            value={date}
-            onChange={( e ) => setDate( e.target.value )}
-            className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
-            required
-            min={new Date().toISOString().slice( 0, 16 )}
-          />
-        </div>
-
         {/* Price & Currency */}
         <div>
           <label
@@ -311,6 +294,46 @@ export default function EventCreateForm ( {
           <p className='text-xs text-gray-500 mt-1'>
             Deja en 0 o vacío si es gratis
           </p>
+        </div>
+
+        {/* Date */}
+        <div>
+          <label
+            htmlFor='eventDate'
+            className='block text-sm font-medium text-gray-700 mb-1'
+          >
+            Fecha y hora{' '}
+            <span className='text-red-500'>*</span>
+          </label>
+          <input
+            id='eventDate'
+            type='datetime-local'
+            value={date}
+            onChange={( e ) => setDate( e.target.value )}
+            className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+            required
+            min={new Date().toISOString().slice( 0, 16 )}
+          />
+        </div>
+
+        {/* Duration (optional) */}
+        <div>
+          <label
+            htmlFor='eventDuration'
+            className='block text-sm font-medium text-gray-700 mb-1'
+          >
+            Duración <small>(opcional)</small>
+          </label>
+          <input
+            id='eventDuration'
+            type='number'
+            min='0.25'
+            step='0.25'
+            placeholder='Ej: 2'
+            value={duration}
+            onChange={e => setDuration( e.target.value )}
+            className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+          />
         </div>
 
         {/* Ticket URL */}

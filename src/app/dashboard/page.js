@@ -543,12 +543,19 @@ export default function Dashboard () {
           'El formato de la URL de venta de entradas no es válido',
         )
       }
+      if ( formData.duration && isNaN( Number( formData.duration ) ) ) {
+        throw new Error(
+          'La duración del evento debe ser un número válido',
+        )
+      }
+      console.log( formData.duration )
 
       // --- Create newEventData (use formData properties) ---
       const newEventData = {
         title: formData.title.trim(),
         description: formData.description.trim(),
-        date: Timestamp.fromDate( eventDateTime ), // Use parsed date
+        date: Timestamp.fromDate( eventDateTime ),
+        duration: formData.duration ? Number( formData.duration ) : null,
         category: formData.category,
         price: formData.price
           ? parseFloat( Number( formData.price ).toFixed( 2 ) )

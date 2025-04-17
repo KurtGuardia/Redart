@@ -314,6 +314,7 @@ const EventListView = () => {
               title={event.title}
               description={event.description}
               date={event.date}
+              duration={event.duration}
               venueName={event.venueName}
               venueId={event.venueId}
               address={event.address}

@@ -35,6 +35,7 @@ const EventCard = ( {
   address = 'Cochabamba',
   image = '/placeholder.svg',
   onClick,
+  duration,
   status,
 } ) => {
   const isPast = hasEventPassed( date )
@@ -103,7 +104,7 @@ const EventCard = ( {
         <div className="flex flex-wrap gap-2 items-center mb-2">
           {date && (
             <a
-              href={addToGoogleCalendar( { title, date, description, address } )}
+              href={addToGoogleCalendar( { title, date, description, address, duration } )}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1 text-xs text-[var(--teal-300)] bg-black/10 hover:bg-black/20 px-2 py-0.5 rounded font-medium  hover:text-accent transition-colors"

@@ -149,10 +149,10 @@ export const getCategoryLabel = ( categoryValue ) => {
  * @param {string|Date} options.date - Event start date/time (ISO string or Date)
  * @param {string} [options.description] - Event description
  * @param {string} [options.location] - Event location
- * @param {number} [options.durationHours=2] - Event duration in hours (default 2h)
+ * @param {number} [options.duration] - Event duration in hours
  * @returns {string} Google Calendar URL
  */
-export function addToGoogleCalendar ( { title, date, description = '', address = '', durationHours = 2 } ) {
+export function addToGoogleCalendar ( { title, date, description = '', address = 'Cochabamba', duration } ) {
   // Parse and format start/end dates to Google Calendar format (UTC, no dashes/colons)
   const pad = ( n ) => String( n ).padStart( 2, '0' );
   const toGCalDate = ( d ) => {
@@ -165,10 +165,19 @@ export function addToGoogleCalendar ( { title, date, description = '', address =
     return `${yyyy}${mm}${dd}T${hh}${min}${ss}Z`;
   };
   const start = new Date( date );
-  const end = new Date( start.getTime() + durationHours * 60 * 60 * 1000 );
   const startStr = toGCalDate( start );
-  const endStr = toGCalDate( end );
-  const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent( title )}&dates=${startStr}/${endStr}&details=${encodeURIComponent( description )}&location=${encodeURIComponent( address )}`;
+  let url;
+
+  if ( typeof duration === 'number' && !isNaN( duration ) ) {
+    const end = new Date( start.getTime() + duration * 60 * 60 * 1000 );
+    const endStr = toGCalDate( end );
+    url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent( title )}&dates=${startStr}/${endStr}&details=${encodeURIComponent( description )}&location=${encodeURIComponent( address )}`;
+  } else {
+    // Default to 2.5 hours if duration is not provided
+    const end = new Date(start.getTime() + 2.5 * 60 * 60 * 1000);
+    const endStr = toGCalDate(end);
+    url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${startStr}/${endStr}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(address)}`;
+  }
   return url;
 }
 
