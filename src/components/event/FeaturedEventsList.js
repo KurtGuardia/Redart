@@ -9,8 +9,7 @@ import EventDetailModal from './EventDetailModal'
 import EventCardSkeleton from './EventCardSkeleton'
 
 export default function FeaturedEventsList () {
-  const { events, loading, error } = useFeaturedEvents()
-  console.log( loading )
+  const { events, loading } = useFeaturedEvents()
   const [selectedEvent, setSelectedEvent] = useState( null )
   const [isModalOpen, setIsModalOpen] = useState( false )
 
@@ -50,11 +49,9 @@ export default function FeaturedEventsList () {
                 title={event.name || event.title}
                 description={event.description}
                 date={event.date}
-                location={
-                  event.venue?.city ||
-                  event.city ||
-                  'Ciudad no especificada'
-                }
+                address={event.address}
+                venueId={event.venueId}
+                venueName={event.venueName}
                 image={event.imageUrl || event.image}
                 status={event.status}
                 onClick={() => openModal( event )}
@@ -65,7 +62,7 @@ export default function FeaturedEventsList () {
           <div className='text-center'>
             <Link
               href='/events'
-              className='bg-[var(--secondary-color)] text-[var(--secondary-color-foreground)] px-6 py-2 rounded-full  hover:bg-teal-700 hover:text-[var(--white)] transition duration-300 text-sm font-semibold shadow-md hover:bg-[#7928ca] mx-auto'
+              className='bg-[var(--secondary-color)] text-[var(--secondary-color-foreground)] px-6 py-2 rounded-full  hover:bg-teal-700 hover:text-[var(--white)] transition duration-300 text-sm font-semibold shadow-md mx-auto'
             >
               Ver todos los eventos
             </Link>

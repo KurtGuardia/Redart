@@ -12,12 +12,11 @@ import {
   hasEventPassed, // Import hasEventPassed
 } from '../../lib/utils'
 
-const EventDetailModal = ({ isOpen, onClose, event }) => {
-  console.log(event)
-  const [isMounted, setIsMounted] = useState(false)
-  useEffect(() => {
-    setIsMounted(true)
-    if (isOpen) {
+const EventDetailModal = ( { isOpen, onClose, event } ) => {
+  const [isMounted, setIsMounted] = useState( false )
+  useEffect( () => {
+    setIsMounted( true )
+    if ( isOpen ) {
       document.body.style.overflow = 'hidden'
     } else {
       document.body.style.overflow = 'unset'
@@ -25,11 +24,11 @@ const EventDetailModal = ({ isOpen, onClose, event }) => {
     return () => {
       document.body.style.overflow = 'unset'
     }
-  }, [isOpen])
+  }, [isOpen] )
 
-  if (!isMounted || !isOpen || !event) return null
+  if ( !isMounted || !isOpen || !event ) return null
 
-  const isPast = hasEventPassed(event.date)
+  const isPast = hasEventPassed( event.date )
   const status = event.status || 'active' // Default to active
 
   // Determine conditional styles based on status and date
@@ -39,19 +38,19 @@ const EventDetailModal = ({ isOpen, onClose, event }) => {
   let statusLabel = null
   let statusLabelClasses = ''
 
-  if (status === 'cancelled') {
+  if ( status === 'cancelled' ) {
     modalOpacityClass = 'opacity-60'
     contentBgClass =
       'bg-gradient-to-b to-[var(--primary)] from-[var(--pink-600-transparent)]'
     statusLabel = 'CANCELADO'
     statusLabelClasses =
       'bg-red-500 px-4 py-1 rounded font-bold text-3xl text-white tracking-wider'
-  } else if (status === 'suspended') {
+  } else if ( status === 'suspended' ) {
     modalOpacityClass = 'opacity-60'
     statusLabel = 'SUSPENDIDO'
     statusLabelClasses =
       'bg-yellow-400 px-4 py-1 rounded font-bold text-3xl text-white tracking-wider'
-  } else if (isPast) {
+  } else if ( isPast ) {
     contentBgClass = 'bg-gray-700/80'
     statusLabel = 'PASADO'
     modalOpacityClass = 'opacity-80'
@@ -111,15 +110,14 @@ const EventDetailModal = ({ isOpen, onClose, event }) => {
 
         <div className='relative'>
           <div
-            className={`relative w-full h-56 sm:h-72 md:h-80 rounded-t-xl overflow-hidden group animate-fade-in-up border-[10px] ${
-              status === 'cancelled'
+            className={`relative w-full h-56 sm:h-72 md:h-80 rounded-t-xl overflow-hidden group animate-fade-in-up border-[10px] ${status === 'cancelled'
                 ? 'border-[var(--pink-600-transparent)]'
                 : status === 'suspended'
-                ? 'border-[var(--secondary-color-transparent)]'
-                : isPast
-                ? 'border-[var(--gray-700)]'
-                : 'border-[var(--secondary-color-transparent)]'
-            }`}
+                  ? 'border-[var(--secondary-color-transparent)]'
+                  : isPast
+                    ? 'border-[var(--gray-700)]'
+                    : 'border-[var(--secondary-color-transparent)]'
+              }`}
           >
             <Image
               src={event.image || '/placeholder.svg'}
@@ -173,10 +171,10 @@ const EventDetailModal = ({ isOpen, onClose, event }) => {
                   Fecha y Hora
                 </p>
                 <p className='font-semibold text-[var(--white)]'>
-                  {formatTimestamp(event.date, {
+                  {formatTimestamp( event.date, {
                     dateStyle: 'full',
                     timeStyle: 'short',
-                  })}
+                  } )}
                 </p>
               </div>
             </div>
@@ -217,7 +215,7 @@ const EventDetailModal = ({ isOpen, onClose, event }) => {
                     Categoría
                   </p>
                   <p className='font-semibold text-[var(--white)]'>
-                    {getCategoryLabel(event.category)}
+                    {getCategoryLabel( event.category )}
                   </p>
                 </div>
               </div>
@@ -235,8 +233,8 @@ const EventDetailModal = ({ isOpen, onClose, event }) => {
                 <p className='font-semibold text-[var(--white)]'>
                   {event.price > 0
                     ? `${getCurrencySymbol(
-                        event.currency,
-                      )} ${event.price.toFixed(2)}`
+                      event.currency,
+                    )} ${event.price.toFixed( 2 )}`
                     : 'Gratis'}
                 </p>
               </div>
@@ -257,7 +255,7 @@ const EventDetailModal = ({ isOpen, onClose, event }) => {
           <div className='bg-[var(--blue-800-transparent)] backdrop-blur-md px-6 sm:px-8 py-4 rounded-b-xl mt-auto border-t border-[#ffffff33]'>
             <a
               href={
-                event.ticketUrl?.startsWith('http')
+                event.ticketUrl?.startsWith( 'http' )
                   ? event.ticketUrl
                   : `https://${event.ticketUrl}`
               }

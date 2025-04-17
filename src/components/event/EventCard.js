@@ -2,9 +2,11 @@ import Image from 'next/image'
 import {
   formatTimestamp,
   hasEventPassed,
+  addToGoogleCalendar,
 } from '../../lib/utils'
+import Link from 'next/link'
 
-// Helper for status badge styling
+
 const getStatusBadgeInfo = ( status, isPast ) => {
   if ( status === 'cancelled' ) {
     return {
@@ -17,21 +19,23 @@ const getStatusBadgeInfo = ( status, isPast ) => {
       classes: 'bg-yellow-500',
     }
   } else if ( isPast ) {
-    // Optionally add a past badge, or handle via background only
-    // return { label: 'FINALIZADO', classes: 'bg-gray-500 text-white' };
+
+
     return null
   }
-  return null // No badge for active, future events
+  return null
 }
 
 const EventCard = ( {
   title,
   description,
   date,
-  location,
-  image,
+  venueName,
+  venueId,
+  address = 'Cochabamba',
+  image = '/placeholder.svg',
   onClick,
-  status, // Accept status prop
+  status,
 } ) => {
   const isPast = hasEventPassed( date )
   const currentStatus = status || 'active'
@@ -41,13 +45,13 @@ const EventCard = ( {
 
   if ( currentStatus === 'cancelled' ) {
     backgroundClass = 'bg-[var(--pink-600-transparent)]'
-    opacityClass = 'opacity-60' // Add opacity to cancelled cards
+    opacityClass = 'opacity-60'
   } else if ( currentStatus === 'suspended' ) {
     opacityClass = 'opacity-50'
   } else if ( isPast ) {
     backgroundClass = 'bg-gray-400/30'
   } else {
-    // Default active/future styles (can adjust if needed)
+
     backgroundClass = 'bg-[var(--primary-transparent)]'
   }
 
@@ -56,7 +60,6 @@ const EventCard = ( {
       className='relative text-white cursor-pointer'
       onClick={onClick}
     >
-      {/* Status Badge - Positioned Absolutely */}
       {badgeInfo && (
         <div
           className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform -rotate-12 ${badgeInfo.classes} px-16 py-1.5 text-center font-bold text-lg tracking-widest shadow-lg whitespace-nowrap z-10`}
@@ -66,59 +69,74 @@ const EventCard = ( {
       )}
 
       <div
-        className={`relative text-white overflow-hidden flex flex-col group rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6 max-w-sm mx-auto w-full ${backgroundClass} ${opacityClass}`}
+        className={`relative text-white overflow-hidden flex flex-col group rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 p-2 mx-auto w-full ${backgroundClass} ${opacityClass}`}
       >
         <div className='relative overflow-hidden rounded-lg mb-4 aspect-[4/3]'>
-          {image ? (
-            <Image
+          {image !== '/placeholder.svg' ? (
+            <>
+              <Image
+                src={image}
+                alt={title}
+                fill
+                className='object-cover rounded-lg scale-[1.20] group-hover:scale-100 transition-transform duration-500'
+              />
+              <div className='absolute inset-0 bg-gradient-to-t from-black/80 to-transparent to-30% rounded-lg' />
+            </>
+          ) : (
+            <>    <Image
               src={image}
               alt={title}
               fill
               className='object-cover rounded-lg scale-[1.20] group-hover:scale-100 transition-transform duration-500'
             />
-          ) : (
-            <div className='w-full h-full bg-gradient-to-r from-[var(--primary)] to-[var(--secondary-color)] p-4 flex items-center justify-center rounded-lg'>
-              <span className='text-white font-medium text-center'>
-                Imagen no disponible
-              </span>
-            </div>
-          )}
-          {image && (
-            <div className='absolute inset-0 bg-gradient-to-t from-black/70 to-transparent to-30% rounded-lg' />
+              <div className='absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg' /></>
           )}
         </div>
+
         <h3
-          className={`text-xl font-semibold mb-2 truncate h-[1.75rem] sm:line-clamp-2 sm:h-[3.5rem] sm:whitespace-normal`}
+          className={`text-lg font-semibold mb-1 truncate`}
           title={title}
         >
           {title}
         </h3>
+
+        <div className="flex flex-wrap gap-2 items-center mb-2">
+          {date && (
+            <a
+              href={addToGoogleCalendar( { title, date, description, address } )}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-xs text-[var(--teal-300)] bg-black/10 hover:bg-black/20 px-2 py-0.5 rounded font-medium  hover:text-accent transition-colors"
+              title="Añadir a Google Calendar"
+              onClick={e => e.stopPropagation()}
+            >
+              <span role="img" aria-label="calendar">📅</span>
+              {formatTimestamp( date, { dateStyle: 'medium', timeStyle: undefined } )}
+            </a>
+          )}
+          {venueName ? (
+            <Link href={`/venues/${venueId}`}>
+              <span
+                className="flex items-center gap-1 text-xs text-[var(--teal-300)] hover:text-accent bg-black/10 hover:bg-black/20 px-2 py-0.5 rounded font-medium"
+                onClick={e => e.stopPropagation()}
+              >
+                <span role="img" aria-label="venueName">📍</span> {venueName}
+              </span>
+            </Link>
+          ) : null}
+        </div>
+
         {description && (
           <p
-            className={`text-sm mb-4 flex-1 line-clamp-3`}
+            className={`text-sm mb-0 px-2 xl:mb-4 flex-1 line-clamp-3`}
             title={description}
           >
             {description}
           </p>
         )}
-        <div className='flex justify-between items-center mt-auto pt-2'>
-          <div className='flex items-center gap-2 text-gray-600'>
-            {date && (
-              <span className='bg-gray-100 px-2 py-1 rounded-md text-[11px] whitespace-nowrap'>
-                📅{' '}
-                {formatTimestamp( date, {
-                  dateStyle: 'medium',
-                  timeStyle: undefined,
-                } )}
-              </span>
-            )}
-            {location && (
-              <span className='bg-gray-100 px-2 py-1 rounded-md text-[11px] whitespace-nowrap'>
-                📍 {location}
-              </span>
-            )}
-          </div>
-          <span className='text-[var(--primary)] font-semibold hover:text-[var(--gray-900)] transition-colors text-[12px]'>
+
+        <div className='flex justify-end items-center mt-auto pt-0'>
+          <span className='text-[var(--accent)] font-semibold hover:text-[var(--teal-500)] transition-colors text-[12px] cursor-pointer'>
             Ver más
           </span>
         </div>

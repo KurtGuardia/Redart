@@ -16,7 +16,7 @@ export default function HomePage () {
       <div className='absolute top-0 left-0 right-0 opacity-80 bg-gradient-to-r from-[var(--secondary-color)] to-[var(--primary)] h-[80vh]' />
       <HeroBackgroundSlider images={heroImages}>
         <div className='mx-auto z-10 text-center flex flex-col justify-between align-center bg-white bg-opacity-25 rounded-3xl py-8'>
-          <h1 className='text-3xl text-[var(--white)] md:text-4xl font-bold w-[70%] animate-fade-in-up'>
+          <h1 className='text-3xl text-[var(--white)] md:text-4xl font-bold w-[70%] mx-auto animate-fade-in-up'>
             Descubre la vibrante escena artística de Bolivia
           </h1>
           <p className='font-semibold text-xl max-w-2xl mx-auto mb-8 animate-fade-in-up'>

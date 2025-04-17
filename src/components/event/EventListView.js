@@ -12,8 +12,7 @@ import {
   Timestamp,
 } from 'firebase/firestore'
 import {
-  CATEGORIES,
-  STATUS_FILTERS,
+  CATEGORIES
 } from '../../lib/constants'
 import { hasEventPassed } from '../../lib/utils'
 import EventCard from './EventCard'
@@ -32,7 +31,7 @@ const EventListView = () => {
   const [error, setError] = useState( null )
   const [searchTerm, setSearchTerm] = useState( '' )
   const [filter, setFilter] = useState( 'all' )
-  const [filterStatus, setFilterStatus] = useState( 'all' )
+
   const [selectedEvent, setSelectedEvent] = useState( null )
   const [isModalOpen, setIsModalOpen] = useState( false )
   const [debouncedSearchTerm, setDebouncedSearchTerm] =
@@ -41,7 +40,7 @@ const EventListView = () => {
 
   // Effect for initial data fetch on mount
   useEffect( () => {
-    fetchEvents( searchTerm, filter, filterStatus, true )
+    fetchEvents( searchTerm, filter, true )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [] )
 
@@ -65,11 +64,10 @@ const EventListView = () => {
     fetchEvents(
       debouncedSearchTerm,
       filter,
-      filterStatus,
       true,
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearchTerm, filter, filterStatus] )
+  }, [debouncedSearchTerm, filter] )
 
   const openModal = ( event ) => {
     setSelectedEvent( event )
@@ -84,17 +82,17 @@ const EventListView = () => {
   const fetchEvents = async (
     currentSearchTerm = '',
     currentCategoryFilter = 'all',
-    currentStatusFilter = 'all',
     shouldReset = false,
   ) => {
+    let currentLastVisible = lastVisible
     if ( shouldReset ) {
       setLoading( true )
     } else {
       setIsFetchingMore( true )
     }
+
     setError( null )
 
-    let currentLastVisible = lastVisible
     if ( shouldReset ) {
       currentLastVisible = null
     }
@@ -150,39 +148,12 @@ const EventListView = () => {
             currentCategoryFilter === 'all' ||
             event.category === currentCategoryFilter
 
-          let matchesStatusFilter = false
-          switch ( currentStatusFilter ) {
-            case 'suspended':
-              matchesStatusFilter = status === 'suspended'
-              break
-            case 'cancelled':
-              matchesStatusFilter = status === 'cancelled'
-              break
-            case 'past':
-              matchesStatusFilter =
-                isPast &&
-                status !== 'cancelled' &&
-                status !== 'suspended'
-              break
-            case 'active':
-              matchesStatusFilter =
-                !isPast &&
-                status !== 'cancelled' &&
-                status !== 'suspended'
-              break
-            case 'all':
-            default:
-              matchesStatusFilter = true
-              break
-          }
-
           const hasValidDate =
             eventDateTimestamp instanceof Timestamp
 
           return (
             matchesSearch &&
             matchesCategoryFilter &&
-            matchesStatusFilter &&
             hasValidDate
           )
         },
@@ -239,19 +210,13 @@ const EventListView = () => {
 
   const handleCategoryFilterChange = ( e ) => {
     const newFilter = e.target.value
-    fetchEvents( searchTerm, newFilter, filterStatus, true )
+    fetchEvents( searchTerm, newFilter, true )
     setFilter( newFilter )
-  }
-
-  const handleStatusFilterChange = ( e ) => {
-    const newStatusFilter = e.target.value
-    fetchEvents( searchTerm, filter, newStatusFilter, true )
-    setFilterStatus( newStatusFilter )
   }
 
   const handleLoadMore = () => {
     if ( !loading && !isFetchingMore && hasMore ) {
-      fetchEvents( searchTerm, filter, filterStatus, false )
+      fetchEvents( searchTerm, filter, false )
     }
   }
 
@@ -268,7 +233,7 @@ const EventListView = () => {
             placeholder='Buscar eventos, lugares, ciudades...'
             value={searchTerm}
             onChange={handleSearchChange}
-            className='w-full px-4 py-2 border-2 border-gray-300 rounded-lg shadow-sm  focus:border-teal-500 pr-10 focus-visible:outline-none'
+            className='bg-white w-full px-4 xl:py-2 py-1 border-2 border-gray-300 rounded-lg shadow-sm  focus:border-teal-500 pr-10 focus-visible:outline-none'
             disabled={loading || isFetchingMore}
           />
           {searchTerm && (
@@ -299,7 +264,7 @@ const EventListView = () => {
           <select
             value={filter}
             onChange={handleCategoryFilterChange}
-            className='w-full md:w-48 px-4 py-2 border-2 border-gray-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500 appearance-none bg-white pr-8 cursor-pointer'
+            className='w-full md:w-48 px-4 xl:py-2 py-1 border-2 border-gray-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500 outline-none appearance-none bg-white pr-8 cursor-pointer'
             disabled={loading || isFetchingMore}
           >
             <option value='all'>Todas</option>
@@ -322,38 +287,13 @@ const EventListView = () => {
             </svg>
           </div>
         </div>
-        <div className='relative w-full md:w-auto'>
-          <select
-            value={filterStatus}
-            onChange={handleStatusFilterChange}
-            className='w-full md:w-48 px-4 py-2 border-2 border-gray-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500 appearance-none bg-white pr-8 cursor-pointer'
-            disabled={loading || isFetchingMore}
-          >
-            {STATUS_FILTERS.map( ( statusOption ) => (
-              <option
-                key={statusOption.value}
-                value={statusOption.value}
-              >
-                {statusOption.label}
-              </option>
-            ) )}
-          </select>
-          <div className='pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700'>
-            <svg
-              className='fill-current h-4 w-4'
-              xmlns='http://www.w3.org/2000/svg'
-              viewBox='0 0 20 20'
-            >
-              <path d='M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z' />
-            </svg>
-          </div>
-        </div>
+
       </div>
 
       {/* Display loading skeletons while data is being
       fetched */}
       {loading && (
-        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8'>
+        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8'>
           {Array.from( { length: 10 } ).map(
             ( _, index ) => (
               <EventCardSkeleton
@@ -366,7 +306,7 @@ const EventListView = () => {
 
       {/* Display event cards when data is loaded */}
       {!loading && (
-        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8'>
+        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-8 gap-8 px-16'>
           {eventsList.map( ( event ) => (
             <EventCard
               key={event.id}
@@ -374,11 +314,11 @@ const EventListView = () => {
               title={event.title}
               description={event.description}
               date={event.date}
-              location={
-                event.city || 'Ubicación no disponible'
-              }
-              image={event.image || '/placeholder.svg'}
-              status={event.status || 'active'}
+              venueName={event.venueName}
+              venueId={event.venueId}
+              address={event.address}
+              image={event.image}
+              status={event.status}
             />
           ) )}
 
