@@ -5,7 +5,7 @@ import {
   addToGoogleCalendar,
 } from '../../lib/utils'
 import Link from 'next/link'
-
+import { useIsIndexPage } from '../../hooks/useIsIndexPage'
 
 const getStatusBadgeInfo = ( status, isPast ) => {
   if ( status === 'cancelled' ) {
@@ -33,7 +33,7 @@ const EventCard = ( {
   venueName,
   venueId,
   address = 'Cochabamba',
-  image = '/placeholder.svg',
+  image,
   onClick,
   duration,
   status,
@@ -42,7 +42,9 @@ const EventCard = ( {
   const currentStatus = status || 'active'
   let backgroundClass = 'bg-[var(--primary-transparent)]'
   let opacityClass = 'opacity-100'
+  let isIndex = useIsIndexPage()
   let badgeInfo = getStatusBadgeInfo( currentStatus, isPast )
+
 
   if ( currentStatus === 'cancelled' ) {
     backgroundClass = 'bg-[var(--pink-600-transparent)]'
@@ -58,7 +60,7 @@ const EventCard = ( {
 
   return (
     <div
-      className='relative text-white cursor-pointer'
+      className={`relative text-white cursor-pointer ${isIndex ? "mx-auto min-w-[90%] max-w-[90%] xl:min-w-[70%] xl:max-w-[70%] lg:max-w-[80%] lg:min-w-[80%]" : ""}`}
       onClick={onClick}
     >
       {badgeInfo && (
@@ -79,23 +81,25 @@ const EventCard = ( {
                 src={image}
                 alt={title}
                 fill
-                className='object-cover rounded-lg scale-[1.20] group-hover:scale-100 transition-transform duration-500'
+                className='object-cover rounded-lg scale-[1.05] group-hover:scale-100 transition-transform duration-500'
               />
               <div className='absolute inset-0 bg-gradient-to-t from-black/80 to-transparent to-30% rounded-lg' />
             </>
           ) : (
-            <>    <Image
-              src={image}
-              alt={title}
-              fill
-              className='object-cover rounded-lg scale-[1.20] group-hover:scale-100 transition-transform duration-500'
-            />
-              <div className='absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg' /></>
+            <>
+              <Image
+                src={image}
+                alt={title}
+                fill
+                className='object-cover rounded-lg scale-[1.20] group-hover:scale-100 transition-transform duration-500'
+              />
+              <div className='absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg' />
+            </>
           )}
         </div>
 
         <h3
-          className={`text-lg font-semibold mb-1 truncate`}
+          className={`text-lg xl:text-2xl font-semibold mb-1 truncate`}
           title={title}
         >
           {title}
@@ -107,7 +111,7 @@ const EventCard = ( {
               href={addToGoogleCalendar( { title, date, description, address, duration } )}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 text-xs text-[var(--teal-300)] bg-black/10 hover:bg-black/20 px-2 py-0.5 rounded font-medium  hover:text-accent transition-colors"
+              className="flex items-center gap-1 text-xs xl:text-lg text-[var(--teal-300)] bg-black/10 hover:bg-black/20 px-2 py-0.5 rounded font-medium  hover:text-accent transition-colors truncate"
               title="Añadir a Google Calendar"
               onClick={e => e.stopPropagation()}
             >
@@ -118,7 +122,7 @@ const EventCard = ( {
           {venueName ? (
             <Link href={`/venues/${venueId}`}>
               <span
-                className="flex items-center gap-1 text-xs text-[var(--teal-300)] hover:text-accent bg-black/10 hover:bg-black/20 px-2 py-0.5 rounded font-medium"
+                className="flex items-center gap-1 text-xs xl:text-lg text-[var(--teal-300)] hover:text-accent bg-black/10 hover:bg-black/20 px-2 py-0.5 rounded font-medium"
                 onClick={e => e.stopPropagation()}
               >
                 <span role="img" aria-label="venueName">📍</span> {venueName}
@@ -129,7 +133,7 @@ const EventCard = ( {
 
         {description && (
           <p
-            className={`text-sm mb-0 px-2 xl:mb-4 flex-1 line-clamp-3`}
+            className={`text-sm xl:text-xl mb-0 px-2 xl:mb-4 flex-1 line-clamp-3`}
             title={description}
           >
             {description}
@@ -137,7 +141,7 @@ const EventCard = ( {
         )}
 
         <div className='flex justify-end items-center mt-auto pt-0'>
-          <span className='text-[var(--accent)] font-semibold hover:text-[var(--teal-500)] transition-colors text-[12px] cursor-pointer'>
+          <span className='text-[var(--accent)] font-semibold hover:text-[var(--teal-500)] transition-colors text-xs 2xl:text-lg cursor-pointer'>
             Ver más
           </span>
         </div>

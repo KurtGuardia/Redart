@@ -54,7 +54,7 @@ export default function Navbar () {
         </Link>
         <div className='space-x-6 flex items-center'>
           <Link
-            className={`xl:text-lg text-md ${isIndexPage && !hasScrolled
+            className={`xl:text-2xl text-md ${isIndexPage && !hasScrolled
               ? 'text-white'
               : 'text-foreground'
               } ${isIndexPage && !hasScrolled
@@ -66,7 +66,7 @@ export default function Navbar () {
             Inicio
           </Link>
           <Link
-            className={`xl:text-lg text-md  ${isIndexPage && !hasScrolled
+            className={`xl:text-2xl text-md  ${isIndexPage && !hasScrolled
               ? 'text-white'
               : 'text-foreground'
               } ${isIndexPage && !hasScrolled
@@ -78,7 +78,7 @@ export default function Navbar () {
             Eventos
           </Link>
           <Link
-            className={`xl:text-lg text-md  ${isIndexPage && !hasScrolled
+            className={`xl:text-2xl text-md  ${isIndexPage && !hasScrolled
               ? 'text-white'
               : 'text-foreground'
               } ${isIndexPage && !hasScrolled
@@ -90,7 +90,7 @@ export default function Navbar () {
             Locaciones
           </Link>
           <Link
-            className={`xl:text-lg text-md  ${isIndexPage && !hasScrolled
+            className={`xl:text-2xl text-md  ${isIndexPage && !hasScrolled
               ? 'text-white'
               : 'text-foreground'
               } ${isIndexPage && !hasScrolled
@@ -104,7 +104,7 @@ export default function Navbar () {
           {user && (
             <div
               onClick={handleAvatarClick}
-              className='cursor-pointer ml-2 h-8 w-8'
+              className='cursor-pointer ml-2 h-10 w-10'
             >
               <Avatar>
                 <AvatarImage
@@ -124,7 +124,7 @@ export default function Navbar () {
           )}
           {!user && (
             <Link
-              className={`text-lg ${isIndexPage && !hasScrolled
+              className={`xl:text-2xl text-lg ${isIndexPage && !hasScrolled
                 ? 'text-white'
                 : 'text-foreground'
                 } ${isIndexPage && !hasScrolled

@@ -318,7 +318,7 @@ const EventListView = () => {
               venueName={event.venueName}
               venueId={event.venueId}
               address={event.address}
-              image={event.image}
+              image={event.image || '/placeholder.svg'}
               status={event.status}
             />
           ) )}

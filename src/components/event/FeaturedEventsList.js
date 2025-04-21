@@ -22,19 +22,19 @@ export default function FeaturedEventsList () {
     setSelectedEvent( null )
     setIsModalOpen( false )
   }
+  console.log( events );
 
   return (
     <>
       <section className='featured-events py-16 mt-24'>
         <div className='relative mx-auto px-4'>
-          {/* Keep Spots if they belong logically to this section */}
           <Spot colorName={'FireBrick'} />
           <Spot colorName={'Magenta'} />
           <Spot colorName={'Peru'} />
-          <h2 className='text-3xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--blue-600)] to-[var(--blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg'>
+          <h2 className='text-3xl xl:text-5xl font-bold text-center mb-10 xl:mb-16   bg-gradient-to-r from-[var(--blue-600)] to-[var(--blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg'>
             Eventos destacados
           </h2>
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-14 w-full min-w-[80vw] justify-items-center'>
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-14 xl:mb-24 w-full min-w-[80vw] justify-items-center'>
             {loading && Array.from( { length: 3 } ).map(
               ( _, index ) => (
                 <EventCardSkeleton
@@ -52,7 +52,7 @@ export default function FeaturedEventsList () {
                 address={event.address}
                 venueId={event.venueId}
                 venueName={event.venueName}
-                image={event.imageUrl || event.image}
+                image={event.image || '/placeholder.svg'}
                 status={event.status}
                 onClick={() => openModal( event )}
               />
@@ -62,7 +62,7 @@ export default function FeaturedEventsList () {
           <div className='text-center'>
             <Link
               href='/events'
-              className='bg-[var(--secondary-color)] text-[var(--secondary-color-foreground)] px-6 py-2 rounded-full  hover:bg-teal-700 hover:text-[var(--white)] transition duration-300 text-sm font-semibold shadow-md mx-auto'
+              className='bg-[var(--secondary-color)] text-[var(--secondary-color-foreground)] px-6 py-2 rounded-full  hover:bg-teal-700 hover:text-[var(--white)] transition duration-300 text-sm xl:text-xl font-semibold shadow-md mx-auto'
             >
               Ver todos los eventos
             </Link>
