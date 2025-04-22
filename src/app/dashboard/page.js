@@ -1228,14 +1228,14 @@ export default function Dashboard () {
 
   return (
     <>
-      <div className='relative container mx-auto px-8 my-24'>
+      <div className='relative mx-auto px-8 my-24 2xl:max-w-[80%] 2xl:min-w-[80%]'>
         <Spot colorName={'red'} />
         <Spot colorName={'indigo'} />
         <Spot colorName={'peru'} />
         <div className='bg-gradient-to-r from-teal-500 to-blue-500 rounded-lg shadow-lg p-6 mb-8'>
-          <h1 className='text-3xl font-bold text-white'>
+          <h1 className='text-3xl 2xl:text-6xl font-bold text-white'>
             Bienvenid@, personal de:{' '}
-            <span className='font-bold text-4xl'>
+            <span className='font-bold text-4xl 2xl:text-7xl drop-shadow-lg'>
               {' '}
               {venue.name || 'Cargando nombre...'}{' '}
             </span>
@@ -1291,7 +1291,6 @@ export default function Dashboard () {
         event={selectedEventDetail}
       />
 
-      {/* --- Restore the original Logout Button --- */}
       <div className='w-fit mx-auto p-4'>
         <button
           onClick={async () => {
@@ -1302,7 +1301,7 @@ export default function Dashboard () {
               console.error( 'Error signing out:', error )
             }
           }}
-          className='w-full py-2 px-4 bg-red-500 text-white font-medium rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2'
+          className='w-full py-2 px-4 bg-red-500 text-white font-semibold md:text-lg 2xl:text-2xl rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2'
         >
           Cerrar sesión
         </button>

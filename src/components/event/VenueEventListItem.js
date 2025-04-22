@@ -101,7 +101,7 @@ export default function VenueEventListItem ( {
 
   return (
     <li
-      className={`flex items-start gap-4 p-2 xl:p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer ${backgroundClass} ${opacityClass} ${textColorClass}`}
+      className={`flex items-start gap-4 p-2 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer ${backgroundClass} ${opacityClass} ${textColorClass}`}
       onClick={() => onClickItem && onClickItem( event )}
     >
       {/* Left: Image */}

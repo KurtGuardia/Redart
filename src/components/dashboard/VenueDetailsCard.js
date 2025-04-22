@@ -64,7 +64,7 @@ export default function VenueDetailsCard ( {
   return (
     <div className='bg-white rounded-lg shadow-lg p-6'>
       {/* Header with Title and Edit Button */}
-      <h2 className='text-2xl font-semibold mb-4 text-gray-800 flex items-center justify-between'>
+      <h2 className='text-2xl md:text-3xl 2xl:text-4xl font-semibold mb-4 text-gray-800 flex items-center justify-between'>
         <div className='flex items-center'>
           <svg
             className='w-6 h-6 mr-2'
@@ -88,7 +88,7 @@ export default function VenueDetailsCard ( {
           Mi espacio
         </div>
         <button
-          className='text-teal-600 hover:text-teal-800'
+          className='text-base md:text-lg 2xl:text-xl text-teal-600 hover:text-teal-800 font-semibold'
           onClick={onEdit} // Use the passed prop from parent to open modal
           aria-label='Editar información del local'
         >
@@ -118,7 +118,7 @@ export default function VenueDetailsCard ( {
               className='w-20 h-20 object-cover rounded-full border-2 border-teal-500 shadow-md mr-4'
               loading='lazy'
             />
-            <h3 className='text-xl font-bold text-gray-800'>
+            <h3 className='text-xl md:text-2xl 2xl:text-3xl font-bold text-gray-800'>
               {venue.name || 'Venue Name'}
             </h3>
           </div>
@@ -126,14 +126,14 @@ export default function VenueDetailsCard ( {
       )}
       {!venue.logo &&
         venue.name && ( // Show name even if no logo
-          <h3 className='text-xl font-bold text-gray-800 mb-4'>
+          <h3 className='text-xl md:text-2xl 2xl:text-3xl font-bold text-gray-800 mb-4'>
             {venue.name}
           </h3>
         )}
 
       {/* Map Display */}
       {hasValidLocation && (
-        <div className='rounded-lg overflow-hidden mb-4 relative h-60'>
+        <div className='rounded-lg overflow-hidden mb-4 relative h-60 text-sm md:text-base 2xl:text-lg'>
           <MapComponent
             venues={[venue]} // Pass venue data in an array
             center={[latitude, longitude]}
@@ -148,7 +148,7 @@ export default function VenueDetailsCard ( {
         </div>
       )}
       {!hasValidLocation && (
-        <div className='bg-gray-100 p-4 rounded-lg mb-4 text-center text-gray-500'>
+        <div className='bg-gray-100 p-4 rounded-lg mb-4 text-center text-xs md:text-sm 2xl:text-base text-gray-500'>
           Ubicación no especificada. Edita el local para
           añadirla.
         </div>
@@ -156,12 +156,12 @@ export default function VenueDetailsCard ( {
 
       {/* Location Info Section */}
       {( venue.address || ( venue.city && venue.country ) ) && (
-        <div className='bg-gray-50 p-4 rounded-lg mb-4'>
-          <h3 className='font-semibold text-gray-700 mb-2'>
+        <div className='bg-gray-50 p-4 rounded-lg mb-4 text-sm md:text-base 2xl:text-lg'>
+          <h3 className='text-lg md:text-xl 2xl:text-2xl font-semibold text-gray-700 mb-2'>
             <span>Ubicación</span>
           </h3>
           {venue.address && (
-            <p className='text-sm text-gray-500 flex items-center gap-2 mb-2'>
+            <p className='text-xs md:text-sm 2xl:text-base text-gray-500 flex items-center gap-2 mb-2'>
               <svg
                 /* Location Icon */ className='w-4 h-4 flex-shrink-0'
                 fill='none'
@@ -185,7 +185,7 @@ export default function VenueDetailsCard ( {
             </p>
           )}
           {venue.city && venue.country && (
-            <p className='text-sm text-gray-500 flex items-center gap-2'>
+            <p className='text-xs md:text-sm 2xl:text-base text-gray-500 flex items-center gap-2'>
               <svg
                 /* Globe Icon */ className='w-4 h-4 flex-shrink-0'
                 fill='none'
@@ -215,11 +215,11 @@ export default function VenueDetailsCard ( {
 
       {/* Description Section */}
       {venue.description && (
-        <div className='bg-gray-50 p-4 rounded-lg mb-4'>
-          <h3 className='font-semibold text-gray-700 mb-2'>
+        <div className='bg-gray-50 p-4 rounded-lg mb-4 text-sm md:text-base 2xl:text-lg'>
+          <h3 className='text-lg md:text-xl 2xl:text-2xl font-semibold text-gray-700 mb-2'>
             <span>Descripción</span>
           </h3>
-          <p className='text-sm text-gray-500 flex items-start gap-2'>
+          <p className='text-xs md:text-sm 2xl:text-base text-gray-500 flex items-start gap-2'>
             <svg
               /* Text/Info Icon */ className='w-4 h-4 mt-1 flex-shrink-0'
               fill='none'
@@ -240,11 +240,11 @@ export default function VenueDetailsCard ( {
 
       {/* Capacity Section */}
       {venue.capacity != null && ( // Check for null/undefined explicitly
-        <div className='bg-gray-50 p-4 rounded-lg mb-4'>
-          <h3 className='font-semibold text-gray-700 mb-2'>
+        <div className='bg-gray-50 p-4 rounded-lg mb-4 text-sm md:text-base 2xl:text-lg'>
+          <h3 className='text-lg md:text-xl 2xl:text-2xl font-semibold text-gray-700 mb-2'>
             <span>Capacidad</span>
           </h3>
-          <p className='text-sm text-gray-500 flex items-center gap-2'>
+          <p className='text-xs md:text-sm 2xl:text-base text-gray-500 flex items-center gap-2'>
             <svg
               /* Users Icon */ className='w-4 h-4 flex-shrink-0'
               fill='none'
@@ -261,7 +261,7 @@ export default function VenueDetailsCard ( {
             {/* Conditional display based on capacity value */}
             {venue.capacity === 0 ||
               venue.capacity === 1 ? ( // Consider 0 or 1 as not specified effectively
-              <span className='italic text-gray-400'>
+              <span className='italic text-xs md:text-sm 2xl:text-base text-gray-400'>
                 Capacidad no especificada
               </span>
             ) : (
@@ -273,15 +273,15 @@ export default function VenueDetailsCard ( {
 
       {/* Amenities Section */}
       {venue.amenities && venue.amenities.length > 0 && (
-        <div className='bg-gray-50 p-4 rounded-lg mb-4'>
-          <h3 className='font-semibold text-gray-700 mb-2'>
+        <div className='bg-gray-50 p-4 rounded-lg mb-4 text-sm md:text-base 2xl:text-lg'>
+          <h3 className='text-lg md:text-xl 2xl:text-2xl font-semibold text-gray-700 mb-2'>
             <span>Comodidades</span>
           </h3>
           <div className='flex flex-wrap gap-2'>
             {venue.amenities.map( ( amenity, index ) => (
               <span
                 key={index}
-                className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800'
+                className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs md:text-sm 2xl:text-base font-medium bg-teal-100 text-teal-800'
               >
                 <svg
                   /* Check Icon */ className='w-3 h-3 mr-1 flex-shrink-0'
@@ -305,17 +305,17 @@ export default function VenueDetailsCard ( {
 
       {/* Internal Contact Section */}
       {venue.email && (
-        <div className='bg-gray-50 p-4 rounded-lg mb-4'>
-          <h3 className='font-semibold text-gray-700 mb-2'>
+        <div className='bg-gray-50 p-4 rounded-lg mb-4 text-sm md:text-base 2xl:text-lg'>
+          <h3 className='text-lg md:text-xl 2xl:text-2xl font-semibold text-gray-700 mb-2'>
             <span>
               Contacto{' '}
-              <small className='font-normal'>
+              <small className='font-normal text-xs md:text-sm 2xl:text-base'>
                 (sólo para Radart, no será visible hacia el
                 público)
               </small>
             </span>
           </h3>
-          <p className='text-sm text-gray-500 flex items-center gap-2'>
+          <p className='text-xs md:text-sm 2xl:text-base text-gray-500 flex items-center gap-2'>
             <svg
               /* Mail Icon */ className='w-4 h-4 flex-shrink-0'
               fill='none'
@@ -338,13 +338,13 @@ export default function VenueDetailsCard ( {
       {( venue.facebookUrl ||
         venue.instagramUrl ||
         venue.whatsappNumber ) && (
-          <div className='bg-gray-50 p-4 rounded-lg mb-4'>
-            <h3 className='font-semibold text-gray-700 mb-2'>
+          <div className='bg-gray-50 p-4 rounded-lg mb-4 text-sm md:text-base 2xl:text-lg'>
+            <h3 className='text-lg md:text-xl 2xl:text-2xl font-semibold text-gray-700 mb-2'>
               <span>Redes Sociales / WhatsApp</span>
             </h3>
             <div className='space-y-2'>
               {venue.facebookUrl && (
-                <p className='text-sm text-gray-500 flex items-center gap-2'>
+                <p className='text-xs md:text-sm 2xl:text-base text-gray-500 flex items-center gap-2'>
                   <a
                     href={venue.facebookUrl}
                     target='_blank'
@@ -358,7 +358,7 @@ export default function VenueDetailsCard ( {
                 </p>
               )}
               {venue.instagramUrl && (
-                <p className='text-sm text-gray-500 flex items-center gap-2'>
+                <p className='text-xs md:text-sm 2xl:text-base text-gray-500 flex items-center gap-2'>
                   <a
                     href={venue.instagramUrl}
                     target='_blank'
@@ -374,7 +374,7 @@ export default function VenueDetailsCard ( {
                 </p>
               )}
               {venue.whatsappNumber && (
-                <p className='text-sm text-gray-500 flex items-center gap-2'>
+                <p className='text-xs md:text-sm 2xl:text-base text-gray-500 flex items-center gap-2'>
                   <a
                     // Ensure only digits are used for the wa.me link for compatibility
                     href={`https://wa.me/${venue.whatsappNumber.replace(
@@ -404,7 +404,7 @@ export default function VenueDetailsCard ( {
       {/* Photos Gallery Section */}
       {venue.photos && venue.photos.length > 0 && (
         <div className='mt-4'>
-          <h3 className='font-semibold text-gray-700 mb-2'>
+          <h3 className='text-lg md:text-xl 2xl:text-2xl font-semibold text-gray-700 mb-2 ml-1 lg:ml-3'>
             Fotos
           </h3>
           <div className='flex flex-col gap-2'>

@@ -48,18 +48,19 @@ export default function EventList ( {
   // Determine button styles based on active filter
   const getButtonClass = ( status ) => {
     return `px-3 py-1 rounded-md text-sm ${filterStatus === status
-        ? 'bg-teal-600 text-white shadow'
-        : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+      ? 'bg-teal-600 text-white shadow'
+      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
       }`
   }
 
   return (
-    <div className='mt-6'>
-      {' '}
+    <div className='mt-6 lg:mt-12 2xl:mt-20'>
+
       {/* Add margin top */}
-      <h3 className='text-lg font-semibold w-fit text-gray-800 mb-4 border-b pb-2'>
+      <h3 className='text-lg md:text-xl 2xl:text-2xl font-semibold w-fit text-gray-800 mb-4 border-b pb-2'>
         Listado de eventos
       </h3>
+
       {/* Filter Buttons - Show only if not loading and there are *any* events */}
       {!loading && events && events.length > 0 && (
         <div className='flex flex-wrap gap-2 mb-4 border-b pb-4'>
@@ -95,18 +96,20 @@ export default function EventList ( {
           </button>
         </div>
       )}
+
       {/* Loading State */}
       {loading && (
         <div className='text-center py-8'>
           <div className='animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-teal-500 mx-auto mb-4'></div>
-          <p className='text-gray-500'>
+          <p className='text-sm md:text-base 2xl:text-lg text-gray-500'>
             Cargando eventos...
           </p>
         </div>
       )}
+
       {/* Empty State (After Loading) - Use the calculated filteredEvents */}
       {!loading && filteredEvents.length === 0 && (
-        <div className='text-center py-8 text-gray-500'>
+        <div className='text-center py-8 text-sm md:text-base 2xl:text-lg text-gray-500'>
           <svg
             className='w-16 h-16 mx-auto mb-4 text-gray-400'
             fill='none'
@@ -121,7 +124,7 @@ export default function EventList ( {
               d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'
             />
           </svg>
-          <p>
+          <p className='text-sm md:text-base 2xl:text-lg text-gray-500'>
             {
               events.length === 0
                 ? 'Aún no has creado ningún evento.' // Message if no events exist at all
@@ -132,13 +135,14 @@ export default function EventList ( {
           {events.length > 0 && filterStatus !== 'all' && (
             <button
               onClick={() => onFilterChange( 'all' )}
-              className='mt-4 text-sm text-teal-600 hover:underline'
+              className='mt-4 text-xs md:text-sm 2xl:text-base text-teal-600 hover:underline'
             >
               Mostrar todos los eventos
             </button>
           )}
         </div>
       )}
+
       {/* Event List Items - Use the calculated filteredEvents */}
       {!loading && filteredEvents.length > 0 && (
         <ul className='space-y-3 mb-6'>
@@ -152,9 +156,6 @@ export default function EventList ( {
               }
               isIndexPage
               onClickItem={() => onViewDetails( event )}
-              detail
-              view
-              handler
             />
           ) )}
         </ul>

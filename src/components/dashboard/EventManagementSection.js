@@ -19,7 +19,7 @@ export default function EventManagementSection ( {
 } ) {
   return (
     <div className='bg-white rounded-lg shadow-lg p-6'>
-      <h2 className='text-2xl font-semibold mb-4 text-gray-800 flex items-center'>
+      <h2 className='text-2xl md:text-3xl 2xl:text-4xl font-semibold mb-4 text-gray-800 flex items-center'>
         <svg
           className='w-6 h-6 mr-2'
           fill='none'

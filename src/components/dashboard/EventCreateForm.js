@@ -176,19 +176,19 @@ export default function EventCreateForm ( {
   return (
     <form
       onSubmit={handleSubmit}
-      className='my-6 bg-white rounded-lg shadow-sm'
+      className='my-6 bg-white rounded-lg shadow-sm text-sm md:text-base 2xl:text-lg'
       noValidate
     >
-      <h3 className='text-lg font-semibold w-fit text-gray-800 my-4 border-b pb-2'>
+      <h3 className='text-lg md:text-xl 2xl:text-2xl font-semibold w-fit text-gray-800 my-4 border-b pb-2'>
         Crear Nuevo Evento
       </h3>
 
       {/* Error Message Display (using prop from parent) */}
       {eventFormError && (
-        <div className='bg-red-50 border-l-4 border-red-500 p-4 mb-4 error-message-selector'>
+        <div className='bg-red-50 border-l-4 border-red-500 p-4 mb-4 error-message-selector text-xs md:text-sm 2xl:text-base'>
           {' '}
           {/* Added class for potential scrolling */}
-          <p className='text-red-700 text-sm'>
+          <p className='text-red-700 text-xs md:text-sm 2xl:text-base'>
             {eventFormError}
           </p>
         </div>
@@ -196,16 +196,16 @@ export default function EventCreateForm ( {
 
       {/* Success Message Display (using prop from parent) */}
       {eventSuccess && (
-        <div className='bg-green-50 border-l-4 border-green-500 p-4 mb-4'>
-          <p className='text-green-700 text-sm'>
+        <div className='bg-green-50 border-l-4 border-green-500 p-4 mb-4 text-xs md:text-sm 2xl:text-base'>
+          <p className='text-green-700 text-xs md:text-sm 2xl:text-base'>
             {eventSuccess}
           </p>
         </div>
       )}
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-6 text-sm md:text-base 2xl:text-lg'>
         {/* Title */}
-        <div className='col-span-2'>
+        <div className='col-span-2 text-sm md:text-base 2xl:text-lg'>
           <label
             htmlFor='eventTitle'
             className='block text-sm font-medium text-gray-700 mb-1'
@@ -257,7 +257,7 @@ export default function EventCreateForm ( {
           >
             Precio
           </label>
-          <div className='flex gap-7 md:gap-2 '>
+          <div className='flex gap-7 md:gap-2 text-sm md:text-base 2xl:text-lg'>
             <div className='relative flex-1'>
               <input
                 id='eventPrice'
@@ -268,14 +268,14 @@ export default function EventCreateForm ( {
                 placeholder='0.00'
                 value={price}
                 onChange={( e ) => setPrice( e.target.value )}
-                className='w-full min-w-20 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent '
+                className='w-full min-w-20 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm md:text-base 2xl:text-lg '
               />
             </div>
             <select
               id='eventCurrency'
               value={currency}
               onChange={( e ) => setCurrency( e.target.value )}
-              className='w-24 p-2 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+              className='w-24 p-2 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm md:text-base 2xl:text-lg'
             >
               <option value='BOB'>Bs (BOB)</option>
               <option value='USD'>$ (USD)</option>
@@ -291,7 +291,7 @@ export default function EventCreateForm ( {
               <option value='PYG'>₲ (PYG)</option>
             </select>
           </div>
-          <p className='text-xs text-gray-500 mt-1'>
+          <p className='text-xs md:text-sm 2xl:text-base text-gray-500 mt-1'>
             Deja en 0 o vacío si es gratis
           </p>
         </div>
@@ -337,7 +337,7 @@ export default function EventCreateForm ( {
         </div>
 
         {/* Ticket URL */}
-        <div className='col-span-2'>
+        <div className='col-span-2 text-sm md:text-base 2xl:text-lg'>
           <label
             htmlFor='eventTicketUrl'
             className='block text-sm font-medium text-gray-700 mb-1'
@@ -352,13 +352,13 @@ export default function EventCreateForm ( {
             onChange={( e ) => setTicketUrl( e.target.value )}
             className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
           />
-          <p className='text-xs text-gray-500 mt-1'>
+          <p className='text-xs md:text-sm 2xl:text-base text-gray-500 mt-1'>
             Opcional: URL donde se pueden comprar entradas
           </p>
         </div>
 
         {/* Description */}
-        <div className='col-span-2'>
+        <div className='col-span-2 text-sm md:text-base 2xl:text-lg'>
           <label
             htmlFor='eventDescription'
             className='block text-sm font-medium text-gray-700 mb-1'
@@ -376,38 +376,38 @@ export default function EventCreateForm ( {
             required
             maxLength={999}
           ></textarea>
-          <p className='text-xs text-gray-500 text-right mt-1'>
+          <p className='text-xs md:text-sm 2xl:text-base text-gray-500 text-right mt-1'>
             {description.length} / 999
           </p>
         </div>
 
         {/* Image */}
-        <div className='col-span-2'>
+        <div className='col-span-2 text-sm md:text-base 2xl:text-lg'>
           <label
             htmlFor='eventImage'
             className='block text-sm font-medium text-gray-700 mb-1'
           >
             Imagen (Max {MAX_IMAGE_SIZE_MB}MB)
           </label>
-          <div className='flex items-center gap-4'>
+          <div className='flex items-center gap-4 text-sm md:text-base 2xl:text-lg'>
             <input
               id='eventImage'
               type='file'
               accept='image/*'
               onChange={handleImageChange}
-              className='flex-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+              className='flex-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm md:text-base 2xl:text-lg'
             />
             {image && (
               <div className='h-16 w-16 relative border rounded overflow-hidden'>
                 <img
                   src={URL.createObjectURL( image )}
                   alt='Vista previa'
-                  className='h-full w-full object-cover'
+                  className='h-full w-full object-cover text-sm md:text-base 2xl:text-lg'
                 />
                 <button
                   type='button'
                   onClick={handleRemoveImage}
-                  className='absolute top-0 right-0 bg-red-500 text-white p-1 rounded-bl'
+                  className='absolute top-0 right-0 bg-red-500 text-white p-1 rounded-bl text-xs md:text-sm 2xl:text-base'
                   aria-label='Remove image preview'
                 >
                   <svg
@@ -427,7 +427,7 @@ export default function EventCreateForm ( {
               </div>
             )}
           </div>
-          <p className='text-xs text-gray-500 mt-1'>
+          <p className='text-xs md:text-sm 2xl:text-base text-gray-500 mt-1'>
             Recomendado: 16:9. Tipos comunes: JPG, PNG, GIF,
             WEBP.
           </p>
@@ -435,18 +435,18 @@ export default function EventCreateForm ( {
       </div>
 
       {/* Submit Button */}
-      <div className='mt-8'>
+      <div className='mt-8 text-sm md:text-base 2xl:text-lg'>
         <button
           type='submit'
           disabled={isSubmitting}
-          className='w-full py-3 px-4 bg-gradient-to-r from-teal-500 to-teal-600 text-white font-medium rounded-md hover:from-teal-600 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition duration-200 disabled:opacity-70 disabled:cursor-not-allowed'
+          className='w-full py-3 px-4 bg-gradient-to-r from-teal-500 to-teal-600 text-white font-semibold text-base md:text-lg 2xl:text-xl rounded-md hover:from-teal-600 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition duration-200 disabled:opacity-70 disabled:cursor-not-allowed'
         >
           {isSubmitting ? (
-            <span className='flex items-center justify-center'>
+            <span className='flex items-center justify-center text-sm md:text-base 2xl:text-lg'>
               Agregando...
             </span>
           ) : (
-            <span className='flex items-center justify-center'>
+            <span className='flex items-center justify-center text-sm md:text-base 2xl:text-lg'>
               <svg
                 className='w-5 h-5 mr-2'
                 fill='none'
