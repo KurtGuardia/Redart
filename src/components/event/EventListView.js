@@ -10,6 +10,7 @@ import {
   limit,
   startAfter,
   Timestamp,
+  where,
 } from 'firebase/firestore'
 import {
   CATEGORIES
@@ -99,6 +100,7 @@ const EventListView = () => {
 
     let eventsQuery = query(
       collection( db, 'events' ),
+      where( 'status', '==', 'active' ),
       orderBy( 'date', 'desc' ),
       limit( ITEMS_PER_PAGE ),
     )
@@ -121,41 +123,24 @@ const EventListView = () => {
 
       const filteredEvents = newEventsData.filter(
         ( event ) => {
-          const lowerSearchTerm =
-            currentSearchTerm.toLowerCase()
+          const lowerSearchTerm = currentSearchTerm.toLowerCase()
           const eventDateTimestamp = event.date
-          const isPast = eventDateTimestamp
-            ? hasEventPassed( eventDateTimestamp )
-            : false
-          const status = event.status || 'active'
+          const isPast = eventDateTimestamp ? hasEventPassed( eventDateTimestamp ) : false
 
           const matchesSearch =
             !currentSearchTerm ||
-            event.title
-              ?.toLowerCase()
-              .includes( lowerSearchTerm ) ||
-            event.description
-              ?.toLowerCase()
-              .includes( lowerSearchTerm ) ||
-            event.venueName
-              ?.toLowerCase()
-              .includes( lowerSearchTerm ) ||
-            event.city
-              ?.toLowerCase()
-              .includes( lowerSearchTerm )
+            event.title?.toLowerCase().includes( lowerSearchTerm ) ||
+            event.description?.toLowerCase().includes( lowerSearchTerm ) ||
+            event.venueName?.toLowerCase().includes( lowerSearchTerm ) ||
+            event.city?.toLowerCase().includes( lowerSearchTerm )
 
           const matchesCategoryFilter =
-            currentCategoryFilter === 'all' ||
-            event.category === currentCategoryFilter
+            currentCategoryFilter === 'all' || event.category === currentCategoryFilter
 
-          const hasValidDate =
-            eventDateTimestamp instanceof Timestamp
+          const hasValidDate = eventDateTimestamp instanceof Timestamp
 
-          return (
-            matchesSearch &&
-            matchesCategoryFilter &&
-            hasValidDate
-          )
+          // Only include events NOT in the past
+          return matchesSearch && matchesCategoryFilter && hasValidDate && !isPast
         },
       )
 
@@ -226,6 +211,7 @@ const EventListView = () => {
 
   return (
     <>
+      {/* Search and Filter */}
       <div className='flex flex-col md:flex-row items-center justify-center gap-4 mb-8'>
         <div className='relative w-full md:w-1/3'>
           <input
@@ -267,7 +253,7 @@ const EventListView = () => {
             className='w-full md:w-48 px-4 xl:py-2 py-1 border-2 border-gray-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500 outline-none appearance-none bg-white pr-8 cursor-pointer'
             disabled={loading || isFetchingMore}
           >
-            <option value='all'>Todas</option>
+            <option value='all'>Categorías</option>
             {CATEGORIES.map( ( category ) => (
               <option
                 key={category.value}
@@ -306,7 +292,7 @@ const EventListView = () => {
 
       {/* Display event cards when data is loaded */}
       {!loading && (
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-8 gap-8 px-16'>
+        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-8 gap-8 px-1 xl:px-16'>
           {eventsList.map( ( event ) => (
             <EventCard
               key={event.id}

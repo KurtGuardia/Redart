@@ -60,7 +60,7 @@ const EventCard = ( {
 
   return (
     <div
-      className={`relative text-white cursor-pointer ${isIndex ? "mx-auto min-w-[90%] max-w-[90%] xl:min-w-[70%] xl:max-w-[70%] lg:max-w-[80%] lg:min-w-[80%]" : ""}`}
+      className={`relative text-white cursor-pointer ${isIndex ? "mx-auto min-w-[80%] max-w-[80%]" : ""}`}
       onClick={onClick}
     >
       {badgeInfo && (
@@ -99,7 +99,7 @@ const EventCard = ( {
         </div>
 
         <h3
-          className={`text-lg xl:text-2xl font-semibold mb-1 truncate`}
+          className={`text-lg 2xl:text-2xl font-semibold mb-1 px-1 truncate`}
           title={title}
         >
           {title}
@@ -111,7 +111,7 @@ const EventCard = ( {
               href={addToGoogleCalendar( { title, date, description, address, duration } )}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 text-xs xl:text-lg text-[var(--teal-300)] bg-black/10 hover:bg-black/20 px-2 py-0.5 rounded font-medium  hover:text-accent transition-colors truncate"
+              className="flex items-center gap-1 text-xs 2xl:text-base text-[var(--teal-300)] bg-black/10 hover:bg-black/20 px-1 xl:px-2 py-0.5 rounded font-medium  hover:text-accent transition-colors truncate "
               title="Añadir a Google Calendar"
               onClick={e => e.stopPropagation()}
             >
@@ -122,7 +122,7 @@ const EventCard = ( {
           {venueName ? (
             <Link href={`/venues/${venueId}`}>
               <span
-                className="flex items-center gap-1 text-xs xl:text-lg text-[var(--teal-300)] hover:text-accent bg-black/10 hover:bg-black/20 px-2 py-0.5 rounded font-medium"
+                className="flex items-center gap-1 text-xs 2xl:text-base text-[var(--teal-300)] hover:text-accent bg-black/10 hover:bg-black/20 px-1 xl:px-2 py-0.5 rounded font-medium"
                 onClick={e => e.stopPropagation()}
               >
                 <span role="img" aria-label="venueName">📍</span> {venueName}
@@ -133,7 +133,7 @@ const EventCard = ( {
 
         {description && (
           <p
-            className={`text-sm xl:text-xl mb-0 px-2 xl:mb-4 flex-1 line-clamp-3`}
+            className={`text-sm 2xl:text-xl mb-0 px-2 xl:mb-4 flex-1 line-clamp-3`}
             title={description}
           >
             {description}

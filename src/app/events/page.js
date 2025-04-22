@@ -3,7 +3,7 @@ import EventListView from '../../components/event/EventListView'
 
 export default function EventsPage () {
   return (
-    <div className='relative container mx-auto my-24'>
+    <div className='relative mx-auto my-24 max-w-[80%] min-w-[80%]'>
       <Spot colorName={'SlateBlue'} />
       <Spot colorName={'Magenta'} />
       <Spot colorName={'red'} />
