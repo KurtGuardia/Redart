@@ -6,6 +6,7 @@ import {
   db,
   storage,
 } from '../../lib/firebase-client'
+import { signOutAndRedirect } from '../../lib/utils'
 import {
   Timestamp,
   doc,
@@ -1242,7 +1243,7 @@ export default function Dashboard () {
           </h1>
         </div>
 
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-4 xl:gap-8'>
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-4 xl:gap-8'>
           <VenueDetailsCard
             venue={venue}
             onEdit={() => setIsEditModalOpen( true )}
@@ -1293,14 +1294,7 @@ export default function Dashboard () {
 
       <div className='w-fit mx-auto p-4'>
         <button
-          onClick={async () => {
-            try {
-              await auth.signOut()
-              router.push( '/login' ) // Ensure router is available in this scope
-            } catch ( error ) {
-              console.error( 'Error signing out:', error )
-            }
-          }}
+          onClick={() => signOutAndRedirect(auth, router)}
           className='w-full py-2 px-4 bg-red-500 text-white font-semibold md:text-lg 2xl:text-2xl rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2'
         >
           Cerrar sesión

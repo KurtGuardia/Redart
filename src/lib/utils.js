@@ -4,6 +4,20 @@ import { Timestamp } from 'firebase/firestore'
 import { CATEGORIES } from './constants' // Import categories for label lookup
 import imageCompression from 'browser-image-compression' // For image compression
 
+/**
+ * Signs out the user and redirects to /login. Handles errors.
+ * @param {object} auth - Firebase Auth instance
+ * @param {object} router - Next.js router instance
+ */
+export async function signOutAndRedirect(auth, router) {
+  try {
+    await auth.signOut();
+    router.push('/login');
+  } catch (error) {
+    console.error('Error signing out:', error);
+  }
+}
+
 export function cn ( ...inputs ) {
   return twMerge( clsx( inputs ) )
 }

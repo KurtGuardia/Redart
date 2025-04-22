@@ -32,30 +32,30 @@ const LocationPinIcon = () => (
   </svg>
 )
 
-export default function VenueDetailFetcher({ venueId }) {
-  const [venue, setVenueData] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+export default function VenueDetailFetcher ( { venueId } ) {
+  const [venue, setVenueData] = useState( null )
+  const [loading, setLoading] = useState( true )
+  const [error, setError] = useState( null )
 
-  useEffect(() => {
-    if (!venueId) {
-      setError(new Error('Venue ID no proporcionado.'))
-      setLoading(false)
+  useEffect( () => {
+    if ( !venueId ) {
+      setError( new Error( 'Venue ID no proporcionado.' ) )
+      setLoading( false )
       return
     }
 
     const fetchData = async () => {
-      setLoading(true)
-      setError(null)
-      setVenueData(null)
+      setLoading( true )
+      setError( null )
+      setVenueData( null )
 
       try {
-        const venueRef = doc(db, 'venues', venueId)
-        const venueSnap = await getDoc(venueRef)
+        const venueRef = doc( db, 'venues', venueId )
+        const venueSnap = await getDoc( venueRef )
 
-        if (!venueSnap.exists()) {
-          setError(new Error('Lugar no encontrado.'))
-          setLoading(false)
+        if ( !venueSnap.exists() ) {
+          setError( new Error( 'Lugar no encontrado.' ) )
+          setLoading( false )
           return
         }
 
@@ -71,32 +71,32 @@ export default function VenueDetailFetcher({ venueId }) {
             : null,
           location: rawVenueData.location
             ? {
-                latitude:
-                  rawVenueData.location.latitude ??
-                  rawVenueData.location._latitude ??
-                  rawVenueData.location.lat ??
-                  null,
-                longitude:
-                  rawVenueData.location.longitude ??
-                  rawVenueData.location._longitude ??
-                  rawVenueData.location.lng ??
-                  null,
-              }
+              latitude:
+                rawVenueData.location.latitude ??
+                rawVenueData.location._latitude ??
+                rawVenueData.location.lat ??
+                null,
+              longitude:
+                rawVenueData.location.longitude ??
+                rawVenueData.location._longitude ??
+                rawVenueData.location.lng ??
+                null,
+            }
             : null,
-          photos: Array.isArray(rawVenueData.photos)
+          photos: Array.isArray( rawVenueData.photos )
             ? rawVenueData.photos
             : [],
         }
         if (
           processedVenueData.location &&
-          (processedVenueData.location.latitude === null ||
-            processedVenueData.location.longitude === null)
+          ( processedVenueData.location.latitude === null ||
+            processedVenueData.location.longitude === null )
         ) {
           processedVenueData.location = null
         }
 
-        setVenueData(processedVenueData)
-      } catch (err) {
+        setVenueData( processedVenueData )
+      } catch ( err ) {
         console.error(
           'Error fetching venue details client-side:',
           err,
@@ -104,21 +104,21 @@ export default function VenueDetailFetcher({ venueId }) {
         setError(
           err instanceof Error
             ? err
-            : new Error('Error al cargar los datos.'),
+            : new Error( 'Error al cargar los datos.' ),
         )
       } finally {
-        setLoading(false)
+        setLoading( false )
       }
     }
 
     fetchData()
-  }, [venueId])
+  }, [venueId] )
 
-  if (error) {
+  if ( error ) {
     throw error
   }
 
-  if (loading) {
+  if ( loading ) {
     return (
       <section className='mb-10 md:mb-12 border-b border-gray-200/80 pb-8 animate-pulse'>
         <div className='flex flex-col lg:flex-row gap-8 lg:gap-12'>
@@ -140,10 +140,10 @@ export default function VenueDetailFetcher({ venueId }) {
             {/* Title */}
             {/* Logo Placeholder */}
             <div className='flex justify-center md:justify-start mb-4'>
-              <Skeleton className='w-[150px] h-[100px] bg-gray-300 rounded-md' />
+              <Skeleton className='w-[150px] h-[150px] bg-gray-300 rounded-full' />
             </div>
             {/* Capacity Skeleton */}
-            <div className='flex items-center gap-3'>
+            <div className='flex items-center gap-5'>
               <Skeleton className='h-6 w-6 bg-gray-300 rounded-full' />
               <div className='space-y-2'>
                 <Skeleton className='h-4 w-20 bg-gray-300' />
@@ -177,11 +177,11 @@ export default function VenueDetailFetcher({ venueId }) {
   const mapLocation =
     venue?.location?.latitude && venue?.location?.longitude
       ? {
-          id: venue.id,
-          name: venue.name,
-          latitude: venue.location.latitude,
-          longitude: venue.location.longitude,
-        }
+        id: venue.id,
+        name: venue.name,
+        latitude: venue.location.latitude,
+        longitude: venue.location.longitude,
+      }
       : null
   const mapCenter = mapLocation
     ? [mapLocation.latitude, mapLocation.longitude]
@@ -193,14 +193,14 @@ export default function VenueDetailFetcher({ venueId }) {
         <div className='flex flex-col lg:flex-row gap-8 lg:gap-12'>
           {/* Left Column: Map */}
           <div className='lg:w-1/2 flex flex-col'>
-            <h2 className='text-2xl md:text-3xl font-bold text-[var(--teal-800)] mb-1'>
+            <h2 className='text-2xl lg:text-3xl 2xl:text-4xl font-bold text-[var(--teal-800)] mb-1'>
               Ubicación en el Mapa
             </h2>
-            <p className='text-sm text-gray-500 mb-4'>
+            <p className='text-sm 2xl:text-base text-gray-500 mb-4'>
               {venue.city}, {venue.country}
             </p>
             {mapLocation ? (
-              <div className='h-80 md:h-96 w-full'>
+              <div className='h-80 md:h-96 w-full 2xl:w-[80%] mx-auto xl:mt-6'>
                 <MapComponent
                   venues={[mapLocation]}
                   center={mapCenter}
@@ -216,12 +216,12 @@ export default function VenueDetailFetcher({ venueId }) {
             )}
             {venue.address && (
               <a
-                href={generateGoogleMapsUrl({
+                href={generateGoogleMapsUrl( {
                   location: venue.location,
                   address: venue.address,
                   city: venue.city,
                   country: venue.country,
-                })}
+                } )}
                 target='_blank'
                 rel='noopener noreferrer'
                 className='block text-center text-[var(--teal-800)] hover:text-[var(--teal-600)] hover:underline text-sm md:text-base mt-4'
@@ -232,8 +232,8 @@ export default function VenueDetailFetcher({ venueId }) {
           </div>
 
           {/* Right Column: Details */}
-          <div className='lg:w-1/2 space-y-6'>
-            <h2 className='text-2xl md:text-3xl font-bold text-[var(--teal-800)] mb-4'>
+          <div className='lg:w-1/2 space-y-8'>
+            <h2 className='text-2xl 2xl:text-4xl md:text-3xl font-bold text-[var(--teal-800)] mb-4'>
               Detalles Adicionales
             </h2>
 
@@ -251,38 +251,36 @@ export default function VenueDetailFetcher({ venueId }) {
             )}
 
             {venue.capacity && (
-              <div className='flex items-center gap-3'>
-                <span
-                  className='text-2xl'
-                  title='Capacidad'
-                >
-                  👥
-                </span>
-                <div>
-                  <h3 className='font-semibold text-gray-700'>
-                    Capacidad
-                  </h3>
-                  <p className='text-gray-900'>
-                    {venue.capacity} personas
-                  </p>
-                </div>
+              <div>
+                <h3 className='font-semibold text-gray-700 text-base 2xl:text-2xl mb-3'>
+                  <span
+                    className='text-2xl 2xl:text-3xl'
+                    title='Capacidad'
+                  >
+                    👥
+                  </span>{' '}
+                  Capacidad
+                </h3>
+                <p className='text-gray-900 text-base 2xl:text-xl pl-12'>
+                  {venue.capacity} personas
+                </p>
               </div>
             )}
 
             <div>
-              <h3 className='font-semibold text-gray-700 mb-2 flex items-center gap-2'>
-                <span className='text-xl'>✨</span>{' '}
+              <h3 className='font-semibold text-gray-700 mb-3 flex items-center gap-2 text-base 2xl:text-2xl'>
+                <span className='text-xl 2xl:text-3xl'>✨</span>{' '}
                 Servicios
               </h3>
-              <ul className='list-none space-y-1 pl-8'>
+              <ul className='list-none space-y-1 pl-12'>
                 {venue.amenities &&
                   venue.amenities.length > 0 && (
                     <div className='flex flex-wrap gap-2'>
                       {venue.amenities.map(
-                        (amenity, index) => (
+                        ( amenity, index ) => (
                           <span
                             key={index}
-                            className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800'
+                            className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs 2xl:text-base font-medium bg-teal-100 text-teal-800'
                           >
                             <svg
                               className='w-3 h-3 mr-1'
@@ -306,78 +304,65 @@ export default function VenueDetailFetcher({ venueId }) {
               </ul>
             </div>
 
-            {(venue.facebookUrl ||
+            {( venue.facebookUrl ||
               venue.instagramUrl ||
-              venue.whatsappNumber) && (
-              <div>
-                <h3 className='font-semibold text-gray-700 mb-2 flex items-center gap-2'>
-                  <span className='text-xl'>🌐</span>{' '}
-                  Contacto / Redes
-                </h3>
-                <div className='space-y-2 pl-8'>
-                  {venue.facebookUrl && (
-                    <a
-                      href={venue.facebookUrl}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      className='flex items-center gap-2 text-blue-600 hover:text-blue-800 hover:underline'
-                      title={venue.facebookUrl}
-                    >
-                      <FaFacebook className='w-5 h-5' />{' '}
-                      <span className='truncate'>
-                        Facebook
-                      </span>
-                    </a>
-                  )}
-                  {venue.instagramUrl && (
-                    <a
-                      href={venue.instagramUrl}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      className='flex items-center gap-2 text-pink-600 hover:text-pink-800 hover:underline'
-                      title={venue.instagramUrl}
-                    >
-                      <FaInstagram className='w-5 h-5' />{' '}
-                      <span className='truncate'>
-                        Instagram
-                      </span>
-                    </a>
-                  )}
-                  {venue.whatsappNumber && (
-                    <a
-                      href={`https://wa.me/${venue.whatsappNumber.replace(
-                        /\D/g,
-                        '',
-                      )}`}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      className='flex items-center gap-2 text-green-600 hover:text-green-800 hover:underline'
-                      title={venue.whatsappNumber}
-                    >
-                      <FaWhatsapp className='w-5 h-5' />{' '}
-                      <span className='truncate'>
-                        {formatWhatsappNumber(
-                          venue.whatsappNumber,
-                        )}
-                      </span>
-                    </a>
-                  )}
+              venue.whatsappNumber ) && (
+                <div>
+                  <h3 className='font-semibold text-gray-700 mb-3 flex items-center gap-2 text-base 2xl:text-2xl'>
+                    <span className='text-xl 2xl:text-3xl'>🌐</span>{' '}
+                    Contacto / Redes
+                  </h3>
+                  <div className='space-y-2 pl-12'>
+                    {venue.facebookUrl && (
+                      <a
+                        href={venue.facebookUrl}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='flex items-center gap-2 text-blue-600 hover:text-blue-800 hover:underline'
+                        title={venue.facebookUrl}
+                      >
+                        <FaFacebook className='w-5 h-5' />{' '}
+                        <span className='truncate text-sm 2xl:text-lg'>
+                          Facebook
+                        </span>
+                      </a>
+                    )}
+                    {venue.instagramUrl && (
+                      <a
+                        href={venue.instagramUrl}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='flex items-center gap-2 text-pink-600 hover:text-pink-800 hover:underline'
+                        title={venue.instagramUrl}
+                      >
+                        <FaInstagram className='w-5 h-5' />{' '}
+                        <span className='truncate text-sm 2xl:text-lg'>
+                          Instagram
+                        </span>
+                      </a>
+                    )}
+                    {venue.whatsappNumber && (
+                      <a
+                        href={`https://wa.me/${venue.whatsappNumber.replace(
+                          /\D/g,
+                          '',
+                        )}`}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='flex items-center gap-2 text-green-600 hover:text-green-800 hover:underline'
+                        title={venue.whatsappNumber}
+                      >
+                        <FaWhatsapp className='w-5 h-5' />{' '}
+                        <span className='truncate text-sm 2xl:text-lg'>
+                          {formatWhatsappNumber(
+                            venue.whatsappNumber,
+                          )}
+                        </span>
+                      </a>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
-
-            {/* <div className='flex items-center gap-2 pt-2'>
-              <span
-                className={`w-3 h-3 rounded-full mr-2 ${
-                  venue.active
-                    ? 'bg-green-500'
-                    : 'bg-red-500'
-                }`}
-              ></span>
-              <span className='text-sm text-gray-600'>
-                {venue.active ? 'Activo' : 'Inactivo'}
-              </span>
-            </div> */}
+              )}
           </div>
         </div>
       </section>

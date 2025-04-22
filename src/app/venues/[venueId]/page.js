@@ -4,7 +4,7 @@ import VenueEventListWrapper from '../../../components/venue/VenueEventListWrapp
 import VenuePhotoGallery from '../../../components/venue/VenuePhotoGallery'
 import VenueHeroSection from '../../../components/venue/VenueHeroSection'
 
-export default function VenuePage({ params }) {
+export default function VenuePage ( { params } ) {
   const venueId = params.venueId
 
   return (
@@ -19,7 +19,7 @@ export default function VenuePage({ params }) {
       <VenueHeroSection venueId={venueId} />
 
       {/* Main Content Area */}
-      <div className='container mx-auto px-4 pb-24'>
+      <div className='mx-auto pb-24 min-w-[90%] max-w-[90%] 2xl:max-w-[80%]'>
         <div className='bg-gradient-to-br from-white to-gray-100/80 backdrop-blur-lg rounded-xl shadow-xl p-6 md:p-10'>
           <VenueDetailFetcher venueId={venueId} />
 
@@ -28,7 +28,7 @@ export default function VenuePage({ params }) {
 
           {/* Upcoming Events Section */}
           <section className='mb-10 md:mb-12 border-b border-gray-200/80 pb-8'>
-            <h2 className='text-2xl md:text-3xl font-bold text-[var(--teal-800)] mb-6'>
+            <h2 className='text-2xl 2xl:text-4xl md:text-3xl font-bold text-[var(--teal-800)] mb-6'>
               Próximos Eventos
             </h2>
             <VenueEventListWrapper venueId={venueId} />

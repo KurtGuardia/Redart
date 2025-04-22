@@ -9,7 +9,7 @@ export default function EventsPage () {
       <Spot colorName={'red'} />
       <Spot colorName={'red'} />
       <Spot colorName={'Indigo'} />
-      <h1 className='text-3xl font-bold text-center xl:mb-12 mb-4'>
+      <h1>
         Próximos Eventos
       </h1>
       <EventListView />

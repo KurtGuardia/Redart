@@ -82,8 +82,8 @@ export default function Loading () {
         </div>
       </div>
 
-      {/* Animated phrases */}
-      <div className='mt-12 text-center max-w-md bg-black/10 rounded-xl p-4 text-[var(--accent)] italic opacity-80'>
+      {/* Animated phrase */}
+      <div className='mt-12 text-center text-2xl tracking-widest max-w-md bg-black/10 rounded-xl p-4 text-[var(--blue-500)] italic font-bold'>
         <p
           className='animate-blink'
           style={{ animationDelay: '1s' }}
