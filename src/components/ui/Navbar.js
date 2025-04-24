@@ -14,59 +14,62 @@ import {
 import { useVenueData } from '../../hooks/useVenueData'
 import { useIsIndexPage } from '../../hooks/useIsIndexPage'
 
-export default function Navbar () {
+export default function Navbar() {
   const isIndexPage = useIsIndexPage()
   const hasScrolled = useHasScrolled()
   const router = useRouter()
-  const [user, setUser] = useState( null )
-  const { venue } = useVenueData( user?.uid )
-  const [avatarMenuOpen, setAvatarMenuOpen] = useState( false )
-  const avatarMenuTimeout = useRef( null )
+  const [user, setUser] = useState(null)
+  const { venue } = useVenueData(user?.uid)
+  const [avatarMenuOpen, setAvatarMenuOpen] =
+    useState(false)
+  const avatarMenuTimeout = useRef(null)
 
-  useEffect( () => {
+  useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(
-      ( currentUser ) => {
-        setUser( currentUser )
+      (currentUser) => {
+        setUser(currentUser)
       },
     )
     return () => unsubscribe()
-  }, [] )
+  }, [])
 
   const handleAvatarMenuOpen = () => {
-    if ( avatarMenuTimeout.current ) {
-      clearTimeout( avatarMenuTimeout.current )
+    if (avatarMenuTimeout.current) {
+      clearTimeout(avatarMenuTimeout.current)
       avatarMenuTimeout.current = null
     }
-    setAvatarMenuOpen( true )
+    setAvatarMenuOpen(true)
   }
 
   const handleAvatarMenuClose = () => {
-    avatarMenuTimeout.current = setTimeout( () => {
-      setAvatarMenuOpen( false )
-    }, 1000 )
+    avatarMenuTimeout.current = setTimeout(() => {
+      setAvatarMenuOpen(false)
+    }, 1000)
   }
 
   const handleAvatarClick = () => {
-    router.push( '/dashboard' )
+    router.push('/dashboard')
   }
 
-  const handleSignOut = ( e ) => {
-    e.stopPropagation();
-    setAvatarMenuOpen( false );
-    signOutAndRedirect( auth, router );
+  const handleSignOut = (e) => {
+    e.stopPropagation()
+    setAvatarMenuOpen(false)
+    signOutAndRedirect(auth, router)
   }
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 shadow-md z-[1001] transition-all duration-300 ${hasScrolled
-        ? 'bg-white shadow-md'
-        : 'bg-transparent'
-        } ${isIndexPage
+      className={`fixed top-0 left-0 right-0 shadow-md z-[1001] transition-all duration-300 ${
+        hasScrolled
+          ? 'bg-white shadow-md'
+          : 'bg-transparent'
+      } ${
+        isIndexPage
           ? hasScrolled
             ? 'bg-white/80 backdrop-blur-sm'
             : ''
           : '!bg-[var(--background)] text-foreground'
-        }`}
+      }`}
     >
       <div className='container mx-auto px-10 2xl:px-4 py-1 2xl:py-3 flex justify-between items-center h-full'>
         <Link
@@ -78,49 +81,57 @@ export default function Navbar () {
 
         <div className='space-x-10 flex items-center'>
           <Link
-            className={`text-sm lg:text-lg 2xl:text-2xl ${isIndexPage && !hasScrolled
-              ? 'text-white'
-              : 'text-foreground'
-              } ${isIndexPage && !hasScrolled
+            className={`text-sm lg:text-lg ${
+              isIndexPage && !hasScrolled
+                ? 'text-white'
+                : 'text-foreground'
+            } ${
+              isIndexPage && !hasScrolled
                 ? 'hover:text-white'
                 : 'hover:text-primary'
-              } hover:underline underline-offset-8 font-bold`}
+            } hover:underline underline-offset-8 font-bold`}
             href='/'
           >
             Inicio
           </Link>
           <Link
-            className={`text-sm lg:text-lg 2xl:text-2xl  ${isIndexPage && !hasScrolled
-              ? 'text-white'
-              : 'text-foreground'
-              } ${isIndexPage && !hasScrolled
+            className={`text-sm lg:text-lg  ${
+              isIndexPage && !hasScrolled
+                ? 'text-white'
+                : 'text-foreground'
+            } ${
+              isIndexPage && !hasScrolled
                 ? 'hover:text-white'
                 : 'hover:text-primary'
-              } hover:underline underline-offset-8 font-bold`}
+            } hover:underline underline-offset-8 font-bold`}
             href='/events'
           >
             Eventos
           </Link>
           <Link
-            className={`text-sm lg:text-lg 2xl:text-2xl  ${isIndexPage && !hasScrolled
-              ? 'text-white'
-              : 'text-foreground'
-              } ${isIndexPage && !hasScrolled
+            className={`text-sm lg:text-lg  ${
+              isIndexPage && !hasScrolled
+                ? 'text-white'
+                : 'text-foreground'
+            } ${
+              isIndexPage && !hasScrolled
                 ? 'hover:text-white'
                 : 'hover:text-primary'
-              } hover:underline underline-offset-8 font-bold`}
+            } hover:underline underline-offset-8 font-bold`}
             href='/map'
           >
             Locaciones
           </Link>
           <Link
-            className={`text-sm lg:text-lg 2xl:text-2xl  ${isIndexPage && !hasScrolled
-              ? 'text-white'
-              : 'text-foreground'
-              } ${isIndexPage && !hasScrolled
+            className={`text-sm lg:text-lg  ${
+              isIndexPage && !hasScrolled
+                ? 'text-white'
+                : 'text-foreground'
+            } ${
+              isIndexPage && !hasScrolled
                 ? 'hover:text-white'
                 : 'hover:text-primary'
-              } hover:underline underline-offset-8 font-bold`}
+            } hover:underline underline-offset-8 font-bold`}
             href='/faq'
           >
             ¿Qué es Radart?
@@ -170,13 +181,15 @@ export default function Navbar () {
           )}
           {!user && (
             <Link
-              className={`xl:text-2xl text-lg ${isIndexPage && !hasScrolled
-                ? 'text-white'
-                : 'text-foreground'
-                } ${isIndexPage && !hasScrolled
+              className={`text-sm lg:text-lg  ${
+                isIndexPage && !hasScrolled
+                  ? 'text-white'
+                  : 'text-foreground'
+              } ${
+                isIndexPage && !hasScrolled
                   ? 'hover:text-white'
                   : 'hover:text-primary'
-                } hover:underline underline-offset-8 font-bold`}
+              } hover:underline underline-offset-8 font-bold`}
               href='/login'
             >
               Iniciar sesión

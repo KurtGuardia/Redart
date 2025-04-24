@@ -4,141 +4,141 @@ import { useState } from 'react'
 import { CATEGORIES } from '../../lib/constants'
 import { isValidUrl } from '../../lib/utils'
 
-export default function EventCreateForm ( {
+export default function EventCreateForm({
   onAddEvent,
   eventFormError,
   eventSuccess,
   setEventFormError,
   setEventSuccess,
-} ) {
-  const [title, setTitle] = useState( '' )
-  const [date, setDate] = useState( '' )
-  const [description, setDescription] = useState( '' )
-  const [category, setCategory] = useState( '' )
-  const [price, setPrice] = useState( '' )
-  const [currency, setCurrency] = useState( 'BOB' )
-  const [ticketUrl, setTicketUrl] = useState( '' )
-  const [image, setImage] = useState( null )
-  const [isSubmitting, setIsSubmitting] = useState( false )
-  const [duration, setDuration] = useState( null )
+}) {
+  const [title, setTitle] = useState('')
+  const [date, setDate] = useState('')
+  const [description, setDescription] = useState('')
+  const [category, setCategory] = useState('')
+  const [price, setPrice] = useState('')
+  const [currency, setCurrency] = useState('BOB')
+  const [ticketUrl, setTicketUrl] = useState('')
+  const [image, setImage] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [duration, setDuration] = useState('')
 
   const MAX_IMAGE_SIZE_MB = 2
   const MAX_IMAGE_SIZE_BYTES =
     MAX_IMAGE_SIZE_MB * 1024 * 1024
 
-  const handleImageChange = ( e ) => {
-    if ( e.target.files && e.target.files[0] ) {
+  const handleImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
       // --- Image Validation (Client-side) ---
-      if ( file.size > MAX_IMAGE_SIZE_BYTES ) {
-        if ( setEventFormError )
+      if (file.size > MAX_IMAGE_SIZE_BYTES) {
+        if (setEventFormError)
           setEventFormError(
             `La imagen no debe superar los ${MAX_IMAGE_SIZE_MB}MB.`,
           )
-        setImage( null )
+        setImage(null)
         e.target.value = '' // Clear the file input visually
         return
       }
       // Optional: Add check for image type (e.g., file.type.startsWith('image/'))
-      if ( !file.type.startsWith( 'image/' ) ) {
-        if ( setEventFormError )
+      if (!file.type.startsWith('image/')) {
+        if (setEventFormError)
           setEventFormError(
             'Por favor selecciona un archivo de imagen válido (JPEG, PNG, GIF, etc.).',
           )
-        setImage( null )
+        setImage(null)
         e.target.value = ''
         return
       }
       // --- End Image Validation ---
 
-      setImage( file )
-      if ( setEventFormError ) setEventFormError( '' ) // Clear error on new valid image
+      setImage(file)
+      if (setEventFormError) setEventFormError('') // Clear error on new valid image
     } else {
-      setImage( null )
+      setImage(null)
     }
   }
 
   const handleRemoveImage = () => {
-    setImage( null )
+    setImage(null)
     // Reset the file input visually
-    const fileInput = document.getElementById( 'eventImage' )
-    if ( fileInput ) fileInput.value = ''
-    if ( setEventFormError ) setEventFormError( '' ) // Clear any previous image errors
+    const fileInput = document.getElementById('eventImage')
+    if (fileInput) fileInput.value = ''
+    if (setEventFormError) setEventFormError('') // Clear any previous image errors
   }
 
-  const handleSubmit = async ( e ) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    setIsSubmitting( true )
+    setIsSubmitting(true)
     // Clear previous messages using setters from parent
-    if ( setEventFormError ) setEventFormError( '' )
-    if ( setEventSuccess ) setEventSuccess( '' )
+    if (setEventFormError) setEventFormError('')
+    if (setEventSuccess) setEventSuccess('')
 
     // --- Client-Side Validation ---
     try {
-      if ( !title.trim() )
+      if (!title.trim())
         throw new Error(
           'El título del evento es obligatorio.',
         )
-      if ( !description.trim() )
+      if (!description.trim())
         throw new Error(
           'La descripción del evento es obligatoria.',
         )
-      if ( !category )
+      if (!category)
         throw new Error(
           'La categoría del evento es obligatoria.',
         )
 
       // Date validation
-      if ( !date )
+      if (!date)
         throw new Error(
           'La fecha y hora del evento son obligatorias.',
         )
-      const eventDateTime = new Date( date )
-      if ( isNaN( eventDateTime.getTime() ) ) {
-        throw new Error( 'Formato de fecha y hora inválido.' )
+      const eventDateTime = new Date(date)
+      if (isNaN(eventDateTime.getTime())) {
+        throw new Error('Formato de fecha y hora inválido.')
       }
-      if ( eventDateTime < new Date() ) {
+      if (eventDateTime < new Date()) {
         throw new Error(
           'La fecha del evento debe ser en el futuro.',
         )
       }
 
       // Price validation (optional - ensure it's a number if provided)
-      if ( price && isNaN( Number( price ) ) ) {
+      if (price && isNaN(Number(price))) {
         throw new Error(
           'El precio debe ser un número válido.',
         )
       }
 
       // Ticket URL validation
-      if ( ticketUrl && !isValidUrl( ticketUrl.trim() ) ) {
+      if (ticketUrl && !isValidUrl(ticketUrl.trim())) {
         throw new Error(
           'El formato de la URL de venta de entradas no es válido.',
         )
       }
 
       // Image size validation (redundant check, primarily handled in handleImageChange, but good safeguard)
-      if ( image && image.size > MAX_IMAGE_SIZE_BYTES ) {
+      if (image && image.size > MAX_IMAGE_SIZE_BYTES) {
         throw new Error(
           `La imagen no debe superar los ${MAX_IMAGE_SIZE_MB}MB.`,
         )
       }
-      if ( image && !image.type.startsWith( 'image/' ) ) {
+      if (image && !image.type.startsWith('image/')) {
         throw new Error(
           'El archivo seleccionado para la imagen no es válido.',
         )
       }
-    } catch ( validationError ) {
-      if ( setEventFormError )
-        setEventFormError( validationError.message )
-      setIsSubmitting( false )
+    } catch (validationError) {
+      if (setEventFormError)
+        setEventFormError(validationError.message)
+      setIsSubmitting(false)
       // Optional: Scroll to error
       document
-        .querySelector( '.error-message-selector' )
-        ?.scrollIntoView( {
+        .querySelector('.error-message-selector')
+        ?.scrollIntoView({
           behavior: 'smooth',
           block: 'center',
-        } )
+        })
       return // Stop submission
     }
     // --- End Client-Side Validation ---
@@ -151,26 +151,26 @@ export default function EventCreateForm ( {
       price,
       currency,
       ticketUrl: ticketUrl.trim(),
-      duration
+      duration,
     }
 
     // Call the handler passed from the parent component
-    const success = await onAddEvent( formData, image )
+    const success = await onAddEvent(formData, image)
 
-    if ( success ) {
+    if (success) {
       // Reset form fields locally upon successful submission
-      setTitle( '' )
-      setDate( '' )
-      setDescription( '' )
-      setCategory( '' )
-      setPrice( '' )
-      setCurrency( 'BOB' )
-      setTicketUrl( '' )
-      setDuration( '' )
+      setTitle('')
+      setDate('')
+      setDescription('')
+      setCategory('')
+      setPrice('')
+      setCurrency('BOB')
+      setTicketUrl('')
+      setDuration('')
       handleRemoveImage() // Clear image state and file input
     }
     // Error/Success message display is handled by the parent based on the return value
-    setIsSubmitting( false )
+    setIsSubmitting(false)
   }
 
   return (
@@ -218,8 +218,8 @@ export default function EventCreateForm ( {
             type='text'
             placeholder='Ej: Concierto de Jazz'
             value={title}
-            onChange={( e ) => setTitle( e.target.value )}
-            className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+            onChange={(e) => setTitle(e.target.value)}
+            className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none focus:border-transparent '
             required
             maxLength={100}
           />
@@ -237,15 +237,15 @@ export default function EventCreateForm ( {
           <select
             id='eventCategory'
             value={category}
-            onChange={( e ) => setCategory( e.target.value )}
-            className='w-full p-2 border bg-white border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+            onChange={(e) => setCategory(e.target.value)}
+            className='w-full p-2 border bg-white border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none focus:border-transparent'
             required
           >
-            {CATEGORIES.map( ( cat ) => (
+            {CATEGORIES.map((cat) => (
               <option key={cat.value} value={cat.value}>
                 {cat.label}
               </option>
-            ) )}
+            ))}
           </select>
         </div>
 
@@ -263,19 +263,19 @@ export default function EventCreateForm ( {
                 id='eventPrice'
                 type='number'
                 min='0'
-                max='9999' // Added max based on original field definition
-                step='0.01' // Allow decimals
+                max='9999'
+                step='0.1'
                 placeholder='0.00'
                 value={price}
-                onChange={( e ) => setPrice( e.target.value )}
-                className='w-full min-w-20 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm md:text-base 2xl:text-lg '
+                onChange={(e) => setPrice(e.target.value)}
+                className='w-full min-w-20 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none focus:border-transparent text-sm md:text-base 2xl:text-lg '
               />
             </div>
             <select
               id='eventCurrency'
               value={currency}
-              onChange={( e ) => setCurrency( e.target.value )}
-              className='w-24 p-2 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm md:text-base 2xl:text-lg'
+              onChange={(e) => setCurrency(e.target.value)}
+              className='w-24 p-2 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none focus:border-transparent text-sm md:text-base 2xl:text-lg'
             >
               <option value='BOB'>Bs (BOB)</option>
               <option value='USD'>$ (USD)</option>
@@ -309,10 +309,10 @@ export default function EventCreateForm ( {
             id='eventDate'
             type='datetime-local'
             value={date}
-            onChange={( e ) => setDate( e.target.value )}
-            className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+            onChange={(e) => setDate(e.target.value)}
+            className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none focus:border-transparent'
             required
-            min={new Date().toISOString().slice( 0, 16 )}
+            min={new Date().toISOString().slice(0, 16)}
           />
         </div>
 
@@ -331,8 +331,8 @@ export default function EventCreateForm ( {
             step='0.25'
             placeholder='Ej: 2'
             value={duration}
-            onChange={e => setDuration( e.target.value )}
-            className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+            onChange={(e) => setDuration(e.target.value)}
+            className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none focus:border-transparent'
           />
         </div>
 
@@ -349,8 +349,8 @@ export default function EventCreateForm ( {
             type='url'
             placeholder='https://ejemplo.com/tickets'
             value={ticketUrl}
-            onChange={( e ) => setTicketUrl( e.target.value )}
-            className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+            onChange={(e) => setTicketUrl(e.target.value)}
+            className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none focus:border-transparent'
           />
           <p className='text-xs md:text-sm 2xl:text-base text-gray-500 mt-1'>
             Opcional: URL donde se pueden comprar entradas
@@ -371,8 +371,8 @@ export default function EventCreateForm ( {
             rows='4'
             placeholder='Describe el evento, artistas, horarios, etc.'
             value={description}
-            onChange={( e ) => setDescription( e.target.value )}
-            className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+            onChange={(e) => setDescription(e.target.value)}
+            className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none focus:border-transparent'
             required
             maxLength={999}
           ></textarea>
@@ -395,12 +395,12 @@ export default function EventCreateForm ( {
               type='file'
               accept='image/*'
               onChange={handleImageChange}
-              className='flex-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm md:text-base 2xl:text-lg'
+              className='flex-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none focus:border-transparent text-sm md:text-base 2xl:text-lg'
             />
             {image && (
               <div className='h-16 w-16 relative border rounded overflow-hidden'>
                 <img
-                  src={URL.createObjectURL( image )}
+                  src={URL.createObjectURL(image)}
                   alt='Vista previa'
                   className='h-full w-full object-cover text-sm md:text-base 2xl:text-lg'
                 />

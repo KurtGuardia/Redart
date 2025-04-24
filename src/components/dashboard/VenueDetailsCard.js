@@ -9,51 +9,57 @@ import {
   FaWhatsapp,
 } from 'react-icons/fa'
 import { formatWhatsappNumber } from '../../lib/utils' // Adjust path as needed
+import { Skeleton } from '../ui/Skeleton'
 
 // Dynamically import MapComponent only on the client-side
 const MapComponent = dynamic(
-  () => import( '../map/MapComponent' ), // Adjust path as needed
+  () => import('../map/MapComponent'), // Adjust path as needed
   { ssr: false },
 )
 
 // Helper to safely access nested properties
-const getSafe = ( fn, defaultValue = null ) => {
+const getSafe = (fn, defaultValue = null) => {
   try {
     // Make sure the function call result is checked for null/undefined before returning defaultValue
     const result = fn()
     return result ?? defaultValue
-  } catch ( e ) {
+  } catch (e) {
     // Optional: Log the error for debugging if needed
     // console.error("Error accessing property:", e);
     return defaultValue
   }
 }
 
-export default function VenueDetailsCard ( {
+export default function VenueDetailsCard({
   venue,
   onEdit, // Function to trigger the edit modal in the parent
-} ) {
+}) {
   // Basic check if venue data is provided
-  if ( !venue ) {
+  if (!venue) {
     return (
-      <div className='bg-white rounded-lg shadow-lg p-6 animate-pulse'>
-        {' '}
-        {/* Added pulse animation for loading */}
-        <div className='h-8 bg-gray-200 rounded w-1/4 mb-4'></div>
-        <div className='h-20 w-20 bg-gray-200 rounded-full mr-4 mb-4 inline-block'></div>
-        <div className='h-6 bg-gray-200 rounded w-1/2 mb-6 inline-block align-middle'></div>
-        <div className='h-60 bg-gray-200 rounded mb-4'></div>
-        <div className='h-4 bg-gray-200 rounded w-full mb-2'></div>
-        <div className='h-4 bg-gray-200 rounded w-3/4 mb-4'></div>
-        <div className='h-4 bg-gray-200 rounded w-full mb-2'></div>
-        <div className='h-4 bg-gray-200 rounded w-full mb-2'></div>
-        <div className='h-4 bg-gray-200 rounded w-1/2 mb-4'></div>
+      <div className='bg-gray-50 rounded-lg shadow-lg p-6'>
+        <Skeleton className='h-8 w-1/4 mb-4 bg-gray-300' />
+        <div className='flex items-center mb-4'>
+          <Skeleton className='h-20 w-20 rounded-full mr-4 bg-gray-300' />
+          <Skeleton className='h-6 w-1/2 bg-gray-300' />
+        </div>
+        <Skeleton className='h-60 w-full mb-4 bg-gray-300' />
+        <Skeleton className='h-4 w-full mb-2 bg-gray-300' />
+        <Skeleton className='h-4 w-3/4 mb-4 bg-gray-300' />
+        <Skeleton className='h-4 w-full mb-2 bg-gray-300' />
+        <Skeleton className='h-4 w-full mb-2 bg-gray-300' />
+        <Skeleton className='h-4 w-1/2 mb-4 bg-gray-300' />
+        <div className='grid grid-cols-3 gap-2 mt-4'>
+          <Skeleton className='h-32 w-full bg-gray-300 rounded-lg' />
+          <Skeleton className='h-32 w-full bg-gray-300 rounded-lg' />
+          <Skeleton className='h-32 w-full bg-gray-300 rounded-lg' />
+        </div>
       </div>
     )
   }
 
   // Safely access latitude and longitude, providing 0 as a default
-  const latitude = getSafe( () => venue.location.latitude, 0 )
+  const latitude = getSafe(() => venue.location.latitude, 0)
   const longitude = getSafe(
     () => venue.location.longitude,
     0,
@@ -62,7 +68,7 @@ export default function VenueDetailsCard ( {
   const hasValidLocation = latitude !== 0 || longitude !== 0
 
   return (
-    <div className='bg-white rounded-lg shadow-lg p-6'>
+    <div className='bg-white rounded-lg shadow-lg p-6 h-fit'>
       {/* Header with Title and Edit Button */}
       <h2 className='text-2xl md:text-3xl 2xl:text-4xl font-semibold mb-4 text-gray-800 flex items-center justify-between'>
         <div className='flex items-center'>
@@ -155,7 +161,7 @@ export default function VenueDetailsCard ( {
       )}
 
       {/* Location Info Section */}
-      {( venue.address || ( venue.city && venue.country ) ) && (
+      {(venue.address || (venue.city && venue.country)) && (
         <div className='bg-gray-50 p-4 rounded-lg mb-4 text-sm md:text-base 2xl:text-lg'>
           <h3 className='text-lg md:text-xl 2xl:text-2xl font-semibold text-gray-700 mb-2'>
             <span>Ubicación</span>
@@ -260,7 +266,7 @@ export default function VenueDetailsCard ( {
             </svg>
             {/* Conditional display based on capacity value */}
             {venue.capacity === 0 ||
-              venue.capacity === 1 ? ( // Consider 0 or 1 as not specified effectively
+            venue.capacity === 1 ? ( // Consider 0 or 1 as not specified effectively
               <span className='italic text-xs md:text-sm 2xl:text-base text-gray-400'>
                 Capacidad no especificada
               </span>
@@ -278,7 +284,7 @@ export default function VenueDetailsCard ( {
             <span>Comodidades</span>
           </h3>
           <div className='flex flex-wrap gap-2'>
-            {venue.amenities.map( ( amenity, index ) => (
+            {venue.amenities.map((amenity, index) => (
               <span
                 key={index}
                 className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs md:text-sm 2xl:text-base font-medium bg-teal-100 text-teal-800'
@@ -298,7 +304,7 @@ export default function VenueDetailsCard ( {
                 </svg>
                 {amenity}
               </span>
-            ) )}
+            ))}
           </div>
         </div>
       )}
@@ -335,71 +341,71 @@ export default function VenueDetailsCard ( {
       )}
 
       {/* Social Media / WhatsApp Section */}
-      {( venue.facebookUrl ||
+      {(venue.facebookUrl ||
         venue.instagramUrl ||
-        venue.whatsappNumber ) && (
-          <div className='bg-gray-50 p-4 rounded-lg mb-4 text-sm md:text-base 2xl:text-lg'>
-            <h3 className='text-lg md:text-xl 2xl:text-2xl font-semibold text-gray-700 mb-2'>
-              <span>Redes Sociales / WhatsApp</span>
-            </h3>
-            <div className='space-y-2'>
-              {venue.facebookUrl && (
-                <p className='text-xs md:text-sm 2xl:text-base text-gray-500 flex items-center gap-2'>
-                  <a
-                    href={venue.facebookUrl}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='flex items-center gap-2 text-[var(--facebook)] hover:underline'
-                    title={venue.facebookUrl}
-                  >
-                    <FaFacebook className='w-5 h-5 flex-shrink-0' />
-                    <span className='truncate'>Facebook</span>
-                  </a>
-                </p>
-              )}
-              {venue.instagramUrl && (
-                <p className='text-xs md:text-sm 2xl:text-base text-gray-500 flex items-center gap-2'>
-                  <a
-                    href={venue.instagramUrl}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='flex items-center gap-2 text-[var(--instagram)] hover:underline '
-                    title={venue.instagramUrl}
-                  >
-                    <FaInstagram className='w-5 h-5 flex-shrink-0' />
-                    <span className='truncate'>
-                      Instagram
-                    </span>
-                  </a>
-                </p>
-              )}
-              {venue.whatsappNumber && (
-                <p className='text-xs md:text-sm 2xl:text-base text-gray-500 flex items-center gap-2'>
-                  <a
-                    // Ensure only digits are used for the wa.me link for compatibility
-                    href={`https://wa.me/${venue.whatsappNumber.replace(
-                      /[^0-9]/g,
-                      '',
-                    )}`}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='flex items-center gap-2 text-[var(--whatsapp)] hover:underline'
-                    title={`WhatsApp ${venue.whatsappNumber}`}
-                  >
-                    <FaWhatsapp className='w-5 h-5 flex-shrink-0' />
-                    <span className='truncate'>
-                      WhatsApp{' '}
-                      {formatWhatsappNumber(
-                        // Display formatted number
-                        venue.whatsappNumber,
-                      )}
-                    </span>
-                  </a>
-                </p>
-              )}
-            </div>
+        venue.whatsappNumber) && (
+        <div className='bg-gray-50 p-4 rounded-lg mb-4 text-sm md:text-base 2xl:text-lg'>
+          <h3 className='text-lg md:text-xl 2xl:text-2xl font-semibold text-gray-700 mb-2'>
+            <span>Redes Sociales / WhatsApp</span>
+          </h3>
+          <div className='space-y-2'>
+            {venue.facebookUrl && (
+              <p className='text-xs md:text-sm 2xl:text-base text-gray-500 flex items-center gap-2'>
+                <a
+                  href={venue.facebookUrl}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='flex items-center gap-2 text-[var(--facebook)] hover:underline'
+                  title={venue.facebookUrl}
+                >
+                  <FaFacebook className='w-5 h-5 flex-shrink-0' />
+                  <span className='truncate'>Facebook</span>
+                </a>
+              </p>
+            )}
+            {venue.instagramUrl && (
+              <p className='text-xs md:text-sm 2xl:text-base text-gray-500 flex items-center gap-2'>
+                <a
+                  href={venue.instagramUrl}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='flex items-center gap-2 text-[var(--instagram)] hover:underline '
+                  title={venue.instagramUrl}
+                >
+                  <FaInstagram className='w-5 h-5 flex-shrink-0' />
+                  <span className='truncate'>
+                    Instagram
+                  </span>
+                </a>
+              </p>
+            )}
+            {venue.whatsappNumber && (
+              <p className='text-xs md:text-sm 2xl:text-base text-gray-500 flex items-center gap-2'>
+                <a
+                  // Ensure only digits are used for the wa.me link for compatibility
+                  href={`https://wa.me/${venue.whatsappNumber.replace(
+                    /[^0-9]/g,
+                    '',
+                  )}`}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='flex items-center gap-2 text-[var(--whatsapp)] hover:underline'
+                  title={`WhatsApp ${venue.whatsappNumber}`}
+                >
+                  <FaWhatsapp className='w-5 h-5 flex-shrink-0' />
+                  <span className='truncate'>
+                    WhatsApp{' '}
+                    {formatWhatsappNumber(
+                      // Display formatted number
+                      venue.whatsappNumber,
+                    )}
+                  </span>
+                </a>
+              </p>
+            )}
           </div>
-        )}
+        </div>
+      )}
 
       {/* Photos Gallery Section */}
       {venue.photos && venue.photos.length > 0 && (
@@ -411,8 +417,8 @@ export default function VenueDetailsCard ( {
             {/* First row (up to 3 photos) */}
             <div className='grid grid-cols-3 gap-2'>
               {venue.photos
-                .slice( 0, 3 )
-                .map( ( photo, index ) => (
+                .slice(0, 3)
+                .map((photo, index) => (
                   <img
                     key={`photo-${index}`}
                     src={photo}
@@ -423,14 +429,14 @@ export default function VenueDetailsCard ( {
                     className='w-full h-36 object-cover rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200'
                     loading='lazy'
                   />
-                ) )}
+                ))}
             </div>
             {/* Second row (photos 4 and 5) */}
             {venue.photos.length > 3 && (
               <div className='grid grid-cols-2 gap-2 mt-2'>
                 {venue.photos
-                  .slice( 3, 5 )
-                  .map( ( photo, index ) => (
+                  .slice(3, 5)
+                  .map((photo, index) => (
                     <img
                       key={`photo-${index + 3}`}
                       src={photo}
@@ -441,7 +447,7 @@ export default function VenueDetailsCard ( {
                       className='w-full h-36 object-cover rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200'
                       loading='lazy'
                     />
-                  ) )}
+                  ))}
               </div>
             )}
           </div>
@@ -449,7 +455,7 @@ export default function VenueDetailsCard ( {
       )}
 
       {/* Link to Public Venue Page */}
-      {getSafe( () => venue.id ) && ( // Only show link if venue ID exists
+      {getSafe(() => venue.id) && ( // Only show link if venue ID exists
         <div className='mt-8 text-center'>
           {' '}
           {/* Consistent margin */}

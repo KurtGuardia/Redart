@@ -246,3 +246,164 @@ export const COUNTRIES_AND_CITIES = {
     'Ciudad Bolívar',
   ],
 }
+
+// --- Form Field Definitions ---
+
+export const venueFormFields = {
+  name: {
+    type: 'text',
+    label: 'Nombre del sitio',
+    required: true,
+  },
+  logo: {
+    type: 'image',
+    label: 'Logo',
+    accept: 'image/*',
+  },
+  description: {
+    type: 'textarea',
+    label: 'Descripción',
+    rows: 4,
+    required: true,
+    maxlength: 999,
+  },
+  address: {
+    type: 'text',
+    label: 'Dirección',
+    required: true,
+  },
+  city: {
+    type: 'text',
+    label: 'Ciudad',
+    required: true,
+    show: false, // Consider if these should be visible or handled differently
+  },
+  country: {
+    type: 'text',
+    label: 'País',
+    required: true,
+    show: false, // Consider if these should be visible or handled differently
+  },
+  capacity: {
+    type: 'number',
+    label: 'Capacidad (personas)',
+    min: 1,
+  },
+  email: {
+    type: 'email',
+    label: 'Email de contacto',
+    required: true,
+    show: false, // Consider if these should be visible or handled differently
+  },
+  facebookUrl: {
+    type: 'text',
+    label: 'Página de Facebook',
+    placeholder: 'https://facebook.com/tu_pagina',
+    description: 'Opcional',
+  },
+  instagramUrl: {
+    type: 'text',
+    label: 'Perfil de Instagram',
+    placeholder: 'https://instagram.com/tu_usuario',
+    description: 'Opcional',
+  },
+  whatsappNumber: {
+    type: 'tel',
+    label: 'Número de WhatsApp',
+    placeholder: '+1234567890 (Incluir código de país)',
+    description:
+      'Opcional (Incluir código de país ej. +591)',
+  },
+  location: {
+    type: 'map',
+    label: 'Ubicación',
+    description: 'Selecciona el punto exacto de entrada',
+  },
+  amenities: {
+    type: 'checkboxGroup',
+    label: 'Comodidades',
+    options: AMENITIES_OPTIONS, // Assumes AMENITIES_OPTIONS is defined above
+  },
+  photos: {
+    type: 'photoGallery',
+    label: 'Fotos',
+    description: 'Máximo 5 fotos',
+    maxPhotos: 5,
+  },
+}
+
+export const eventFormFields = {
+  title: {
+    type: 'text',
+    label: 'Título del evento',
+    required: true,
+    maxLength: 100,
+  },
+  category: {
+    type: 'select',
+    label: 'Categoría',
+    required: true,
+    options: CATEGORIES, // Assumes CATEGORIES is defined above
+  },
+  date: {
+    type: 'datetime-local',
+    label: 'Fecha y hora',
+    required: true,
+  },
+  price: {
+    type: 'number',
+    label: 'Precio',
+    min: 0,
+    max: 9999,
+    step: '0.01',
+    description: 'Deja en 0 si es gratis',
+  },
+  currency: {
+    type: 'select',
+    label: 'Moneda',
+    required: true,
+    options: [
+      { value: 'BOB', label: 'Bs (BOB)' },
+      { value: 'USD', label: '$ (USD)' },
+      { value: 'EUR', label: '€ (EUR)' },
+      { value: 'GBP', label: '£ (GBP)' },
+      { value: 'BRL', label: 'R$ (BRL)' },
+      { value: 'ARS', label: '$ (ARS)' },
+      { value: 'CLP', label: '$ (CLP)' },
+      { value: 'COP', label: '$ (COP)' },
+      { value: 'MXN', label: '$ (MXN)' },
+      { value: 'PEN', label: 'S/ (PEN)' },
+      { value: 'UYU', label: '$U (UYU)' },
+      { value: 'PYG', label: '₲ (PYG)' },
+    ],
+  },
+  ticketUrl: {
+    type: 'text',
+    label: 'URL de venta de entradas',
+    description:
+      'Opcional: URL donde se pueden comprar entradas',
+  },
+  description: {
+    type: 'textarea',
+    label: 'Descripción',
+    rows: 3,
+    required: true,
+    maxlength: 999,
+  },
+  image: {
+    type: 'image',
+    label: 'Imagen',
+    description: 'Imagen principal del evento',
+    accept: 'image/*',
+  },
+  status: {
+    type: 'select',
+    label: 'Estado del evento',
+    required: true,
+    options: [
+      { value: 'active', label: 'Activo' },
+      { value: 'cancelled', label: 'Cancelado' },
+      { value: 'suspended', label: 'Suspendido' },
+    ],
+  },
+}

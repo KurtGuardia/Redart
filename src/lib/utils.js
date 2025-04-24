@@ -11,15 +11,15 @@ import imageCompression from 'browser-image-compression' // For image compressio
  */
 export async function signOutAndRedirect(auth, router) {
   try {
-    await auth.signOut();
-    router.push('/login');
+    await auth.signOut()
+    router.push('/login')
   } catch (error) {
-    console.error('Error signing out:', error);
+    console.error('Error signing out:', error)
   }
 }
 
-export function cn ( ...inputs ) {
-  return twMerge( clsx( inputs ) )
+export function cn(...inputs) {
+  return twMerge(clsx(inputs))
 }
 
 /**
@@ -27,9 +27,9 @@ export function cn ( ...inputs ) {
  * @param {string} currencyCode - The currency code.
  * @returns {string} The currency symbol or the code itself if not found.
  */
-export const getCurrencySymbol = ( currencyCode ) => {
+export const getCurrencySymbol = (currencyCode) => {
   switch (
-  currencyCode?.toUpperCase() // Added toUpperCase for safety
+    currencyCode?.toUpperCase() // Added toUpperCase for safety
   ) {
     case 'USD':
       return '$'
@@ -64,7 +64,7 @@ export const getCurrencySymbol = ( currencyCode ) => {
  * Formats a Firestore Timestamp, Date object, or ISO date string into a localized string.
  * Handles potential null/undefined/invalid inputs.
  */
-export function formatTimestamp ( timestampInput, options ) {
+export function formatTimestamp(timestampInput, options) {
   // Default options if none provided
   const defaultOptions = {
     dateStyle: 'medium',
@@ -73,7 +73,7 @@ export function formatTimestamp ( timestampInput, options ) {
   const formatOptions = { ...defaultOptions, ...options }
 
   // 1. Handle null or undefined input gracefully
-  if ( !timestampInput ) {
+  if (!timestampInput) {
     // console.warn('formatTimestamp received null or undefined input.');
     return 'Fecha no disponible' // Or return empty string, based on preference
   }
@@ -82,16 +82,16 @@ export function formatTimestamp ( timestampInput, options ) {
 
   try {
     // 2. Convert input to Date object
-    if ( timestampInput.toDate ) {
+    if (timestampInput.toDate) {
       // Check if it's a Firestore Timestamp
       dateObj = timestampInput.toDate()
     } else {
       // Assume it's a Date object or ISO string
-      dateObj = new Date( timestampInput )
+      dateObj = new Date(timestampInput)
     }
 
     // 3. Validate the created Date object
-    if ( isNaN( dateObj.getTime() ) ) {
+    if (isNaN(dateObj.getTime())) {
       // getTime() returns NaN for invalid dates
       console.warn(
         'formatTimestamp resulted in an invalid date for input:',
@@ -104,8 +104,8 @@ export function formatTimestamp ( timestampInput, options ) {
     return new Intl.DateTimeFormat(
       'es-ES',
       formatOptions,
-    ).format( dateObj )
-  } catch ( error ) {
+    ).format(dateObj)
+  } catch (error) {
     console.error(
       'Error formatting timestamp:',
       error,
@@ -121,22 +121,22 @@ export function formatTimestamp ( timestampInput, options ) {
  * @param {string} string - The string to validate.
  * @returns {boolean} True if the string looks like a URL, false otherwise.
  */
-export const isValidUrl = ( string ) => {
-  if ( !string ) return false
+export const isValidUrl = (string) => {
+  if (!string) return false
   try {
     // First, try parsing the URL directly
-    new URL( string )
+    new URL(string)
     return true // If it parses successfully, it's valid
-  } catch ( e ) {
+  } catch (e) {
     // If direct parsing fails, try prepending 'http://'
     try {
       // Check if the string already starts with common schemes or relative paths
-      if ( /^(https?:\/\/|ftp:\/\/|\/\/|\/)/i.test( string ) ) {
+      if (/^(https?:\/\/|ftp:\/\/|\/\/|\/)/i.test(string)) {
         return false // If it has a scheme or looks like a path, and failed first time, it's invalid
       }
-      new URL( `http://${string}` )
+      new URL(`http://${string}`)
       return true // If it parses successfully with 'http://', it's valid
-    } catch ( _ ) {
+    } catch (_) {
       // If it still fails after prepending 'http://', it's invalid
       return false
     }
@@ -148,9 +148,9 @@ export const isValidUrl = ( string ) => {
  * @param {string} categoryValue - The category value (e.g., 'music').
  * @returns {string} The Spanish label or the original value if not found.
  */
-export const getCategoryLabel = ( categoryValue ) => {
+export const getCategoryLabel = (categoryValue) => {
   const category = CATEGORIES.find(
-    ( c ) => c.value === categoryValue,
+    (c) => c.value === categoryValue,
   )
   return category?.label || categoryValue || 'Sin categoría'
 }
@@ -166,33 +166,51 @@ export const getCategoryLabel = ( categoryValue ) => {
  * @param {number} [options.duration] - Event duration in hours
  * @returns {string} Google Calendar URL
  */
-export function addToGoogleCalendar ( { title, date, description = '', address = 'Cochabamba', duration } ) {
+export function addToGoogleCalendar({
+  title,
+  date,
+  description = '',
+  address = 'Cochabamba',
+  duration,
+}) {
   // Parse and format start/end dates to Google Calendar format (UTC, no dashes/colons)
-  const pad = ( n ) => String( n ).padStart( 2, '0' );
-  const toGCalDate = ( d ) => {
-    const yyyy = d.getUTCFullYear();
-    const mm = pad( d.getUTCMonth() + 1 );
-    const dd = pad( d.getUTCDate() );
-    const hh = pad( d.getUTCHours() );
-    const min = pad( d.getUTCMinutes() );
-    const ss = pad( d.getUTCSeconds() );
-    return `${yyyy}${mm}${dd}T${hh}${min}${ss}Z`;
-  };
-  const start = new Date( date );
-  const startStr = toGCalDate( start );
-  let url;
+  const pad = (n) => String(n).padStart(2, '0')
+  const toGCalDate = (d) => {
+    const yyyy = d.getUTCFullYear()
+    const mm = pad(d.getUTCMonth() + 1)
+    const dd = pad(d.getUTCDate())
+    const hh = pad(d.getUTCHours())
+    const min = pad(d.getUTCMinutes())
+    const ss = pad(d.getUTCSeconds())
+    return `${yyyy}${mm}${dd}T${hh}${min}${ss}Z`
+  }
+  const start = new Date(date)
+  const startStr = toGCalDate(start)
+  let url
 
-  if ( typeof duration === 'number' && !isNaN( duration ) ) {
-    const end = new Date( start.getTime() + duration * 60 * 60 * 1000 );
-    const endStr = toGCalDate( end );
-    url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent( title )}&dates=${startStr}/${endStr}&details=${encodeURIComponent( description )}&location=${encodeURIComponent( address )}`;
+  if (typeof duration === 'number' && !isNaN(duration)) {
+    const end = new Date(
+      start.getTime() + duration * 60 * 60 * 1000,
+    )
+    const endStr = toGCalDate(end)
+    url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
+      title,
+    )}&dates=${startStr}/${endStr}&details=${encodeURIComponent(
+      description,
+    )}&location=${encodeURIComponent(address)}`
   } else {
     // Default to 2.5 hours if duration is not provided
-    const end = new Date(start.getTime() + 2.5 * 60 * 60 * 1000);
-    const endStr = toGCalDate(end);
-    url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${startStr}/${endStr}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(address)}`;
+    const end = new Date(
+      start.getTime() + 2.5 * 60 * 60 * 1000,
+    )
+    const endStr = toGCalDate(end)
+    url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
+      title,
+    )}&dates=${startStr}/${endStr}&details=${encodeURIComponent(
+      description,
+    )}&location=${encodeURIComponent(address)}`
   }
-  return url;
+  return url
 }
 
 // --- Validation Functions ---
@@ -203,9 +221,9 @@ export function addToGoogleCalendar ( { title, date, description = '', address =
  * @param {string} url The URL string to validate.
  * @returns {boolean} True if it seems like a Facebook URL, false otherwise.
  */
-export const validateFacebookUrl = ( url ) => {
-  if ( !url || typeof url !== 'string' ) return true // Allow empty or non-string values (treat as optional)
-  return url.toLowerCase().includes( 'facebook.com' )
+export const validateFacebookUrl = (url) => {
+  if (!url || typeof url !== 'string') return true // Allow empty or non-string values (treat as optional)
+  return url.toLowerCase().includes('facebook.com')
 }
 
 /**
@@ -214,9 +232,9 @@ export const validateFacebookUrl = ( url ) => {
  * @param {string} url The URL string to validate.
  * @returns {boolean} True if it seems like an Instagram URL, false otherwise.
  */
-export const validateInstagramUrl = ( url ) => {
-  if ( !url || typeof url !== 'string' ) return true // Allow empty
-  return url.toLowerCase().includes( 'instagram.com' )
+export const validateInstagramUrl = (url) => {
+  if (!url || typeof url !== 'string') return true // Allow empty
+  return url.toLowerCase().includes('instagram.com')
 }
 
 /**
@@ -225,10 +243,10 @@ export const validateInstagramUrl = ( url ) => {
  * @param {string} number The number string to validate.
  * @returns {boolean} True if it seems like a valid format, false otherwise.
  */
-export const validateWhatsappNumber = ( number ) => {
-  if ( !number || typeof number !== 'string' ) return true // Allow empty
+export const validateWhatsappNumber = (number) => {
+  if (!number || typeof number !== 'string') return true // Allow empty
   // Simple check for starting with '+'
-  return number.startsWith( '+' )
+  return number.startsWith('+')
 }
 
 /**
@@ -238,16 +256,16 @@ export const validateWhatsappNumber = ( number ) => {
  * @param {string} number The raw WhatsApp number string (e.g., +34123456789).
  * @returns {string} The formatted number string or the original if formatting fails.
  */
-export const formatWhatsappNumber = ( number ) => {
+export const formatWhatsappNumber = (number) => {
   if (
     !number ||
     typeof number !== 'string' ||
-    !number.startsWith( '+' )
+    !number.startsWith('+')
   ) {
     return number // Return original if not a valid starting format
   }
 
-  const digits = number.substring( 1 )
+  const digits = number.substring(1)
   let countryCode = ''
   let restOfNumber = ''
 
@@ -461,37 +479,37 @@ export const formatWhatsappNumber = ( number ) => {
 
   // Prioritize known single-digit codes (+1, +7) usually with 10 digits following
   if (
-    ( digits.startsWith( '1' ) || digits.startsWith( '7' ) ) &&
+    (digits.startsWith('1') || digits.startsWith('7')) &&
     digits.length === 11
   ) {
-    countryCode = digits.substring( 0, 1 )
-    restOfNumber = digits.substring( 1 )
+    countryCode = digits.substring(0, 1)
+    restOfNumber = digits.substring(1)
     // Check for known 3-digit codes (needs sufficient remaining digits)
   } else if (
     digits.length >= 10 &&
-    common3DigitCodes.includes( digits.substring( 0, 3 ) )
+    common3DigitCodes.includes(digits.substring(0, 3))
   ) {
-    countryCode = digits.substring( 0, 3 )
-    restOfNumber = digits.substring( 3 )
+    countryCode = digits.substring(0, 3)
+    restOfNumber = digits.substring(3)
     // Check for known 2-digit codes (needs sufficient remaining digits)
   } else if (
     digits.length >= 9 &&
-    common2DigitCodes.includes( digits.substring( 0, 2 ) )
+    common2DigitCodes.includes(digits.substring(0, 2))
   ) {
-    countryCode = digits.substring( 0, 2 )
-    restOfNumber = digits.substring( 2 )
+    countryCode = digits.substring(0, 2)
+    restOfNumber = digits.substring(2)
     // Fallback for other 2-digit codes if length is typical
   } else if (
     digits.length === 10 ||
     digits.length === 11 ||
     digits.length === 12
   ) {
-    countryCode = digits.substring( 0, 2 )
-    restOfNumber = digits.substring( 2 )
+    countryCode = digits.substring(0, 2)
+    restOfNumber = digits.substring(2)
     // Fallback for other 3-digit codes if length is typical
-  } else if ( digits.length === 11 || digits.length === 12 ) {
-    countryCode = digits.substring( 0, 3 )
-    restOfNumber = digits.substring( 3 )
+  } else if (digits.length === 11 || digits.length === 12) {
+    countryCode = digits.substring(0, 3)
+    restOfNumber = digits.substring(3)
   } else {
     // Cannot reliably determine format, return original
     return number
@@ -512,20 +530,20 @@ export const formatWhatsappNumber = ( number ) => {
  * @param {Timestamp | Date | string} dateInput The date of the event.
  * @returns {boolean} True if the event date is in the past, false otherwise.
  */
-export const hasEventPassed = ( dateInput ) => {
-  if ( !dateInput ) {
+export const hasEventPassed = (dateInput) => {
+  if (!dateInput) {
     return false // Consider events without dates as not passed
   }
 
   let eventDate
   try {
-    if ( dateInput.toDate ) {
+    if (dateInput.toDate) {
       eventDate = dateInput.toDate()
     } else {
-      eventDate = new Date( dateInput )
+      eventDate = new Date(dateInput)
     }
 
-    if ( isNaN( eventDate.getTime() ) ) {
+    if (isNaN(eventDate.getTime())) {
       console.warn(
         'hasEventPassed received an invalid date input:',
         dateInput,
@@ -535,7 +553,7 @@ export const hasEventPassed = ( dateInput ) => {
 
     const now = new Date()
     return eventDate < now
-  } catch ( error ) {
+  } catch (error) {
     console.error(
       'Error determining if event has passed:',
       error,
@@ -558,22 +576,22 @@ export const hasEventPassed = ( dateInput ) => {
  * @param {string} [options.country] - Venue country.
  * @returns {string} The Google Maps URL or '#' if insufficient data.
  */
-export const generateGoogleMapsUrl = ( {
+export const generateGoogleMapsUrl = ({
   location,
   address,
   city,
   country,
-} ) => {
-  if ( location?.latitude && location?.longitude ) {
+}) => {
+  if (location?.latitude && location?.longitude) {
     // Use coordinates if available
     return `https://www.google.com/maps/search/?api=1&query=${location.latitude},${location.longitude}`
-  } else if ( address && city ) {
+  } else if (address && city) {
     // Use address if coordinates are missing
     const queryParts = [address, city, country].filter(
       Boolean,
     ) // Filter out null/empty parts
     const googleMapsQuery = encodeURIComponent(
-      queryParts.join( ', ' ),
+      queryParts.join(', '),
     )
     return `https://www.google.com/maps/search/?api=1&query=${googleMapsQuery}`
   }
@@ -589,11 +607,11 @@ export const generateGoogleMapsUrl = ( {
  * @param {number} maxSizeKB - Maximum size in KB (default: 150KB).
  * @returns {Promise<File>} - A promise that resolves to the compressed image file or original if fails/small enough.
  */
-export async function compressImage (
+export async function compressImage(
   imageFile,
   maxSizeKB = 150,
 ) {
-  if ( !( imageFile instanceof File ) ) {
+  if (!(imageFile instanceof File)) {
     console.error(
       'compressImage: Expected a File object, received:',
       imageFile,
@@ -603,7 +621,7 @@ export async function compressImage (
 
   try {
     // Skip compression for small images
-    if ( imageFile.size <= maxSizeKB * 1024 ) {
+    if (imageFile.size <= maxSizeKB * 1024) {
       return imageFile
     }
 
@@ -620,11 +638,11 @@ export async function compressImage (
     )
 
     // Create a new file with the same name but compressed content
-    return new File( [compressedFile], imageFile.name, {
+    return new File([compressedFile], imageFile.name, {
       type: imageFile.type,
       lastModified: Date.now(),
-    } )
-  } catch ( error ) {
+    })
+  } catch (error) {
     console.error(
       `Error compressing image ${imageFile.name}:`,
       error,
@@ -639,11 +657,11 @@ export async function compressImage (
  * @param {number} maxSizeKB - Maximum size in KB (default: 150KB).
  * @returns {Promise<File[]>} - A promise that resolves to an array of compressed/original image files.
  */
-export async function compressMultipleImages (
+export async function compressMultipleImages(
   imageFiles,
   maxSizeKB = 150,
 ) {
-  if ( !Array.isArray( imageFiles ) ) {
+  if (!Array.isArray(imageFiles)) {
     console.error(
       'compressMultipleImages: Expected an array of File objects.',
     )
@@ -651,20 +669,63 @@ export async function compressMultipleImages (
   }
 
   const validImageFiles = imageFiles.filter(
-    ( file ) => file instanceof File,
+    (file) => file instanceof File,
   )
-  if ( validImageFiles.length === 0 ) return [] // Return empty if no valid files
+  if (validImageFiles.length === 0) return [] // Return empty if no valid files
 
   try {
-    const compressPromises = validImageFiles.map( ( file ) =>
-      compressImage( file, maxSizeKB ),
+    const compressPromises = validImageFiles.map((file) =>
+      compressImage(file, maxSizeKB),
     )
-    return await Promise.all( compressPromises )
-  } catch ( error ) {
+    return await Promise.all(compressPromises)
+  } catch (error) {
     console.error(
       'Error compressing multiple images:',
       error,
     )
     return validImageFiles // Return original valid files on error
+  }
+}
+
+/**
+ * Extracts the storage path from a Firebase Storage download URL.
+ * @param {string} urlString The Firebase Storage URL.
+ * @returns {string|null} The decoded storage path (e.g., 'venues/abc/logo/image.jpg') or null if parsing fails.
+ */
+export const parseFirebaseStorageUrl = (urlString) => {
+  if (!urlString || typeof urlString !== 'string') {
+    console.warn(
+      'Invalid input provided to parseFirebaseStorageUrl:',
+      urlString,
+    )
+    return null
+  }
+  try {
+    const url = new URL(urlString)
+    // Pathname is already decoded by URL constructor, no need for decodeURIComponent here
+    const pathName = url.pathname
+    // Path format: /v0/b/BUCKET_NAME/o/ENCODED_FILE_PATH
+    // The part after /o/ is still URL-encoded (e.g., spaces are %20)
+    const parts = pathName.split('/o/')
+    if (parts.length > 1) {
+      // Decode the actual file path part
+      const filePath = decodeURIComponent(parts[1])
+      // Optional: Remove query parameters like ?alt=media&token=... if present
+      return filePath.split('?')[0]
+    } else {
+      console.warn(
+        'Could not extract file path from Firebase Storage URL (format unexpected):',
+        urlString,
+      )
+      return null
+    }
+  } catch (error) {
+    console.error(
+      'Error parsing Firebase Storage URL:',
+      error,
+      'URL:',
+      urlString,
+    )
+    return null
   }
 }
