@@ -8,21 +8,20 @@ import Link from 'next/link'
 import EventDetailModal from './EventDetailModal'
 import EventCardSkeleton from './EventCardSkeleton'
 
-export default function FeaturedEventsList () {
+export default function FeaturedEventsList() {
   const { events, loading } = useFeaturedEvents()
-  const [selectedEvent, setSelectedEvent] = useState( null )
-  const [isModalOpen, setIsModalOpen] = useState( false )
+  const [selectedEvent, setSelectedEvent] = useState(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const openModal = ( event ) => {
-    setSelectedEvent( event )
-    setIsModalOpen( true )
+  const openModal = (event) => {
+    setSelectedEvent(event)
+    setIsModalOpen(true)
   }
 
   const closeModal = () => {
-    setSelectedEvent( null )
-    setIsModalOpen( false )
+    setSelectedEvent(null)
+    setIsModalOpen(false)
   }
-  console.log( events );
 
   return (
     <>
@@ -35,15 +34,14 @@ export default function FeaturedEventsList () {
             Eventos destacados
           </h2>
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-14 xl:mb-24 w-full min-w-[80vw] justify-items-center'>
-            {loading && Array.from( { length: 3 } ).map(
-              ( _, index ) => (
+            {loading &&
+              Array.from({ length: 3 }).map((_, index) => (
                 <EventCardSkeleton
                   key={`initial-skeleton-${index}`}
                 />
-              ),
-            )}
+              ))}
 
-            {events.map( ( event ) => (
+            {events.map((event) => (
               <EventCard
                 key={event.id}
                 title={event.name || event.title}
@@ -54,9 +52,9 @@ export default function FeaturedEventsList () {
                 venueName={event.venueName}
                 image={event.image || '/placeholder.svg'}
                 status={event.status}
-                onClick={() => openModal( event )}
+                onClick={() => openModal(event)}
               />
-            ) )}
+            ))}
           </div>
 
           <div className='text-center'>

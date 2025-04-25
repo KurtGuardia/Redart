@@ -10,8 +10,8 @@ import {
 } from '../../lib/utils'
 
 // Function to get category color classes
-const getCategoryColor = ( category ) => {
-  switch ( category ) {
+const getCategoryColor = (category) => {
+  switch (category) {
     case 'music':
       return 'bg-blue-100 text-blue-800'
     case 'art':
@@ -29,26 +29,26 @@ const getCategoryColor = ( category ) => {
   }
 }
 
-export default function VenueEventListItem ( {
+export default function VenueEventListItem({
   event,
   onEdit,
   onDelete,
   onClickItem,
   isIndexPage,
-} ) {
-  if ( !event ) return null
+}) {
+  if (!event) return null
 
-  const isPast = hasEventPassed( event.date )
+  const isPast = hasEventPassed(event.date)
   const status = event.status || 'active'
 
   const imageUrl = event.image || '/placeholder.svg'
-  const eventDateTime = formatTimestamp( event.date, {
+  const eventDateTime = formatTimestamp(event.date, {
     dateStyle: 'long',
     timeStyle: undefined,
-  } )
-  const categoryLabel = getCategoryLabel( event.category )
-  const categoryColor = getCategoryColor( event.category )
-  const currencySymbol = getCurrencySymbol( event.currency )
+  })
+  const categoryLabel = getCategoryLabel(event.category)
+  const categoryColor = getCategoryColor(event.category)
+  const currencySymbol = getCurrencySymbol(event.currency)
   const priceDisplay =
     event.price > 0
       ? `${currencySymbol} ${event.price}`
@@ -58,9 +58,9 @@ export default function VenueEventListItem ( {
   let opacityClass = ''
   let textColorClass = ''
 
-  if ( status === 'cancelled' ) {
+  if (status === 'cancelled') {
     backgroundClass = 'bg-[var(--pink-600-transparent)]'
-  } else if ( status === 'suspended' ) {
+  } else if (status === 'suspended') {
     backgroundClass =
       'bg-[var(--secondary-color-transparent)]'
     opacityClass = 'opacity-50'
@@ -71,14 +71,14 @@ export default function VenueEventListItem ( {
       : 'bg-[var(--secondary-color-transparent)]'
   }
 
-  const handleButtonClick = ( e ) => {
+  const handleButtonClick = (e) => {
     e.stopPropagation()
   }
 
   return (
     <li
       className={`flex items-start gap-4 p-2 2xl:p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer ${backgroundClass} ${opacityClass} ${textColorClass}`}
-      onClick={() => onClickItem && onClickItem( event )}
+      onClick={() => onClickItem && onClickItem(event)}
     >
       {/* Left: Image */}
       <div className='flex-shrink-0 w-20 h-20 2xl:w-32 2xl:h-32 relative rounded-md overflow-hidden'>
@@ -89,7 +89,7 @@ export default function VenueEventListItem ( {
           className='object-cover'
           sizes='(max-width: 640px) 10vw, 80px'
           unoptimized={
-            imageUrl.startsWith( 'http' ) ? undefined : true
+            imageUrl.startsWith('http') ? undefined : true
           }
         />
       </div>
@@ -99,7 +99,7 @@ export default function VenueEventListItem ( {
         {/* Middle: Info */}
         <div className='flex-1 min-w-0'>
           <div className='flex items-center gap-2 mb-1 flex-wrap'>
-            <h3 className='text-lg 2xl:text-2xl text-[var(--blue-900)] font-semibold truncate'>
+            <h3 className='text-lg 2xl:text-2xl font-semibold truncate'>
               {event.title || 'Evento sin título'}
             </h3>
             <span
@@ -161,9 +161,9 @@ export default function VenueEventListItem ( {
         {isIndexPage && (
           <div className='flex flex-col sm:flex-row gap-2 flex-shrink-0'>
             <button
-              onClick={( e ) => {
-                handleButtonClick( e )
-                onEdit( event )
+              onClick={(e) => {
+                handleButtonClick(e)
+                onEdit(event)
               }}
               className='text-teal-600 hover:text-teal-800 p-1'
               aria-label='Editar evento'
@@ -183,8 +183,8 @@ export default function VenueEventListItem ( {
               </svg>
             </button>
             <button
-              onClick={( e ) => {
-                handleButtonClick( e )
+              onClick={(e) => {
+                handleButtonClick(e)
                 onDelete()
               }}
               className='text-red-600 hover:text-red-800 p-1'

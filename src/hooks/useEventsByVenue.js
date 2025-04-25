@@ -50,16 +50,9 @@ export function useEventsByVenue(venueId) {
           !Array.isArray(eventIds) ||
           eventIds.length === 0
         ) {
-          console.log(
-            `Venue ${venueId} has no associated event IDs.`,
-          )
           setLoading(false)
           return // No IDs to fetch, not an error
         }
-
-        console.log(
-          `Venue ${venueId} has ${eventIds.length} event IDs. Fetching events...`,
-        )
 
         // 4. Fetch events in batches due to 'in' query limit
         const allFetchedEvents = []

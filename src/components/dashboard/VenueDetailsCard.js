@@ -8,7 +8,10 @@ import {
   FaRegEye,
   FaWhatsapp,
 } from 'react-icons/fa'
-import { formatWhatsappNumber } from '../../lib/utils' // Adjust path as needed
+import {
+  formatTimestamp,
+  formatWhatsappNumber,
+} from '../../lib/utils' // Adjust path as needed
 import { Skeleton } from '../ui/Skeleton'
 
 // Dynamically import MapComponent only on the client-side
@@ -468,6 +471,13 @@ export default function VenueDetailsCard({
           </Link>
         </div>
       )}
+
+      <p className='text-[var(--blue-500)] text-xs mt-6'>
+        Parte de Radart desde:{' '}
+        {formatTimestamp(venue.createdAt, {
+          timeStyle: undefined,
+        })}
+      </p>
     </div>
   )
 }
