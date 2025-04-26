@@ -13,31 +13,27 @@ import {
   formatWhatsappNumber,
 } from '../../lib/utils' // Adjust path as needed
 import { Skeleton } from '../ui/Skeleton'
+import Image from 'next/image'
 
-// Dynamically import MapComponent only on the client-side
+//
 const MapComponent = dynamic(
-  () => import('../map/MapComponent'), // Adjust path as needed
+  () => import('../map/MapComponent'),
   { ssr: false },
 )
 
-// Helper to safely access nested properties
 const getSafe = (fn, defaultValue = null) => {
   try {
-    // Make sure the function call result is checked for null/undefined before returning defaultValue
     const result = fn()
     return result ?? defaultValue
   } catch (e) {
-    // Optional: Log the error for debugging if needed
-    // console.error("Error accessing property:", e);
     return defaultValue
   }
 }
 
 export default function VenueDetailsCard({
   venue,
-  onEdit, // Function to trigger the edit modal in the parent
+  onEdit,
 }) {
-  // Basic check if venue data is provided
   if (!venue) {
     return (
       <div className='bg-gray-50 rounded-lg shadow-lg p-6'>
@@ -61,13 +57,11 @@ export default function VenueDetailsCard({
     )
   }
 
-  // Safely access latitude and longitude, providing 0 as a default
   const latitude = getSafe(() => venue.location.latitude, 0)
   const longitude = getSafe(
     () => venue.location.longitude,
     0,
   )
-  // Consider a location valid if BOTH lat and lng are not 0 (or near 0 if that's possible for valid data)
   const hasValidLocation = latitude !== 0 || longitude !== 0
 
   return (
@@ -118,27 +112,47 @@ export default function VenueDetailsCard({
       </h2>
 
       {/* Logo and Venue Name */}
-      {venue.logo && (
-        <div className='flex items-center mb-4'>
-          <div className='flex items-center'>
-            <img
-              src={venue.logo}
-              alt={`Logo de ${venue.name || 'el local'}`}
-              className='w-20 h-20 object-cover rounded-full border-2 border-teal-500 shadow-md mr-4'
-              loading='lazy'
-            />
-            <h3 className='text-xl md:text-2xl 2xl:text-3xl font-bold text-gray-800'>
-              {venue.name || 'Venue Name'}
-            </h3>
-          </div>
-        </div>
-      )}
-      {!venue.logo &&
-        venue.name && ( // Show name even if no logo
-          <h3 className='text-xl md:text-2xl 2xl:text-3xl font-bold text-gray-800 mb-4'>
-            {venue.name}
+      <div className='flex items-center mb-4'>
+        <div className='flex items-center'>
+          <Image
+            src={venue.logo || './placeholder.svg'}
+            alt={`Logo de ${venue.name || 'el local'}`}
+            width={80}
+            height={80}
+            className='object-cover rounded-full border-2 border-teal-500 shadow-md mr-4'
+          />
+          <h3 className='text-xl md:text-2xl 2xl:text-3xl font-bold text-gray-800'>
+            {venue.name || 'Establecimiento artistico'}
           </h3>
-        )}
+          {/* Ratings Display */}
+          {Array.isArray(venue.ratings) &&
+            venue.ratings.length > 0 && (
+              <div className='flex items-center ml-4'>
+                <span
+                  className='text-yellow-500 text-lg'
+                  title='Puntuación promedio'
+                >
+                  ⭐
+                </span>
+                <span className='ml-1 text-yellow-600 font-semibold text-base -mb-[5px]'>
+                  {(
+                    venue.ratings.reduce(
+                      (sum, r) =>
+                        sum +
+                        (typeof r.score === 'number'
+                          ? r.score
+                          : 0),
+                      0,
+                    ) / venue.ratings.length
+                  ).toFixed(1)}
+                </span>
+                <span className='ml-1 text-gray-500 text-xs -mb-[5px]'>
+                  ({venue.ratings.length})
+                </span>
+              </div>
+            )}
+        </div>
+      </div>
 
       {/* Map Display */}
       {hasValidLocation && (

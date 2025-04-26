@@ -16,23 +16,15 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!loading && !userId && !error) {
-      console.log(
-        'Initial load complete, no user ID found. Redirecting to login.',
-      )
       router.push('/login')
     }
   }, [loading, userId, error, router])
 
   if (loading) {
-    console.log('Dashboard Page: useUserData is loading...')
     return <DashboardSkeleton />
   }
 
   if (error) {
-    console.error(
-      'Dashboard Page: Error from useUserData:',
-      error,
-    )
     return (
       <div className='text-red-500 p-4 text-center'>
         Error: {error}
@@ -48,15 +40,12 @@ export default function Dashboard() {
 
   if (!userData) {
     console.log(
-      'Dashboard Page: Loading complete, no error, but no userData. Showing skeleton/error.',
+      'Página de Dashboard: Carga completa, sin errores, pero sin datos de usuario. Mostrando esqueleto/error.',
     )
     return <DashboardSkeleton />
   }
 
   const renderDashboard = () => {
-    console.log(
-      `Rendering dashboard for role: ${userData.role}, User ID: ${userId}`,
-    )
     switch (userData.role) {
       case 'venue':
         return <VenueDashboard venueId={userId} />

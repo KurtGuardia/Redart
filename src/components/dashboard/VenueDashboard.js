@@ -127,7 +127,6 @@ export default function VenueDashboard({ venueId }) {
       deleteEvent(eventId, image)
     }
   }
-  // --- End of event modal/delete logic ---
 
   // Loading state now includes initial venue loading from useVenueData
   const isLoading =
@@ -136,8 +135,6 @@ export default function VenueDashboard({ venueId }) {
   const displayError =
     venueError || eventError || venueUpdateError
 
-  // Use the loading/error state from useVenueData for initial display
-  if (isLoading && !venue) return <DashboardSkeleton />
   if (displayError && !isLoading && !venue) {
     // Handle case where initial load failed but maybe subsequent actions have errors
     return <div>Error: {displayError}</div>
