@@ -4,32 +4,16 @@ import Image from 'next/image'
 import { useVenueData } from '../../hooks/useVenueData'
 import { generateGoogleMapsUrl } from '../../lib/utils'
 import { Skeleton } from '../ui/Skeleton'
+import LocationPinIcon from '../LocationPinIcon'
 
+export default function VenueHeroSection({ venueId }) {
+  const { venue, loading, error } = useVenueData(venueId)
 
-const LocationPinIcon = () => (
-  <svg
-    xmlns='http://www.w3.org/2000/svg'
-    className='h-5 w-5 inline-block mr-1 text-[var(--teal-700)]'
-    viewBox='0 0 20 20'
-    fill='currentColor'
-  >
-    <path
-      fillRule='evenodd'
-      d='M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z'
-      clipRule='evenodd'
-    />
-  </svg>
-)
-
-export default function VenueHeroSection ( { venueId } ) {
-  const { venue, loading, error } = useVenueData( venueId )
-
-  if ( error ) {
+  if (error) {
     throw error
   }
 
-  if ( loading ) {
-
+  if (loading) {
     return (
       <div className='relative min-w-[80%] animate-pulse'>
         <div className='relative w-full h-72 md:h-96 flex items-end justify-center text-center overflow-hidden mb-12 shadow-lg bg-white'>
@@ -46,7 +30,7 @@ export default function VenueHeroSection ( { venueId } ) {
     )
   }
 
-  if ( !venue ) {
+  if (!venue) {
     return (
       <div className='relative w-full h-64 md:h-96 flex items-center justify-center text-center overflow-hidden mb-12 shadow-lg bg-gray-800 text-gray-400'>
         No se encontraron datos del lugar.
@@ -61,13 +45,12 @@ export default function VenueHeroSection ( { venueId } ) {
 
   const { address, city, country, location } = venue
 
-  const googleMapsUrl = generateGoogleMapsUrl( {
+  const googleMapsUrl = generateGoogleMapsUrl({
     location,
     address,
     city,
     country,
-  } )
-
+  })
 
   return (
     <>
@@ -89,9 +72,7 @@ export default function VenueHeroSection ( { venueId } ) {
           <div className='absolute inset-0 bg-gradient-to-br from-[var(--teal-700)] to-[var(--blue-800)] z-0'></div>
         )}
         <div className='relative z-20 bg-white/10 backdrop-blur-md rounded-lg p-4 md:p-6 xl:px-14 2xl:px-20 shadow-lg'>
-          <h1
-            className='text-3xl md:text-5xl 2xl:text-7xl font-bold text-white mb-2'
-          >
+          <h1 className='text-3xl md:text-5xl 2xl:text-7xl font-bold text-white mb-2'>
             {venue.name}
           </h1>
           <div>
@@ -112,9 +93,7 @@ export default function VenueHeroSection ( { venueId } ) {
       </div>
 
       {venue.description && (
-        <p
-          className='mb-12 md:mb-16 border-b border-gray-200/80 rounded-xl bg-[var(--blue-800-transparent)] p-8 2xl:py-12 2xl:px-20 xl:max-w-[80%] mx-auto whitespace-pre-wrap leading-relaxed 2xl:leading-normal text-2xl 2xl:text-3xl text-center text-white'
-        >
+        <p className='mb-12 md:mb-16 border-b border-gray-200/80 rounded-xl bg-[var(--blue-800-transparent)] p-8 2xl:py-12 2xl:px-20 xl:max-w-[80%] mx-auto whitespace-pre-wrap leading-relaxed 2xl:leading-normal text-2xl 2xl:text-3xl text-center text-white'>
           {venue.description}
         </p>
       )}
