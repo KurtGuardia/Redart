@@ -116,9 +116,8 @@ export default function Map({
 }) {
   const router = useRouter()
   const [searchResult, setSearchResult] = useState(null)
-  const [initialMapCenter, setInitialMapCenter] = useState(
-    center || DEFAULT_CENTER,
-  )
+  const [initialMapCenter, setInitialMapCenter] =
+    useState(center)
   const [loadingLocation, setLoadingLocation] =
     useState(true)
   const [userLocation, setUserLocation] = useState(null)
@@ -231,7 +230,6 @@ export default function Map({
           setLocationError(
             'No se pudo determinar la ubicación aproximada por IP.',
           )
-          console.error('IPinfo fetch error:', error)
         })
         .finally(() => {
           setLoadingLocation(false)
@@ -289,7 +287,7 @@ export default function Map({
     }
   }, [showLocationModal])
 
-  // Precise location (optional)
+  // Precise location
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -339,7 +337,7 @@ export default function Map({
     }
   }, [])
 
-  // Restore simple initial zoom
+  // Simple initial zoom
   const initialMapZoom = zoom || DEFAULT_ZOOM
 
   // Improved function to safely extract position from venue
@@ -532,7 +530,7 @@ export default function Map({
         className={`w-full h-[60vh] mx-auto map-container relative`}
       >
         {loadingLocation && (
-          <div className='absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/80'>
+          <div className='absolute inset-0 z-20 flex flex-col items-center justify-center'>
             <FaSpinner className='animate-spin text-3xl text-teal-600 mb-2' />
             <span className='text-teal-800 font-medium'>
               Detectando ubicación...
@@ -577,15 +575,16 @@ export default function Map({
                   venue.country === userLocation.country ||
                   venue.country ===
                     userLocation.country_code
-                if (!match) {
-                  console.log('Venue filtered out:', {
-                    venueCountry: venue.country,
-                    userCountry: userLocation.country,
-                    userCountryCode:
-                      userLocation.country_code,
-                    venue,
-                  })
-                }
+                // Only for debugging:
+                // if (!match) {
+                //   console.log('Venue filtered out:', {
+                //     venueCountry: venue.country,
+                //     userCountry: userLocation.country,
+                //     userCountryCode:
+                //       userLocation.country_code,
+                //     venue,
+                //   })
+                // }
                 return match
               })
               .map((venue) => {

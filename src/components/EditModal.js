@@ -450,7 +450,7 @@ const EditModal = ({
                           <MapComponent
                             mapId={mapId}
                             small={true}
-                            isDashboard={true}
+                            hideSearch={true}
                             isEditable={true}
                             center={
                               hasLocation

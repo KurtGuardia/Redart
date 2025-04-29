@@ -2,37 +2,35 @@
 
 import MapComponent from '../map/MapComponent'
 import { useVenueLocations } from '../../hooks/useVenueLocations'
-import Link from 'next/link'
 import { Skeleton } from '../ui/Skeleton'
 import { usePathname } from 'next/navigation'
-import Image from 'next/image'
 
-export default function MapView () {
+export default function MapView({ ...props }) {
   const { locations, loading, error } = useVenueLocations()
   const pathname = usePathname()
   const isHomePage = pathname === '/'
 
-  if ( error ) {
+  if (error) {
     throw error
   }
 
-  if ( loading || !locations ) {
+  if (loading || !locations) {
     return (
-      <div className="flex flex-col gap-4 w-full max-w-4xl mx-auto bg-gray-100/50 rounded-xl shadow-md p-6 animate-pulse">
-        <div className="flex gap-2 mb-4">
-          <Skeleton className="h-10 w-full rounded-md bg-gray-300" />
-          <Skeleton className="h-10 w-24 rounded-md bg-gray-300" />
+      <div className='flex flex-col gap-4 w-full max-w-4xl mx-auto bg-gray-100/50 rounded-xl shadow-md p-6 animate-pulse'>
+        <div className='flex gap-2 mb-4'>
+          <Skeleton className='h-10 w-full rounded-md bg-gray-300' />
+          <Skeleton className='h-10 w-24 rounded-md bg-gray-300' />
         </div>
-        <Skeleton className="w-full h-[350px] rounded-lg bg-gray-300" />
+        <Skeleton className='w-full h-[350px] rounded-lg bg-gray-300' />
       </div>
-
     )
   }
 
   return (
     <div
-      className={`mx-auto rounded-lg overflow-hidden ${isHomePage ? 'w-[80%]' : 'w-full'
-        }`}
+      className={`mx-auto rounded-lg overflow-hidden ${
+        isHomePage ? 'w-[80%]' : 'w-full'
+      }`}
     >
       {locations.length > 0 ? (
         <>
@@ -40,51 +38,8 @@ export default function MapView () {
             center={[-17.389499, -66.156123]}
             zoom={14}
             venues={locations}
+            {...props}
           />
-
-          {!isHomePage && (
-            <>
-              <div className='bg-[var(--blue-800-transparent)] text-[var(--white)] p-2 mt-4 mb-8 rounded-lg w-fit mx-auto text-sm'>
-                Mostrando {locations.length}{' '}
-                {locations.length === 1
-                  ? 'espacio cultural'
-                  : 'espacios culturales'}
-              </div>
-
-              <ul className='list-disc pl-5 text-[var(--primary)]'>
-                {locations.map( ( location ) => (
-                  <li
-                    key={location.id}
-                    className='my-2 p-2 relative group w-fit'
-                  >
-                    <Link
-                      href={`/venues/${location.id}`}
-                      className='font-semibold text-[var(--primary)] hover:underline'
-                    >
-                      {location.name}:{' '}
-                      <span className='text-[var(--teal-700)]'>
-                        {location.address}
-                      </span>{' '}
-                      <small className=' text-gray-500'>
-                        {location.city}, {location.country}
-                      </small>
-                      {location.logo && (
-                        <div className='hidden group-hover:block absolute z-10 -top-24 left-0 w-24 h-24 p-1 bg-white rounded-md shadow-lg border border-gray-200'>
-                          <Image
-                            src={location.logo}
-                            alt={`${location.name} logo`}
-                            width={96}
-                            height={96}
-                            className='object-contain w-full h-full'
-                          />
-                        </div>
-                      )}
-                    </Link>
-                  </li>
-                ) )}
-              </ul>
-            </>
-          )}
         </>
       ) : (
         <div className='text-center h-[60vh] flex flex-col justify-center items-center bg-gray-100 p-4'>

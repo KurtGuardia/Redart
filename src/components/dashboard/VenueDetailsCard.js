@@ -162,7 +162,7 @@ export default function VenueDetailsCard({
             center={[latitude, longitude]}
             zoom={15}
             small={true}
-            isDashboard={true}
+            hideSearch={true}
             mapId={`dashboard-map-${getSafe(
               () => venue.id,
               'venue', // Fallback ID part

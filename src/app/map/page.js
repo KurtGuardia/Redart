@@ -1,8 +1,15 @@
+'use client'
 import Link from 'next/link'
 import Spot from '../../components/ui/Spot'
 import MapView from '../../components/map/MapView'
+import VenueList from '../../components/venue/VenueList'
+import { useState } from 'react'
+import { useVenueLocations } from '../../hooks/useVenueLocations'
 
-export default async function MapPage() {
+export default function MapPage() {
+  const [tab, setTab] = useState('mapa')
+  const { locations, loading, error } = useVenueLocations()
+
   return (
     <div className='map relative container mx-auto my-24'>
       <Spot colorName={'chartreuse'} />
@@ -13,7 +20,39 @@ export default async function MapPage() {
 
       <h1>Descubre la movida cultural que tengas cerca!</h1>
 
-      <MapView />
+      {/* Tabs */}
+      <div className='flex justify-center mt-8 mb-6'>
+        <button
+          className={`px-6 py-2 rounded-l-full font-semibold border-t border-b border-l border-gray-300 focus:outline-none transition-colors duration-200 ${
+            tab === 'mapa'
+              ? 'bg-teal-600 text-white'
+              : 'bg-white text-teal-700 hover:bg-teal-50'
+          }`}
+          onClick={() => setTab('mapa')}
+        >
+          Mapa
+        </button>
+        <button
+          className={`px-6 py-2 rounded-r-full font-semibold border-t border-b border-r border-gray-300 focus:outline-none transition-colors duration-200 ${
+            tab === 'lista'
+              ? 'bg-teal-600 text-white'
+              : 'bg-white text-teal-700 hover:bg-teal-50'
+          }`}
+          onClick={() => setTab('lista')}
+        >
+          Lista
+        </button>
+      </div>
+
+      {tab === 'mapa' && <MapView hideSearch={true} />}
+      {tab === 'lista' &&
+        (loading ? (
+          <div className='text-center py-10 text-gray-500'>
+            Cargando espacios culturales...
+          </div>
+        ) : (
+          <VenueList locations={locations} />
+        ))}
 
       <div className='text-center mt-8'>
         <Link

@@ -40,7 +40,7 @@ export default function VenueDetailFetcher({ venueId }) {
     useState(false)
   const [ratingError, setRatingError] = useState(null)
   const [ratingSuccess, setRatingSuccess] = useState(false)
-
+  console.log(venue)
   useEffect(() => {
     if (venue?.ratings && user?.uid) {
       const existingRating = venue.ratings.find(
@@ -346,7 +346,7 @@ export default function VenueDetailFetcher({ venueId }) {
   const mapCenter = mapLocation
     ? [mapLocation.latitude, mapLocation.longitude]
     : null
-
+  console.log(mapCenter)
   return (
     <section className='mb-10 md:mb-12 border-b border-gray-200/80 pb-8'>
       <div className='flex flex-col lg:flex-row gap-8 lg:gap-12'>
@@ -364,7 +364,7 @@ export default function VenueDetailFetcher({ venueId }) {
                 venues={[mapLocation]}
                 center={mapCenter}
                 zoom={16}
-                isDashboard={true}
+                hideSearch={true}
                 mapId={`venue-map-${venue.id}`}
               />
             </div>
