@@ -118,7 +118,10 @@ const VenueRegistrationForm = ({}) => {
   const handleCountryChange = (e) => {
     const country = e.target.value
     setSelectedCountry(country)
-    setCities(COUNTRIES_AND_CITIES[country] || [])
+    const countryObj = COUNTRIES_AND_CITIES.find(
+      (c) => c.code === country,
+    )
+    setCities(countryObj ? countryObj.cities : [])
     setSelectedCity('')
   }
 
@@ -548,10 +551,10 @@ const VenueRegistrationForm = ({}) => {
                 required
               >
                 <option value=''>Selecciona un país</option>
-                {Object.keys(COUNTRIES_AND_CITIES).map(
-                  (country) => (
-                    <option key={country} value={country}>
-                      {country}
+                {COUNTRIES_AND_CITIES.map(
+                  ({ code, name }) => (
+                    <option key={code} value={code}>
+                      {name}
                     </option>
                   ),
                 )}

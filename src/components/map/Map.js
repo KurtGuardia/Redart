@@ -124,7 +124,6 @@ export default function Map({
   const [locationError, setLocationError] = useState('')
   const [showLocationModal, setShowLocationModal] =
     useState(true)
-
   // IP-based location fetch
   const suggestionsRef = useRef(null)
 
@@ -218,7 +217,45 @@ export default function Map({
               .map(Number)
             if (!didSet) {
               setInitialMapCenter([lat, lng])
-              setUserLocation(data)
+              // Optionally, fetch city from Mapbox for IP-based location
+              const mapboxToken =
+                process.env.NEXT_PUBLIC_MAPBOX_TOKEN
+              fetch(
+                `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?types=country,place,locality&access_token=${mapboxToken}`,
+              )
+                .then((res) => res.json())
+                .then((data2) => {
+                  const countryFeature =
+                    data2.features.find((f) =>
+                      f.place_type.includes('country'),
+                    )
+                  const cityFeature = data2.features.find(
+                    (f) => f.place_type.includes('place'),
+                  )
+                  const country = countryFeature?.text
+                  const countryCode =
+                    countryFeature?.properties?.short_code?.toUpperCase()
+                  const city = cityFeature?.text
+                  setUserLocation({
+                    ...data,
+                    latitude: lat,
+                    longitude: lng,
+                    lat: lat,
+                    lng: lng,
+                    country,
+                    country_code: countryCode,
+                    city,
+                  })
+                })
+                .catch(() => {
+                  setUserLocation({
+                    ...data,
+                    latitude: lat,
+                    longitude: lng,
+                    lat: lat,
+                    lng: lng,
+                  })
+                })
             }
           } else {
             setLocationError(
@@ -227,6 +264,7 @@ export default function Map({
           }
         })
         .catch((error) => {
+          console.error(error)
           setLocationError(
             'No se pudo determinar la ubicación aproximada por IP.',
           )
@@ -240,19 +278,24 @@ export default function Map({
           (position) => {
             const { latitude, longitude } = position.coords
             setInitialMapCenter([latitude, longitude])
-            // Reverse geocode with Mapbox to get country name/code
+            // Reverse geocode with Mapbox to get country name/code and city
             const mapboxToken =
               process.env.NEXT_PUBLIC_MAPBOX_TOKEN
             fetch(
-              `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?types=country&access_token=${mapboxToken}`,
+              `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?types=country,place,locality&access_token=${mapboxToken}`,
             )
               .then((res) => res.json())
               .then((data) => {
-                const countryFeature =
-                  data.features && data.features[0]
-                const country = countryFeature?.text // e.g., 'Bolivia'
+                const countryFeature = data.features.find(
+                  (f) => f.place_type.includes('country'),
+                )
+                const cityFeature = data.features.find(
+                  (f) => f.place_type.includes('place'),
+                )
+                const country = countryFeature?.text
                 const countryCode =
-                  countryFeature?.properties?.short_code?.toUpperCase() // e.g., 'BO'
+                  countryFeature?.properties?.short_code?.toUpperCase()
+                const city = cityFeature?.text
                 setUserLocation((prev) => ({
                   ...prev,
                   latitude,
@@ -261,10 +304,10 @@ export default function Map({
                   lng: longitude,
                   country,
                   country_code: countryCode,
+                  city,
                 }))
               })
               .catch(() => {
-                // fallback: just update lat/lng
                 setUserLocation((prev) => ({
                   ...prev,
                   latitude,
@@ -310,6 +353,7 @@ export default function Map({
           )
             .then((res) => res.json())
             .then((data) => {
+              console.log(data)
               const countryFeature =
                 data.features && data.features[0]
               const country = countryFeature?.text
@@ -571,21 +615,18 @@ export default function Map({
                   getValidPosition(venue)
                 if (!venuePosition || !userLocation)
                   return false
-                const match =
-                  venue.country === userLocation.country ||
+                // Case-insensitive city comparison
+                if (venue.city && userLocation.city) {
+                  return (
+                    venue.city.trim().toLowerCase() ===
+                    userLocation.city.trim().toLowerCase()
+                  )
+                }
+                // Fallback to country code if city is not available
+                return (
                   venue.country ===
-                    userLocation.country_code
-                // Only for debugging:
-                // if (!match) {
-                //   console.log('Venue filtered out:', {
-                //     venueCountry: venue.country,
-                //     userCountry: userLocation.country,
-                //     userCountryCode:
-                //       userLocation.country_code,
-                //     venue,
-                //   })
-                // }
-                return match
+                  userLocation.country_code
+                )
               })
               .map((venue) => {
                 const position = getValidPosition(venue)
