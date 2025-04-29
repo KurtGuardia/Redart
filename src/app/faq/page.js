@@ -20,21 +20,14 @@ const faqs = [
   // Add more FAQs as needed
 ]
 
-export default function FAQ () {
+export default function FAQ() {
   return (
     <>
-      <Spot colorName={'SlateBlue'} />
-      <Spot colorName={'Magenta'} />
-      <Spot colorName={'red'} />
-      <Spot colorName={'Indigo'} />
-      <Spot colorName={'red'} />
-      <Spot colorName={'Indigo'} />
+      <Spot count={5} />
       <div className='mx-auto my-24 max-w-[80%] min-w-[80%]'>
-        <h1>
-          Preguntas Frecuentes
-        </h1>
+        <h1>Preguntas Frecuentes</h1>
         <div className='space-y-4 2xl:space-y-6 mx-auto '>
-          {faqs.map( ( faq, index ) => (
+          {faqs.map((faq, index) => (
             <div className='transform transition-transform duration-300 hover:translate-y-[-7px]'>
               <FAQItem
                 key={index}
@@ -42,7 +35,7 @@ export default function FAQ () {
                 answer={faq.answer}
               />
             </div>
-          ) )}
+          ))}
         </div>
       </div>
     </>

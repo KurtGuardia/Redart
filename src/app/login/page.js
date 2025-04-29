@@ -3,16 +3,16 @@
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import Spot from '../../components/ui/Spot'
+import Spots from '../../components/ui/Spot'
 
-function LoginForm () {
-  const [email, setEmail] = useState( '' )
-  const [password, setPassword] = useState( '' )
-  const [error, setError] = useState( null )
+function LoginForm() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState(null)
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  const handleSubmit = async ( e ) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     try {
       const { signInWithEmailAndPassword } = await import(
@@ -29,10 +29,10 @@ function LoginForm () {
       )
       await auth.authStateReady() // Wait for state propagation
       const redirect =
-        searchParams.get( 'redirect' ) || '/dashboard'
-      router.push( redirect )
-    } catch ( error ) {
-      setError( error.message )
+        searchParams.get('redirect') || '/dashboard'
+      router.push(redirect)
+    } catch (error) {
+      setError(error.message)
       console.error(
         'Login error:',
         error.code,
@@ -61,7 +61,7 @@ function LoginForm () {
             type='email'
             id='email'
             value={email}
-            onChange={( e ) => setEmail( e.target.value )}
+            onChange={(e) => setEmail(e.target.value)}
             className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500'
             required
           />
@@ -77,7 +77,7 @@ function LoginForm () {
             type='password'
             id='password'
             value={password}
-            onChange={( e ) => setPassword( e.target.value )}
+            onChange={(e) => setPassword(e.target.value)}
             className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500'
             required
           />
@@ -104,7 +104,7 @@ function LoginForm () {
 
 //TODO: delete when actual login is implemented
 // Loading fallback component
-function LoginFormFallback () {
+function LoginFormFallback() {
   return (
     <div className='p-6'>
       <h2 className='text-2xl font-bold mb-6 text-center'>
@@ -114,13 +114,10 @@ function LoginFormFallback () {
   )
 }
 
-export default function Login () {
+export default function Login() {
   return (
     <>
-      <Spot colorName={'red'} />
-      <Spot colorName={'Indigo'} />
-      <Spot colorName={'GoldenRod'} />
-      <Spot colorName={'MediumVioletRed'} />
+      <Spots count={4} />
       <div className='mx-auto my-24 container'>
         <div className='max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden'>
           <Suspense fallback={<LoginFormFallback />}>

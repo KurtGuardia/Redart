@@ -3,17 +3,15 @@ import VenueDetailFetcher from '../../../components/venue/VenueDetailFetcher'
 import VenueEventListWrapper from '../../../components/venue/VenueEventListWrapper'
 import VenuePhotoGallery from '../../../components/venue/VenuePhotoGallery'
 import VenueHeroSection from '../../../components/venue/VenueHeroSection'
+import Spots from '../../../components/ui/Spot'
 
-export default function VenuePage ( { params } ) {
+export default function VenuePage({ params }) {
   const venueId = params.venueId
 
   return (
     <div className='relative min-h-screen w-full'>
       {/* Background Spots */}
-      <Spot colorName={'Teal'} />
-      <Spot colorName={'Cyan'} />
-      <Spot colorName={'SkyBlue'} />
-      <Spot colorName={'Indigo'} />
+      <Spots count={4} />
 
       {/* Hero Section (Now uses data directly) */}
       <VenueHeroSection venueId={venueId} />

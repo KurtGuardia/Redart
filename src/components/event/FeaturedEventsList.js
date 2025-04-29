@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { useFeaturedEvents } from '../../hooks/useFeaturedEvents'
 import EventCard from './EventCard'
-import Spot from '../ui/Spot'
+import Spots from '../ui/Spot'
 import Link from 'next/link'
 import EventDetailModal from './EventDetailModal'
 import EventCardSkeleton from './EventCardSkeleton'
@@ -27,9 +27,7 @@ export default function FeaturedEventsList() {
     <>
       <section className='featured-events py-16 mt-24'>
         <div className='relative mx-auto px-4'>
-          <Spot colorName={'FireBrick'} />
-          <Spot colorName={'Magenta'} />
-          <Spot colorName={'Peru'} />
+          <Spots count={3} />
           <h2 className='text-3xl xl:text-5xl font-bold text-center mb-10 xl:mb-16   bg-gradient-to-r from-[var(--blue-600)] to-[var(--blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg'>
             Eventos destacados
           </h2>

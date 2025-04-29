@@ -3,8 +3,9 @@ import Spot from '../components/ui/Spot'
 import HeroBackgroundSlider from '../components/HeroBackgroundSlider'
 import MapView from '../components/map/MapView'
 import FeaturedEventsList from '../components/event/FeaturedEventsList'
+import Spots from '../components/ui/Spot'
 
-export default function HomePage () {
+export default function HomePage() {
   const heroImages = [
     '/theater.jpg',
     '/carnival.jpg',
@@ -34,7 +35,8 @@ export default function HomePage () {
 
       <FeaturedEventsList />
 
-      <section className='about-us img relative mt-24'
+      <section
+        className='about-us img relative mt-24'
         style={{ backgroundImage: `url(${'/crowd.jpg'})` }}
       >
         <div className='w-[80%] relative min-h-[50vh] flex flex-col z-10 py-12 mx-auto px-4 text-center text-white'>
@@ -62,10 +64,7 @@ export default function HomePage () {
 
       <section className='map mt-24'>
         <div className='relative container mx-auto px-4 w-[80%] 2xl:w-[100%]'>
-          <Spot colorName={'OliveDrab'} />
-          <Spot colorName={'Teal'} />
-          <Spot colorName={'Chartreuse'} />
-          <Spot colorName={'Coral'} />
+          <Spots count={4} />
           <h2 className='text-3xl xl:text-5xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--blue-600)] to-[var(--blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg'>
             Explora los espacios culturales
           </h2>

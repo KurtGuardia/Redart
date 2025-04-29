@@ -9,6 +9,7 @@ import DashboardSkeleton from '../../components/DashboardSkeleton'
 import VenueDashboard from '../../components/dashboard/VenueDashboard'
 import UserDashboard from '../../components/dashboard/UserDashboard'
 import { useUserData } from '../../hooks/useUserData'
+import Spots from '../../components/ui/Spot'
 
 export default function Dashboard() {
   const router = useRouter()
@@ -80,9 +81,7 @@ export default function Dashboard() {
 
   return (
     <div className='relative mx-auto px-4 sm:px-8 my-16 sm:my-24 2xl:max-w-[90%] 2xl:min-w-[80%]'>
-      <Spot colorName={'red'} />
-      <Spot colorName={'indigo'} />
-      <Spot colorName={'peru'} />
+      <Spots count={3} />
 
       <div className='min-h-[60vh]'>
         {renderDashboard()}

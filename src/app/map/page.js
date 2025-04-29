@@ -5,6 +5,7 @@ import MapView from '../../components/map/MapView'
 import VenueList from '../../components/venue/VenueList'
 import { useState } from 'react'
 import { useVenueLocations } from '../../hooks/useVenueLocations'
+import Spots from '../../components/ui/Spot'
 
 export default function MapPage() {
   const [tab, setTab] = useState('mapa')
@@ -12,11 +13,7 @@ export default function MapPage() {
 
   return (
     <div className='map relative container mx-auto my-24'>
-      <Spot colorName={'chartreuse'} />
-      <Spot colorName={'magenta'} />
-      <Spot colorName={'red'} />
-      <Spot colorName={'Indigo'} />
-      <Spot colorName={'indigo'} />
+      <Spots count={5} />
 
       <h1>Descubre la movida cultural que tengas cerca!</h1>
 
