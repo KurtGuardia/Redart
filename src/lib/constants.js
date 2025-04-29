@@ -158,6 +158,7 @@ export const COUNTRIES_AND_CITIES = {
     'Murcia',
     'Palma de Mallorca',
     'Las Palmas',
+    'Lugo',
     'Bilbao',
     'Alicante',
     'Córdoba',

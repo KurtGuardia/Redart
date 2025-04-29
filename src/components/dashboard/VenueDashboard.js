@@ -139,13 +139,6 @@ export default function VenueDashboard({ venueId }) {
     // Handle case where initial load failed but maybe subsequent actions have errors
     return <div>Error: {displayError}</div>
   }
-  if (!venue && !isLoading && !displayError) {
-    // Should ideally not be reached if loading/error handled above
-    console.warn(
-      'VenueDashboard reached unexpected state: no venue, no loading, no error.',
-    )
-    return <DashboardSkeleton />
-  }
 
   // Show specific errors from event/update actions if they occur, even if venue loaded
   if ((eventError || venueUpdateError) && venue) {
@@ -176,7 +169,8 @@ export default function VenueDashboard({ venueId }) {
           venue={venue}
           onEdit={() => setIsEditModalOpen(true)}
           // Pass initial venue loading state
-          isLoading={venueLoading || venueUpdateLoading}
+          isLoading={isLoading}
+          error={displayError}
         />
 
         <EventManagementSection

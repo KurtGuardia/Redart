@@ -232,9 +232,23 @@ export const validateFacebookUrl = (url) => {
  * @param {string} url The URL string to validate.
  * @returns {boolean} True if it seems like an Instagram URL, false otherwise.
  */
-export const validateInstagramUrl = (url) => {
-  if (!url || typeof url !== 'string') return true // Allow empty
-  return url.toLowerCase().includes('instagram.com')
+export const validateInstagramUrl = (input) => {
+  if (!input || typeof input !== 'string') return true // Allow empty
+
+  const lower = input.toLowerCase().trim()
+  // Allow URLs containing instagram.com
+  if (lower.includes('instagram.com')) return true
+
+  // Allow tags like @username (must start with @, at least one more character, and only valid username chars)
+  // Instagram usernames: 1-30 chars, letters, numbers, periods, underscores
+  if (
+    lower.startsWith('@') &&
+    /^@[a-z0-9._]{1,30}$/i.test(lower)
+  ) {
+    return true
+  }
+
+  return false
 }
 
 /**

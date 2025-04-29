@@ -36,22 +36,25 @@ export default function VenueDetailsCard({
 }) {
   if (!venue) {
     return (
-      <div className='bg-gray-50 rounded-lg shadow-lg p-6'>
-        <Skeleton className='h-8 w-1/4 mb-4 bg-gray-300' />
+      <div className='bg-gray-50 rounded-lg shadow-lg p-6 flex flex-col items-center justify-center min-h-[350px]'>
+        <span className='text-2xl font-bold text-teal-700 mb-8 animate-pulse bg-teal-100 px-6 py-3 rounded-lg shadow'>
+          Cargando datos del lugar...
+        </span>
+        <Skeleton className='h-8 w-1/4 mb-4 bg-gray-300 animate-pulse' />
         <div className='flex items-center mb-4'>
-          <Skeleton className='h-20 w-20 rounded-full mr-4 bg-gray-300' />
-          <Skeleton className='h-6 w-1/2 bg-gray-300' />
+          <Skeleton className='h-20 w-20 rounded-full mr-4 bg-gray-300 animate-pulse' />
+          <Skeleton className='h-6 w-1/2 bg-gray-300 animate-pulse' />
         </div>
-        <Skeleton className='h-60 w-full mb-4 bg-gray-300' />
-        <Skeleton className='h-4 w-full mb-2 bg-gray-300' />
-        <Skeleton className='h-4 w-3/4 mb-4 bg-gray-300' />
-        <Skeleton className='h-4 w-full mb-2 bg-gray-300' />
-        <Skeleton className='h-4 w-full mb-2 bg-gray-300' />
-        <Skeleton className='h-4 w-1/2 mb-4 bg-gray-300' />
+        <Skeleton className='h-60 w-full mb-4 bg-gray-300 animate-pulse' />
+        <Skeleton className='h-4 w-full mb-2 bg-gray-300 animate-pulse' />
+        <Skeleton className='h-4 w-3/4 mb-4 bg-gray-300 animate-pulse' />
+        <Skeleton className='h-4 w-full mb-2 bg-gray-300 animate-pulse' />
+        <Skeleton className='h-4 w-full mb-2 bg-gray-300 animate-pulse' />
+        <Skeleton className='h-4 w-1/2 mb-4 bg-gray-300 animate-pulse' />
         <div className='grid grid-cols-3 gap-2 mt-4'>
-          <Skeleton className='h-32 w-full bg-gray-300 rounded-lg' />
-          <Skeleton className='h-32 w-full bg-gray-300 rounded-lg' />
-          <Skeleton className='h-32 w-full bg-gray-300 rounded-lg' />
+          <Skeleton className='h-32 w-full bg-gray-300 rounded-lg animate-pulse' />
+          <Skeleton className='h-32 w-full bg-gray-300 rounded-lg animate-pulse' />
+          <Skeleton className='h-32 w-full bg-gray-300 rounded-lg animate-pulse' />
         </div>
       </div>
     )

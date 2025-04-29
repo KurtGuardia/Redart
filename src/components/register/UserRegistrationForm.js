@@ -443,11 +443,11 @@ const UserRegistrationForm = ({}) => {
       </div>
 
       {/* Social Sign Up Buttons */}
-      <div className='space-y-3'>
+      <div className='flex flex-col sm:flex-row gap-3'>
         <button
           type='button'
           onClick={() => handleSocialSignUp('google')}
-          className='w-full flex items-center justify-center gap-2 bg-white border border-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-100 transition duration-300 disabled:opacity-70'
+          className='flex-1 flex items-center justify-center gap-2 bg-white border border-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-100 transition duration-300 disabled:opacity-70'
           disabled={registerLoading || socialLoading}
         >
           <FaGoogle className='text-red-500' />
@@ -459,7 +459,7 @@ const UserRegistrationForm = ({}) => {
         <button
           type='button'
           onClick={() => handleSocialSignUp('facebook')}
-          className='w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300 disabled:opacity-70'
+          className='flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300 disabled:opacity-70'
           disabled={registerLoading || socialLoading}
         >
           <FaFacebook />
