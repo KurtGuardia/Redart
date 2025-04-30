@@ -1,4 +1,3 @@
-import Spot from '../../../components/ui/Spot'
 import VenueDetailFetcher from '../../../components/venue/VenueDetailFetcher'
 import VenueEventListWrapper from '../../../components/venue/VenueEventListWrapper'
 import VenuePhotoGallery from '../../../components/venue/VenuePhotoGallery'

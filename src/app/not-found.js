@@ -1,27 +1,13 @@
 'use client'
 
 import Link from 'next/link'
-import Spot from '../components/ui/Spot'
 import { FaQuestionCircle } from 'react-icons/fa'
+import Spots from '../components/ui/Spot'
 
 export default function NotFound() {
   return (
     <div className='min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden'>
-      {/* Decorative Spots */}
-      <div className='fixed inset-0 pointer-events-none overflow-hidden opacity-40'>
-        <Spot
-          colorName='purple'
-          customClass='top-10 -left-60 opacity-70 blur-xl'
-        />
-        <Spot
-          colorName='teal'
-          customClass='bottom-10 -right-60 opacity-70 blur-xl'
-        />
-        <Spot
-          colorName='blue' // Added another spot for balance
-          customClass='top-1/3 right-1/4 opacity-50 blur-2xl'
-        />
-      </div>
+      <Spots count={5} />
 
       {/* Content Area */}
       <div className='relative z-10 text-center p-8 max-w-lg w-full'>

@@ -3,16 +3,12 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import Spot from '../components/ui/Spot'
+import Spots from '../components/ui/Spot'
 
 export default function Error({ error, reset }) {
-  const router = useRouter()
   const [timeLeft, setTimeLeft] = useState(10)
   const [showDetails, setShowDetails] = useState(false)
   const [position, setPosition] = useState({ x: 0, y: 0 })
-  const [showFloatingIcon, setShowFloatingIcon] =
-    useState(true)
-  const [glitchClass, setGlitchClass] = useState('')
 
   // Countdown timer for automatic retry/redirect
   useEffect(() => {
@@ -43,15 +39,6 @@ export default function Error({ error, reset }) {
   }, [])
 
   useEffect(() => {
-    const glitchInterval = setInterval(() => {
-      setGlitchClass(getRandomGlitchStyle())
-      setTimeout(() => setGlitchClass(''), 100)
-    }, 2000)
-
-    return () => clearInterval(glitchInterval)
-  }, [])
-
-  useEffect(() => {
     console.error('An error occurred:', error.message, {
       stack: error.stack,
     })
@@ -59,18 +46,7 @@ export default function Error({ error, reset }) {
 
   return (
     <div className='min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden'>
-      {/* Dynamic floating spots */}
-      <div className='fixed inset-0 pointer-events-none overflow-hidden'>
-        <Spot
-          colorName='teal'
-          customClass='top-0 -left-40 opacity-30'
-        />
-        <Spot
-          colorName='purple'
-          customClass='bottom-0 -right-40 opacity-30'
-        />
-      </div>
-
+      <Spots count={5} />
       {/* Follow cursor spotlight effect */}
       <div
         className='fixed w-96 h-96 rounded-full bg-teal-100/30 blur-3xl pointer-events-none transition-all duration-500 ease-out'

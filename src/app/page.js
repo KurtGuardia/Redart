@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import Spot from '../components/ui/Spot'
 import HeroBackgroundSlider from '../components/HeroBackgroundSlider'
 import MapView from '../components/map/MapView'
 import FeaturedEventsList from '../components/event/FeaturedEventsList'
@@ -74,7 +73,7 @@ export default function HomePage() {
             tuyo preferido y conoce la programación de
             eventos.
           </p>
-          <MapView />
+          <MapView hideSearch={true} />
         </div>
       </section>
 

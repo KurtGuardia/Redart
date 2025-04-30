@@ -60,12 +60,29 @@ export default function VenueDetailsCard({
     )
   }
 
-  const latitude = getSafe(() => venue.location.latitude, 0)
-  const longitude = getSafe(
-    () => venue.location.longitude,
-    0,
-  )
-  const hasValidLocation = latitude !== 0 || longitude !== 0
+  // Robustly extract latitude and longitude from venue.location (Firestore GeoPoint)
+  let latitude = null
+  let longitude = null
+  if (venue && venue.location) {
+    if (
+      typeof venue.location.latitude === 'number' &&
+      typeof venue.location.longitude === 'number'
+    ) {
+      latitude = venue.location.latitude
+      longitude = venue.location.longitude
+    } else if (
+      typeof venue.location._latitude === 'number' &&
+      typeof venue.location._longitude === 'number'
+    ) {
+      latitude = venue.location._latitude
+      longitude = venue.location._longitude
+    }
+  }
+  const hasValidLocation =
+    typeof latitude === 'number' &&
+    typeof longitude === 'number' &&
+    !isNaN(latitude) &&
+    !isNaN(longitude)
 
   return (
     <div className='bg-white rounded-lg shadow-lg p-6 h-fit'>
@@ -166,6 +183,7 @@ export default function VenueDetailsCard({
             zoom={15}
             small={true}
             hideSearch={true}
+            // disableUserLocation={true}
             mapId={`dashboard-map-${getSafe(
               () => venue.id,
               'venue', // Fallback ID part

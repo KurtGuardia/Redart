@@ -1,5 +1,5 @@
-import Spot from '../../components/ui/Spot'
 import FAQItem from '../../components/FAQItem'
+import Spots from '../../components/ui/Spot'
 
 const faqs = [
   {
@@ -23,7 +23,7 @@ const faqs = [
 export default function FAQ() {
   return (
     <>
-      <Spot count={5} />
+      <Spots count={5} />
       <div className='mx-auto my-24 max-w-[80%] min-w-[80%]'>
         <h1>Preguntas Frecuentes</h1>
         <div className='space-y-4 2xl:space-y-6 mx-auto '>

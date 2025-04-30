@@ -1,4 +1,3 @@
-import Spot from '../../components/ui/Spot'
 import EventListView from '../../components/event/EventListView'
 import Spots from '../../components/ui/Spot'
 

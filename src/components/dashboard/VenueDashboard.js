@@ -11,7 +11,6 @@ import {
   eventFormFields,
 } from '../../lib/constants'
 import EventDetailModal from '../../components/event/EventDetailModal'
-import DashboardSkeleton from '../../components/DashboardSkeleton'
 import VenueDetailsCard from './VenueDetailsCard'
 import EventManagementSection from './EventManagementSection'
 

@@ -17,7 +17,6 @@ import { useAddressSearch } from '../../hooks/useAddressSearch'
 import { FaSpinner } from 'react-icons/fa'
 import Modal from '../ui/Modal'
 
-const DEFAULT_CENTER = [-17.389499, -66.156123]
 const DEFAULT_ZOOM = 13
 
 const customIcon = new Icon({
@@ -110,20 +109,22 @@ export default function Map({
   onLocationSelect = () => {},
   registrationAddress = '',
   registrationCity = '',
-  isDashboard = false,
+  hideSearch = false,
   mapId = 'map',
   isEditable = false,
+  disableUserLocation = false,
 }) {
   const router = useRouter()
   const [searchResult, setSearchResult] = useState(null)
-  const [initialMapCenter, setInitialMapCenter] =
-    useState(center)
+  const [initialMapCenter, setInitialMapCenter] = useState(
+    center || null,
+  )
   const [loadingLocation, setLoadingLocation] =
     useState(true)
   const [userLocation, setUserLocation] = useState(null)
   const [locationError, setLocationError] = useState('')
   const [showLocationModal, setShowLocationModal] =
-    useState(true)
+    useState(center ? false : true)
   // IP-based location fetch
   const suggestionsRef = useRef(null)
 
@@ -196,6 +197,8 @@ export default function Map({
     }
   }, [])
 
+  // The VenueDetailCard passes fine and in the Dashboard the correct center is palced. In the VenueDetailFetcher I see the data fetching, maybe goes that way. Also why is it fetching when there is a useVenueData hook. The whole whing is fine, the only issue is to center on the venue detail fetcher, just the centering. I asked to change forthe custom hook and it froze. I also think maybe passing the data or the customhook usage, may equal venueFetchert adn venueCardd for good or for worst.
+
   // Only run geolocation after user accepts
   useEffect(() => {
     if (!showLocationModal) {
@@ -217,6 +220,7 @@ export default function Map({
               .map(Number)
             if (!didSet) {
               setInitialMapCenter([lat, lng])
+              console.log([lat, lng])
               // Optionally, fetch city from Mapbox for IP-based location
               const mapboxToken =
                 process.env.NEXT_PUBLIC_MAPBOX_TOKEN
@@ -276,6 +280,7 @@ export default function Map({
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
+            console.log(position.coords)
             const { latitude, longitude } = position.coords
             setInitialMapCenter([latitude, longitude])
             // Reverse geocode with Mapbox to get country name/code and city
@@ -332,52 +337,57 @@ export default function Map({
 
   // Precise location
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const preciseLocation = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          }
-          setInitialMapCenter([
-            preciseLocation.lat,
-            preciseLocation.lng,
-          ])
-          // Reverse geocode with Mapbox to get country name/code
-          const mapboxToken =
-            process.env.NEXT_PUBLIC_MAPBOX_TOKEN
-          fetch(
-            `https://api.mapbox.com/geocoding/v5/mapbox.places/${preciseLocation.lng},${preciseLocation.lat}.json?types=country&access_token=${mapboxToken}`,
-          )
-            .then((res) => res.json())
-            .then((data) => {
-              console.log(data)
-              const countryFeature =
-                data.features && data.features[0]
-              const country = countryFeature?.text
-              const countryCode =
-                countryFeature?.properties?.short_code?.toUpperCase()
-              setUserLocation((prev) => ({
-                ...prev,
-                ...preciseLocation,
-                country,
-                country_code: countryCode,
-              }))
-            })
-            .catch(() => {
-              setUserLocation((prev) => ({
-                ...prev,
-                ...preciseLocation,
-              }))
-            })
-        },
-        (error) => {
-          console.warn('Browser geolocation error:', error)
-        },
-        { enableHighAccuracy: true },
-      )
+    if (!disableUserLocation) {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const preciseLocation = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            }
+            console.log(preciseLocation)
+            setInitialMapCenter([
+              preciseLocation.lat,
+              preciseLocation.lng,
+            ])
+            // Reverse geocode with Mapbox to get country name/code
+            const mapboxToken =
+              process.env.NEXT_PUBLIC_MAPBOX_TOKEN
+            fetch(
+              `https://api.mapbox.com/geocoding/v5/mapbox.places/${preciseLocation.lng},${preciseLocation.lat}.json?types=country&access_token=${mapboxToken}`,
+            )
+              .then((res) => res.json())
+              .then((data) => {
+                const countryFeature =
+                  data.features && data.features[0]
+                const country = countryFeature?.text
+                const countryCode =
+                  countryFeature?.properties?.short_code?.toUpperCase()
+                setUserLocation((prev) => ({
+                  ...prev,
+                  ...preciseLocation,
+                  country,
+                  country_code: countryCode,
+                }))
+              })
+              .catch(() => {
+                setUserLocation((prev) => ({
+                  ...prev,
+                  ...preciseLocation,
+                }))
+              })
+          },
+          (error) => {
+            console.warn(
+              'Browser geolocation error:',
+              error,
+            )
+          },
+          { enableHighAccuracy: true },
+        )
+      }
     }
   }, [])
 
@@ -463,10 +473,18 @@ export default function Map({
       )
       return null
     }
-
     // Always return consistent [lat, lng] array format for Leaflet
     return [lat, lng]
   }
+
+  useEffect(() => {
+    if (center) {
+      setInitialMapCenter(center)
+      return
+    }
+    if (center) return // Skip geolocation if center is provided
+    if (center) return // Skip geolocation if center is provided
+  }, [center, showLocationModal])
 
   return (
     <div className='flex flex-col gap-4 h-full'>
@@ -487,7 +505,7 @@ export default function Map({
         <br />
         ¿Deseas continuar?
       </Modal>
-      {!isDashboard && (
+      {!hideSearch && (
         <div className='relative' ref={suggestionsRef}>
           <div className='flex gap-2'>
             <div className='relative flex-grow'>
@@ -613,6 +631,7 @@ export default function Map({
               .filter((venue) => {
                 const venuePosition =
                   getValidPosition(venue)
+
                 if (!venuePosition || !userLocation)
                   return false
                 // Case-insensitive city comparison

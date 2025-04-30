@@ -32,7 +32,6 @@ export default function VenueDetailFetcher({ venueId }) {
   const [errorVenue, setErrorVenue] = useState(null)
   const [currentUserRole, setCurrentUserRole] =
     useState(null)
-  // console.log(currentUserRole)
   const { user, loadingAuth } = useAuth()
 
   const [userRating, setUserRating] = useState(0)
@@ -40,7 +39,7 @@ export default function VenueDetailFetcher({ venueId }) {
     useState(false)
   const [ratingError, setRatingError] = useState(null)
   const [ratingSuccess, setRatingSuccess] = useState(false)
-  console.log(venue)
+
   useEffect(() => {
     if (venue?.ratings && user?.uid) {
       const existingRating = venue.ratings.find(
@@ -334,19 +333,6 @@ export default function VenueDetailFetcher({ venueId }) {
     )
   }
 
-  const mapLocation =
-    venue?.location?.latitude && venue?.location?.longitude
-      ? {
-          id: venue.id,
-          name: venue.name,
-          latitude: venue.location.latitude,
-          longitude: venue.location.longitude,
-        }
-      : null
-  const mapCenter = mapLocation
-    ? [mapLocation.latitude, mapLocation.longitude]
-    : null
-  console.log(mapCenter)
   return (
     <section className='mb-10 md:mb-12 border-b border-gray-200/80 pb-8'>
       <div className='flex flex-col lg:flex-row gap-8 lg:gap-12'>
@@ -358,14 +344,18 @@ export default function VenueDetailFetcher({ venueId }) {
           <p className='text-sm 2xl:text-base text-gray-500 mb-4'>
             {venue.city}, {venue.country}
           </p>
-          {mapLocation ? (
+          {venue ? (
             <div className='h-80 md:h-96 w-full 2xl:w-[80%] mx-auto xl:mt-6'>
               <MapComponent
-                venues={[mapLocation]}
-                center={mapCenter}
-                zoom={16}
+                venues={[venue]}
+                center={[
+                  venue.location.latitude,
+                  venue.location.longitude,
+                ]}
+                zoom={15}
                 hideSearch={true}
-                mapId={`venue-map-${venue.id}`}
+                mapId={`dashboard-map-${venue.id}`}
+                disableUserLocation={true}
               />
             </div>
           ) : (

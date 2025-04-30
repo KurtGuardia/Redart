@@ -635,6 +635,7 @@ const VenueRegistrationForm = ({}) => {
                   center={[-17.389499, -66.156123]}
                   zoom={12}
                   isEditable={true}
+                  hideSearch={false}
                   registrationAddress={address}
                   registrationCity={selectedCity}
                   onLocationSelect={(location) =>

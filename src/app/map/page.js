@@ -1,6 +1,5 @@
 'use client'
 import Link from 'next/link'
-import Spot from '../../components/ui/Spot'
 import MapView from '../../components/map/MapView'
 import VenueList from '../../components/venue/VenueList'
 import { useState } from 'react'
