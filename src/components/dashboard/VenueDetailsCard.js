@@ -191,6 +191,7 @@ export default function VenueDetailsCard({
           />
         </div>
       )}
+
       {!hasValidLocation && (
         <div className='bg-gray-100 p-4 rounded-lg mb-4 text-center text-xs md:text-sm 2xl:text-base text-gray-500'>
           Ubicación no especificada. Edita el local para

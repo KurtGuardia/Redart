@@ -355,7 +355,7 @@ export default function VenueDetailFetcher({ venueId }) {
                 zoom={15}
                 hideSearch={true}
                 mapId={`dashboard-map-${venue.id}`}
-                disableUserLocation={true}
+                // disableUserLocation={true}
               />
             </div>
           ) : (

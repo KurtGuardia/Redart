@@ -40,7 +40,7 @@ export default function MapPage() {
         </button>
       </div>
 
-      {tab === 'mapa' && <MapView hideSearch={true} />}
+      {tab === 'mapa' && <MapView />}
       {tab === 'lista' &&
         (loading ? (
           <div className='text-center py-10 text-gray-500'>

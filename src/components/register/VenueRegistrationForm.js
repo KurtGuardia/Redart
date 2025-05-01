@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { onAuthStateChanged } from 'firebase/auth'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
+import { useAddressSearch } from '../../hooks/useAddressSearch'
 import {
   auth,
   db,
@@ -49,7 +50,7 @@ const VenueRegistrationForm = ({}) => {
     useState(DESCRIPTION_MAX_LENGTH)
   const [address, setAddress] = useState('')
   const [capacity, setCapacity] = useState('')
-  const [geoPoint, setGeoPoint] = useState({
+  const [selectedLocation, setSelectedLocation] = useState({
     lat: null,
     lng: null,
   })
@@ -113,6 +114,42 @@ const VenueRegistrationForm = ({}) => {
       setPasswordValid(true)
     }
   }, [password])
+
+  // Inside the VenueRegistrationForm component function, after state declarations
+
+  const {
+    searchQuery,
+    // setSearchQuery, // Optional: Get setter if needed
+    handleInputChange,
+    suggestions,
+    showSuggestions,
+    setShowSuggestions,
+    handleSuggestionClick,
+    // handleSearchClick,
+    isSearching,
+    searchError,
+    searchResult, // The result object { lat, lng, address, ... } after selection
+  } = useAddressSearch(
+    address, // Use address state as initial query
+    selectedCity, // Use selectedCity state for context
+    (result) => {
+      // --- Callback when a suggestion is clicked ---
+      console.log('Address search result selected:', result)
+      const newLocation = {
+        lat: result.lat,
+        lng: result.lng,
+      }
+      setSelectedLocation(newLocation) // Update the location state
+
+      // Optionally update form fields
+      if (!address && result.address)
+        setAddress(result.address) // Populate address if empty
+      // Maybe update city/country if needed, though user selects them separately here
+      // if (!selectedCity && result.city) setSelectedCity(result.city);
+
+      setShowSuggestions(false) // Hide suggestions
+    },
+  )
 
   // --- Handlers & Logic ---
   const handleCountryChange = (e) => {
@@ -233,7 +270,10 @@ const VenueRegistrationForm = ({}) => {
         address,
         events: [],
         capacity: Number(capacity),
-        location: new GeoPoint(geoPoint.lat, geoPoint.lng),
+        location: new GeoPoint(
+          selectedLocation.lat,
+          selectedLocation.lng,
+        ),
         amenities: selectedAmenities,
         photos: photoUrls,
         ...(facebookUrl.trim() && {
@@ -623,37 +663,112 @@ const VenueRegistrationForm = ({}) => {
               </div>
             </div>
             {/* Map Location */}
-            <div className='mb-4 h-[300px]'>
+            <div className='mb-4'>
               <label className='block text-gray-700 font-bold mb-2'>
                 Ubicación{' '}
                 <span className='text-gray-500 text-sm'>
                   (selecciona el punto exacto de entrada)
                 </span>
               </label>
+
+              {/* --- NEW: Address Search Input --- */}
+              <div className='relative mb-3'>
+                <label
+                  htmlFor='address-search-register'
+                  className='block text-xs font-medium text-gray-600 mb-1'
+                >
+                  Buscar Dirección o Lugar
+                </label>
+                <input
+                  id='address-search-register'
+                  type='text'
+                  value={searchQuery}
+                  onChange={handleInputChange}
+                  onFocus={() => setShowSuggestions(true)}
+                  // onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+                  placeholder='Escribe una dirección...'
+                  className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none'
+                  disabled={isSearching}
+                  autoComplete='off'
+                />
+                {isSearching && (
+                  <span className='absolute right-2 top-8 text-xs text-gray-500'>
+                    Buscando...
+                  </span>
+                )}
+                {/* Suggestions List */}
+                {showSuggestions &&
+                  suggestions.length > 0 && (
+                    <div className='absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto'>
+                      {suggestions.map((s) => (
+                        <button
+                          key={s.id}
+                          type='button'
+                          onClick={() =>
+                            handleSuggestionClick(s)
+                          }
+                          onMouseDown={(e) =>
+                            e.preventDefault()
+                          }
+                          className='block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
+                        >
+                          {s.place_name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                {searchError && (
+                  <p className='text-red-500 text-xs mt-1'>
+                    {searchError}
+                  </p>
+                )}
+              </div>
+
               <div className='h-full pb-8'>
                 <MapComponent
-                  center={[-17.389499, -66.156123]}
-                  zoom={12}
-                  isEditable={true}
-                  hideSearch={false}
-                  registrationAddress={address}
-                  registrationCity={selectedCity}
-                  onLocationSelect={(location) =>
-                    setGeoPoint(location)
+                  center={
+                    // Center on selected location or default
+                    selectedLocation.lat &&
+                    selectedLocation.lng
+                      ? [
+                          selectedLocation.lat,
+                          selectedLocation.lng,
+                        ]
+                      : [-17.389499, -66.156123]
                   }
+                  zoom={
+                    selectedLocation.lat &&
+                    selectedLocation.lng
+                      ? 16
+                      : 12
+                  } // Zoom in if selected
+                  isEditable={true}
+                  hideSearch={true} // *** IMPORTANT: Hide Map.js internal search ***
+                  searchResultForMap={searchResult} // *** Pass hook's result to MapController ***
+                  onLocationSelect={(
+                    location, // Use the (renamed) state setter
+                  ) => setSelectedLocation(location)}
                   venues={
-                    geoPoint.lat && geoPoint.lng
+                    // Show marker based on selectedLocation state
+                    selectedLocation.lat &&
+                    selectedLocation.lng
                       ? [
                           {
+                            id: 'new-venue-marker',
                             name: name || 'Nuevo espacio',
                             location: {
-                              latitude: geoPoint.lat,
-                              longitude: geoPoint.lng,
+                              latitude:
+                                selectedLocation.lat,
+                              longitude:
+                                selectedLocation.lng,
+                              lat: selectedLocation.lat, // Include lat/lng too
+                              lng: selectedLocation.lng,
                             },
                           },
                         ]
                       : []
                   }
+                  mapId='venue-registration-map' // Give it a unique ID
                 />
               </div>
             </div>

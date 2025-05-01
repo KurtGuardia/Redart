@@ -3,6 +3,8 @@ import React from 'react'
 export default function Modal({
   isOpen,
   onClose,
+  onReject,
+  onAccept,
   title,
   children,
 }) {
@@ -27,10 +29,16 @@ export default function Modal({
         </div>
         <div className='flex justify-center mt-6'>
           <button
-            onClick={onClose}
+            onClick={onAccept}
             className='px-6 py-2 bg-teal-600 text-white rounded-lg shadow hover:bg-teal-700 transition font-semibold'
           >
             Aceptar
+          </button>
+          <button
+            onClick={onReject}
+            className='px-6 py-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition font-semibold'
+          >
+            Rechazar
           </button>
         </div>
       </div>

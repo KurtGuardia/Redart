@@ -3,6 +3,8 @@
 import { useEffect, useState, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import dynamic from 'next/dynamic'
+import { GeoPoint } from 'firebase/firestore'
+import { useAddressSearch } from '../hooks/useAddressSearch'
 import {
   compressImage,
   compressMultipleImages,
@@ -37,7 +39,10 @@ const EditModal = ({
   fields,
   saveButtonText = 'Guardar Cambios',
 }) => {
+  // Inside the EditModal component function
   const [formData, setFormData] = useState({})
+  const [currentMapLocation, setCurrentMapLocation] =
+    useState(null)
   const [isMounted, setIsMounted] = useState(false)
 
   // Generate a unique map ID for each modal instance
@@ -47,12 +52,88 @@ const EditModal = ({
     [],
   )
 
-  // Initialize form data when the modal opens or data changes
+  const {
+    searchQuery,
+    setSearchQuery, // Get setter to potentially clear it
+    handleInputChange,
+    suggestions,
+    showSuggestions,
+    setShowSuggestions,
+    handleSuggestionClick,
+    handleSearchClick, // Might not need the explicit search button
+    isSearching,
+    searchError,
+    searchResult, // This is the result object { lat, lng, address, ... } after selection
+  } = useAddressSearch(
+    formData?.address || '', // Initial query from form data
+    formData?.city || '', // Initial city context from form data
+    (result) => {
+      // --- Callback when a suggestion is clicked ---
+      console.log('Address search result selected:', result)
+      const newLocation = {
+        lat: result.lat,
+        lng: result.lng,
+      }
+      setCurrentMapLocation(newLocation) // Update the map's target location
+
+      //  update form fields based on search result
+      setFormData((prev) => ({
+        ...prev,
+        // Update address/city only if they seem more specific or missing
+        address: result.address || prev.address || '',
+        city: result.city || prev.city || '',
+        // DO NOT update formData.location here directly. Let save handle it.
+      }))
+      // clear search query after selection
+      setSearchQuery(result.address || '') // Or clear completely: setSearchQuery('');
+      setShowSuggestions(false) // Hide suggestions after selection
+    },
+  )
+
+  // Modify the useEffect for initial data
   useEffect(() => {
-    if (data) {
-      setFormData(data)
+    if (data && isOpen) {
+      // Also check isOpen to reset when reopened
+      setFormData(data) // Set the main form data
+
+      // Initialize currentMapLocation from data.location (expecting GeoPoint or old format)
+      let initialLat = null
+      let initialLng = null
+
+      if (data.location) {
+        if (
+          data.location.latitude != null &&
+          data.location.longitude != null
+        ) {
+          // It's likely a GeoPoint
+          initialLat = data.location.latitude
+          initialLng = data.location.longitude
+        } else if (
+          data.location.lat != null &&
+          data.location.lng != null
+        ) {
+          // It might be the old { lat, lng } format
+          initialLat = data.location.lat
+          initialLng = data.location.lng
+        }
+
+        if (initialLat !== null && initialLng !== null) {
+          setCurrentMapLocation({
+            lat: initialLat,
+            lng: initialLng,
+          })
+        } else {
+          setCurrentMapLocation(null) // No valid initial location
+        }
+      } else {
+        setCurrentMapLocation(null) // No location in data
+      }
+    } else if (!isOpen) {
+      // Optionally reset state when modal closes
+      setFormData({})
+      setCurrentMapLocation(null)
     }
-  }, [data, isOpen])
+  }, [data, isOpen]) // Depend on data and isOpen
 
   // Client-side only rendering for the portal
   useEffect(() => {
@@ -76,6 +157,30 @@ const EditModal = ({
     }
   }, [mapId])
 
+  // Inside the EditModal component function
+
+  const handleMapClickSelect = (locationFromClick) => {
+    // locationFromClick is { lat, lng, latitude, longitude }
+    setCurrentMapLocation({
+      // Update map location state
+      lat: locationFromClick.lat,
+      lng: locationFromClick.lng,
+    })
+    //Clear search query if user clicks map instead
+    setSearchQuery('')
+    //Perform reverse geocoding here to update address/city fields in formData
+    fetchReverseGeocode(
+      locationFromClick.lat,
+      locationFromClick.lng,
+    ).then((details) => {
+      setFormData((prev) => ({
+        ...prev,
+        address: details.address,
+        city: details.city,
+      }))
+    })
+  }
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
     setFormData((prev) => ({
@@ -89,6 +194,22 @@ const EditModal = ({
 
     // Create a copy of the form data for processing
     let processedData = { ...formData }
+
+    // --- Add/Update Location just before saving ---
+    if (
+      currentMapLocation &&
+      currentMapLocation.lat != null &&
+      currentMapLocation.lng != null
+    ) {
+      // Assign the { lat, lng } object. The backend service will convert it.
+      processedData.location = {
+        lat: currentMapLocation.lat,
+        lng: currentMapLocation.lng,
+      }
+    } else {
+      // Handle case where location might be removed or was never set
+      processedData.location = null // Or delete processedData.location;
+    }
 
     // Process image fields before submission
     for (const [key, field] of Object.entries(fields)) {
@@ -399,12 +520,11 @@ const EditModal = ({
                     )
 
                   case 'map':
+                    // Use currentMapLocation for checks and centering
                     const hasLocation =
-                      formData.location &&
-                      (formData.location.latitude ||
-                        formData.location.lat) &&
-                      (formData.location.longitude ||
-                        formData.location.lng)
+                      currentMapLocation &&
+                      currentMapLocation.lat != null &&
+                      currentMapLocation.lng != null
 
                     return (
                       <div key={key} className='my-4'>
@@ -416,15 +536,73 @@ const EditModal = ({
                             </span>
                           )}
                         </label>
+
                         {field.description && (
                           <p className='text-base text-gray-500 mb-2'>
                             {field.description}
                           </p>
                         )}
 
+                        {/* --- NEW: Address Search Input --- */}
+                        <div className='relative mb-3'>
+                          <label
+                            htmlFor='address-search'
+                            className='block text-xs font-medium text-gray-600 mb-1'
+                          >
+                            Buscar Dirección o Lugar
+                          </label>
+                          <input
+                            id='address-search'
+                            type='text'
+                            value={searchQuery}
+                            onChange={handleInputChange}
+                            onFocus={() =>
+                              setShowSuggestions(true)
+                            }
+                            // onBlur={() => setTimeout(() => setShowSuggestions(false), 150)} // Delay hiding to allow click
+                            placeholder='Escribe una dirección...'
+                            className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none'
+                            disabled={isSearching}
+                            autoComplete='off'
+                          />
+                          {isSearching && (
+                            <span className='absolute right-2 top-8 text-xs text-gray-500'>
+                              Buscando...
+                            </span>
+                          )}
+                          {/* Suggestions List */}
+                          {showSuggestions &&
+                            suggestions.length > 0 && (
+                              <div className='absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto'>
+                                {suggestions.map((s) => (
+                                  <button
+                                    key={s.id}
+                                    type='button' // Prevent form submission
+                                    onClick={() =>
+                                      handleSuggestionClick(
+                                        s,
+                                      )
+                                    }
+                                    onMouseDown={(e) =>
+                                      e.preventDefault()
+                                    } // Prevents input blur before click registers
+                                    className='block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
+                                  >
+                                    {s.place_name}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          {searchError && (
+                            <p className='text-red-500 text-xs mt-1'>
+                              {searchError}
+                            </p>
+                          )}
+                        </div>
+
                         {/* Show instruction message when no location is set */}
                         {!hasLocation && (
-                          <div className='bg-blue-50 p-2 mb-3 text-base text-gray-700 text-base rounded-md'>
+                          <div className='bg-blue-50 p-2 mb-3 text-base text-gray-700 rounded-md'>
                             <p className='flex items-center'>
                               <svg
                                 className='h-5 w-5 mr-1'

@@ -73,7 +73,7 @@ export default function HomePage() {
             tuyo preferido y conoce la programación de
             eventos.
           </p>
-          <MapView hideSearch={true} />
+          <MapView />
         </div>
       </section>
 
