@@ -3,12 +3,10 @@ import Link from 'next/link'
 import MapView from '../../components/map/MapView'
 import VenueList from '../../components/venue/VenueList'
 import { useState } from 'react'
-import { useVenueLocations } from '../../hooks/useVenueLocations'
 import Spots from '../../components/ui/Spot'
 
 export default function MapPage() {
   const [tab, setTab] = useState('mapa')
-  const { locations, loading, error } = useVenueLocations()
 
   return (
     <div className='map relative container mx-auto my-24'>

@@ -3,10 +3,7 @@ import { useState, useEffect, useCallback } from 'react'
 async function fetchLocationDetails(lat, lng) {
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
   if (!mapboxToken || isNaN(lat) || isNaN(lng)) {
-    console.warn(
-      'Mapbox token missing or invalid coordinates for reverse geocoding.',
-    )
-    return { city: null, country: null, country_code: null }
+    return { city: null, country: null, country_code: null } // Handle missing token or invalid coords
   }
 
   try {
@@ -34,13 +31,12 @@ async function fetchLocationDetails(lat, lng) {
         null,
     }
   } catch (error) {
-    console.error('Error during reverse geocoding:', error)
+    // Consider logging to a monitoring service
     return { city: null, country: null, country_code: null }
   }
 }
 
 export function useUserLocationDetection() {
-  console.log('[useUserLocationDetection] Hook initialized')
   const [location, setLocation] = useState(null)
   const [locationDetails, setLocationDetails] =
     useState(null)
@@ -50,15 +46,9 @@ export function useUserLocationDetection() {
     useState('prompt')
 
   const detectLocation = useCallback(async () => {
-    console.log(
-      `[useUserLocationDetection] detectLocation called. Current permissionState: ${permissionState}`,
-    )
     setLoading(true)
     setError(null)
     let locationFound = false
-    console.log(navigator)
-    console.log(navigator.geolocation)
-    console.log(navigator.permissions)
 
     // --- 1. Try Browser Geolocation (if permission granted or prompt) ---
     if (
@@ -66,9 +56,6 @@ export function useUserLocationDetection() {
       (permissionState === 'granted' ||
         permissionState === 'prompt')
     ) {
-      console.log(
-        '[useUserLocationDetection] Attempting Browser Geolocation...',
-      )
       try {
         const position = await new Promise(
           (resolve, reject) => {
@@ -91,31 +78,21 @@ export function useUserLocationDetection() {
           latitude,
           longitude,
         }
-        setLocation(coords)
         const details = await fetchLocationDetails(
           latitude,
           longitude,
         )
+        setLocation(coords) // Update coords
         setLocationDetails(details)
         setPermissionState('granted')
         setError(null)
-        console.log(
-          '[useUserLocationDetection] Browser Geolocation SUCCESS:',
-          coords,
-          details,
-        )
         locationFound = true
-        // Note: setLoading(false) happens at the end of detectLocation
       } catch (geoError) {
-        console.warn('Browser Geolocation error:', geoError)
         if (geoError.code === geoError.PERMISSION_DENIED) {
           setError(
             'Permiso de ubicación denegado por el navegador.',
           )
           setPermissionState('denied')
-          console.log(
-            '[useUserLocationDetection] Browser Geolocation FAILED: Permission Denied.',
-          )
         } else {
           // Keep previous error null or set a generic one, fallback to IP
           setError(
@@ -128,34 +105,19 @@ export function useUserLocationDetection() {
       navigator.geolocation &&
       permissionState === 'denied'
     ) {
-      console.log(
-        '[useUserLocationDetection] Browser Geolocation skipped: Permission already denied.',
-      )
       setError(
         'Permiso de ubicación denegado por el navegador.',
       )
     } else if (!navigator.geolocation) {
-      console.log(
-        '[useUserLocationDetection] Browser Geolocation skipped: Not supported.',
-      )
-      console.warn('Browser Geolocation not supported.')
-      // Proceed to IP fallback
     }
-
     // --- 2. Try IP Geolocation (if browser failed or wasn't tried) ---
     if (!locationFound && permissionState !== 'denied') {
-      // Only try IP if browser failed AND permission wasn't explicitly denied
-      console.log(
-        '[useUserLocationDetection] Attempting IP Geolocation...',
-      )
       const ipinfoToken =
         process.env.NEXT_PUBLIC_IPINFO_TOKEN
       if (ipinfoToken) {
         try {
-          console.log(
-            '[useUserLocationDetection] Using IPInfo token.',
-          )
           const response = await fetch(
+            // Only try IP if browser failed AND permission wasn't explicitly denied
             `https://ipinfo.io/json?token=${ipinfoToken}`,
           )
           if (!response.ok)
@@ -173,19 +135,14 @@ export function useUserLocationDetection() {
                 latitude: lat,
                 longitude: lng,
               }
-              setLocation(coords) // Set location even if browser failed
               const details = await fetchLocationDetails(
                 lat,
                 lng,
               )
+              setLocation(coords) // Set location even if browser failed
               setLocationDetails(details)
               setError(null) // Clear previous browser error if IP succeeds
               locationFound = true
-              console.log(
-                '[useUserLocationDetection] IP Geolocation SUCCESS:',
-                coords,
-                details,
-              )
             } else {
               throw new Error(
                 'Invalid coordinates from IPInfo',
@@ -197,11 +154,7 @@ export function useUserLocationDetection() {
             )
           }
         } catch (ipError) {
-          console.error('IP Geolocation error:', ipError)
-          console.log(
-            '[useUserLocationDetection] IP Geolocation FAILED.',
-          )
-          // Only set error if browser didn't already set one, or be more specific
+          // Consider logging to a monitoring service
           if (!error && permissionState !== 'denied') {
             setError(
               'No se pudo determinar la ubicación aproximada.',
@@ -209,10 +162,6 @@ export function useUserLocationDetection() {
           }
         }
       } else {
-        console.warn('IPInfo token missing.')
-        console.log(
-          '[useUserLocationDetection] IP Geolocation skipped: Token missing.',
-        )
         if (!error && permissionState !== 'denied') {
           setError(
             'No se pudo determinar la ubicación aproximada (configuración).',
@@ -220,10 +169,6 @@ export function useUserLocationDetection() {
         }
       }
     }
-
-    console.log(
-      `[useUserLocationDetection] detectLocation finished. Location found: ${locationFound}, Error: ${error}`,
-    )
     setLoading(false)
 
     // If still no location found after all attempts
@@ -238,54 +183,43 @@ export function useUserLocationDetection() {
 
   // Effect to check initial permission state
   useEffect(() => {
-    console.log(
-      '[useUserLocationDetection] useEffect: Checking initial permission state...',
-    )
     if (
       typeof window === 'undefined' ||
       !navigator.permissions
     ) {
-      console.log(
-        '[useUserLocationDetection] useEffect: Permissions API not available, defaulting state to prompt.',
-      )
       return
     }
     navigator.permissions
       .query({ name: 'geolocation' }) // Check initial permission
       .then((result) => {
-        setPermissionState(result.state) // 'granted', 'prompt', or 'denied'
         const initialState = result.state
-        setPermissionState(initialState) // Update state
-        console.log(
-          '[useUserLocationDetection] useEffect: Initial permission state from Permissions API:',
-          initialState,
-        )
-        // --- ADDED: Trigger initial detection if allowed ---
+        setPermissionState(initialState)
+        // Trigger initial detection if allowed or prompt
         if (
           initialState === 'granted' ||
           initialState === 'prompt'
         ) {
-          console.log(
-            '[useUserLocationDetection] useEffect: Triggering initial detection based on permission state.',
-          )
           detectLocation()
         }
       })
       .catch((error) => {
-        console.error(
-          '[useUserLocationDetection] useEffect: Error checking initial permission state:',
-          error,
-        )
+        // Consider logging to a monitoring service
       })
   }, []) // Runs only once on mount
 
+  // Effect to trigger detection when permission becomes granted or on initial load (if not denied/disabled)
+  useEffect(() => {
+    // NOTE: Initial detection is handled by the first useEffect.
+    // Subsequent detections after explicit permission grant are handled by requestPermissionAndDetect.
+    // This effect primarily ensures loading state is correct if permission changes to denied externally.
+    if (permissionState === 'denied') {
+      setLoading(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [permissionState, loading]) // detectLocation removed as it's stable via useCallback
+
   // Function to be called explicitly by UI if user grants permission via a modal
   const requestPermissionAndDetect = () => {
-    console.log(
-      `[useUserLocationDetection] requestPermissionAndDetect called. Current permissionState: ${permissionState}`,
-    )
-    if (permissionState === 'granted') return // No need if already granted
-
     if (navigator.geolocation) {
       setLoading(true) // Show loading indicator while browser prompt is potentially up
       navigator.geolocation.getCurrentPosition(
@@ -299,32 +233,20 @@ export function useUserLocationDetection() {
             latitude,
             longitude,
           }
-          setLocation(coords)
           const details = await fetchLocationDetails(
             latitude,
             longitude,
           )
+          setLocation(coords)
           setLocationDetails(details)
           setError(null)
-          console.log(
-            '[useUserLocationDetection] requestPermissionAndDetect: Browser prompt SUCCESS.',
-            coords,
-            details,
-          )
           setLoading(false)
         },
         (geoError) => {
           // Failure: Permission likely denied via browser prompt
-          console.warn(
-            'Browser Geolocation error on request:',
-            geoError,
-          )
           setPermissionState('denied')
           setError(
             'Permiso de ubicación denegado por el navegador.',
-          )
-          console.log(
-            '[useUserLocationDetection] requestPermissionAndDetect: Browser prompt FAILED (Permission Denied).',
           )
           setLoading(false)
           // Optionally try IP fallback again here if desired, but might be redundant
@@ -336,9 +258,6 @@ export function useUserLocationDetection() {
         },
       )
     } else {
-      console.error(
-        '[useUserLocationDetection] requestPermissionAndDetect: navigator.geolocation is not available.',
-      )
       setError(
         'Geolocalización no soportada por este navegador.',
       )
@@ -346,11 +265,6 @@ export function useUserLocationDetection() {
     }
   }
 
-  console.log(
-    `[useUserLocationDetection] Returning state: loading=${loading}, permissionState=${permissionState}, location=${JSON.stringify(
-      location,
-    )}, error=${error}`,
-  )
   return {
     location,
     locationDetails,

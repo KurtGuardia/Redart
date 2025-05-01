@@ -8,7 +8,6 @@ import {
   limit,
 } from 'firebase/firestore'
 
-// Define a default location if needed
 const DEFAULT_FILTER = {
   city: 'Cochabamba',
   country: 'BO',
@@ -26,11 +25,11 @@ export function useVenueLocations(
     const fetchData = async () => {
       setLoading(true)
       setError(null)
-      setLocations([]) // Clear previous results
+      setLocations([])
 
       try {
         const venuesCollection = collection(db, 'venues')
-        let q // Firestore query variable
+        let q
 
         // Determine if we have valid filter parameters
         const hasCity = filterParams?.city
@@ -39,60 +38,38 @@ export function useVenueLocations(
           !fetchAll && (hasCity || hasCountryCode)
 
         if (useFilter) {
-          console.log('Filtering venues by:', filterParams)
-          // Build query with filters - prioritize city if available
-          // Note: Firestore client-side SDK doesn't easily support OR queries across different fields.
-          // We'll filter by city primarily, or country if city is missing.
-          // Add other essential filters like 'active' here as well.
-          if (hasCity) {
-            q = query(
-              venuesCollection,
-              where('city', '==', filterParams.city),
-              where(
-                'country',
-                '==',
-                filterParams.country ||
-                  DEFAULT_FILTER.country,
-              ), // Ensure country matches too if city is specific
-              // where('active', '==', true), // Only active venues
-              limit(100),
-            )
-          } else if (hasCountryCode) {
-            // Fallback to country if city isn't available
+          if (hasCountryCode) {
             q = query(
               venuesCollection,
               where('country', '==', filterParams.country),
               // where('active', '==', true),
               limit(100),
             )
-          } else {
-            // If filterParams exist but lack city/country, maybe use default or fetch all?
-            // Using default filter for this example:
-            console.log(
-              'Using default filter:',
-              DEFAULT_FILTER,
-            )
+            // --- Commented out City Filter (kept for reference) ---
+            /* else if (hasCity) {
+            // This block is less likely to be used now but kept for reference
             q = query(
               venuesCollection,
-              where('city', '==', DEFAULT_FILTER.city),
+              where('city', '==', filterParams.city),
               where(
                 'country',
                 '==',
-                DEFAULT_FILTER.country,
+                filterParams.country || DEFAULT_FILTER.country, // Ensure country matches if city is specific
               ),
               // where('active', '==', true),
               limit(100),
             )
+          } */
+            // If filterParams exist but lack city/country, maybe use default or fetch all?
+            // Using default filter for this example:
+          } else {
+            // If filterParams exist but lack city/country, maybe use default or fetch all?
+            // Using default filter for this example:
+            q = query(venuesCollection, limit(100)) // Fallback to limit if no valid filter
           }
         } else {
-          // Fetch all (or a limited subset of all) active/approved venues if fetchAll is true or no filters provided
-          console.log(
-            'Fetching all active venues (limited)',
-          )
           q = query(
             venuesCollection,
-            // where('active', '==', true),
-            // where('isApproved', '==', true),
             limit(100), // IMPORTANT: Limit results when fetching all client-side
           )
         }
@@ -102,7 +79,6 @@ export function useVenueLocations(
           .map((doc) => ({
             id: doc.id,
             ...doc.data(),
-            // Add robust location processing here if needed, similar to getValidPosition
             location: doc.data().location
               ? {
                   latitude:
@@ -126,14 +102,8 @@ export function useVenueLocations(
           ) // Ensure location is valid after fetch
 
         setLocations(fetchedLocations)
-        console.log(
-          `Fetched ${fetchedLocations.length} venues.`,
-        )
       } catch (err) {
-        console.error(
-          'Error fetching venue locations:',
-          err,
-        )
+        // Consider logging to a monitoring service instead of console
         setError(
           err instanceof Error
             ? err
@@ -144,8 +114,6 @@ export function useVenueLocations(
       }
     }
 
-    // Only fetch if filter params are provided OR fetchAll is true
-    // Avoid fetching if filterParams is empty object {} and fetchAll is false
     if (
       fetchAll ||
       (filterParams && Object.keys(filterParams).length > 0)
@@ -155,17 +123,12 @@ export function useVenueLocations(
       !filterParams ||
       Object.keys(filterParams).length === 0
     ) {
-      // If no filters and not fetching all, decide what to do.
-      // Option 1: Fetch default location
-      // fetchData(); // (using the default filter logic inside)
-      // Option 2: Set loading false and show empty state immediately
+      // If no filters and not fetching all, set loading false and show empty state
       setLoading(false)
       setLocations([])
-      console.log(
-        'No filter parameters provided, not fetching venues.',
-      )
     }
-  }, [filterParams?.city, filterParams?.country, fetchAll]) // Re-fetch if filter params or fetchAll change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterParams?.city, filterParams?.country, fetchAll])
 
   return { locations, loading, error }
 }
