@@ -1,7 +1,60 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { useUserLocationDetection } from '../../hooks/useUserLocationDetection'
+import { useEffect, useState } from 'react'
+import { useVenueLocations } from '../../hooks/useVenueLocations'
 
-export default function VenueList({ locations = [] }) {
+export default function VenueList() {
+  const [showLocationModal, setShowLocationModal] =
+    useState(false)
+  const [venueFilter, setVenueFilter] = useState(null)
+  const [showPermissionModal, setShowPermissionModal] =
+    useState(false)
+
+  const {
+    location: userCoords,
+    locationDetails: userLocationDetails,
+    loading: loadingUserLocation,
+    error: userLocationError,
+    permissionState,
+    requestPermissionAndDetect,
+  } = useUserLocationDetection()
+
+  const {
+    locations,
+    loading: loadingVenues,
+    error: venuesError,
+  } = useVenueLocations(venueFilter)
+
+  useEffect(() => {
+    if (
+      permissionState === 'granted' &&
+      !loadingUserLocation &&
+      userLocationDetails?.country_code
+    ) {
+      setVenueFilter({
+        country: userLocationDetails.country_code,
+      })
+    } else {
+      setVenueFilter(null)
+    }
+
+    if (
+      permissionState === 'prompt' &&
+      !loadingUserLocation &&
+      !userLocationError
+    ) {
+      setShowLocationModal(true)
+    } else {
+      setShowLocationModal(false)
+    }
+  }, [
+    permissionState,
+    loadingUserLocation,
+    userLocationDetails,
+    userLocationError,
+  ])
+
   if (!locations.length) {
     return (
       <div className='text-center text-gray-500 py-8'>
@@ -66,3 +119,5 @@ export default function VenueList({ locations = [] }) {
     </div>
   )
 }
+
+// Hay que hacer que muestre el mensaje de que es necesario dar ubicacion, y el boton de tooltip

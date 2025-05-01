@@ -39,14 +39,7 @@ export default function MapPage() {
       </div>
 
       {tab === 'mapa' && <MapView />}
-      {tab === 'lista' &&
-        (loading ? (
-          <div className='text-center py-10 text-gray-500'>
-            Cargando espacios culturales...
-          </div>
-        ) : (
-          <VenueList locations={locations} />
-        ))}
+      {tab === 'lista' && <VenueList />}
 
       <div className='text-center mt-8'>
         <Link

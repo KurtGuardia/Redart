@@ -38,7 +38,7 @@ export default function HomePage() {
         className='about-us img relative mt-24'
         style={{ backgroundImage: `url(${'/crowd.jpg'})` }}
       >
-        <div className='w-[80%] relative min-h-[50vh] flex flex-col z-10 py-12 mx-auto px-4 text-center text-white'>
+        <div className='w-full xl:w-[80%] relative min-h-[50vh] flex flex-col z-10 py-12 mx-auto px-4 text-center text-white'>
           <h2 className='text-3xl xl:text-5xl font-bold mb-12'>
             Sobre nosotros
           </h2>
@@ -62,7 +62,7 @@ export default function HomePage() {
       </section>
 
       <section className='map mt-24'>
-        <div className='relative container mx-auto px-4 w-[80%] 2xl:w-[100%]'>
+        <div className='relative container mx-auto px-4 w-full md:w-[80%] 2xl:w-full'>
           <Spots count={4} />
           <h2 className='text-3xl xl:text-5xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--blue-600)] to-[var(--blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg'>
             Explora los espacios culturales
