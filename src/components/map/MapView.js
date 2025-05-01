@@ -43,41 +43,29 @@ export default function MapView({ ...props }) {
         '[MapView] useEffect: Location detection finished (loadingUserLocation is false).',
       )
 
-      if (
-        userLocationDetails?.city &&
-        userLocationDetails?.country
-      ) {
-        console.log('Ever here')
+      // --- New Logic: Prioritize Country Code ---
+      if (userLocationDetails?.country_code) {
+        console.log(
+          '[MapView] useEffect: Found country code, setting filter.',
+        )
         setVenueFilter({
-          city: userLocationDetails.city, // Keep city as is
           country: userLocationDetails.country_code, // Use country_code here
         })
         console.log(
-          '[MapView] useEffect: Set venueFilter based on City and Country:',
-          {
-            city: userLocationDetails.city,
-            country: userLocationDetails.country_code, // Log the code too
-          },
+          '[MapView] useEffect: Set venueFilter based on Country Code:',
+          { country: userLocationDetails.country_code },
         )
-      } else if (userLocationDetails?.country) {
-        console.log('test')
-
-        setVenueFilter({
-          country: userLocationDetails.country,
-          country: userLocationDetails.country_code, // Use country_code here too
-        })
-        console.log(
-          '[MapView] useEffect: Set venueFilter based on Country only:',
-          { country: userLocationDetails.country_code }, // Log the code
-        )
-      } else if (
+      }
+      // --- Logic for Denied/Error/No Details ---
+      // Keep this logic to handle cases where location detection fails or is denied
+      else if (
         permissionState === 'denied' ||
         userLocationError ||
         (!userLocationDetails &&
           permissionState === 'granted')
       ) {
         console.log(
-          'Location denied, error, or details unavailable. Using default filter.',
+          // Removed duplicate log message here
           '[MapView] useEffect: Location denied, error, or details unavailable. Setting venueFilter to null (will use default later if needed).',
         )
         setVenueFilter(null)
@@ -88,7 +76,10 @@ export default function MapView({ ...props }) {
           '[MapView] useEffect: Permission state is prompt. Setting venueFilter to null.',
         )
         setVenueFilter(null)
-      } else {
+      }
+      // --- Fallback ---
+      // This case might be less likely now but kept as a safety net
+      else {
         console.log('HERE x2')
 
         console.log(
@@ -96,6 +87,26 @@ export default function MapView({ ...props }) {
         )
         setVenueFilter(DEFAULT_MAP_FILTER)
       }
+
+      /* --- Commented Out: Original City + Country Logic ---
+      if (
+        userLocationDetails?.city &&
+        userLocationDetails?.country_code // Check for country_code here too
+      ) {
+        console.log('[MapView] useEffect: Found city and country code.');
+        setVenueFilter({
+          city: userLocationDetails.city,
+          country: userLocationDetails.country_code,
+        });
+        console.log('[MapView] useEffect: Set venueFilter based on City and Country:', { city: userLocationDetails.city, country: userLocationDetails.country_code });
+      } else if (userLocationDetails?.country_code) { // Check for country_code only
+        console.log('[MapView] useEffect: Found country code only.');
+        setVenueFilter({
+          country: userLocationDetails.country_code,
+        });
+        console.log('[MapView] useEffect: Set venueFilter based on Country only:', { country: userLocationDetails.country_code });
+      }
+      --- End Commented Out --- */
 
       // --- Modal Logic ---
       if (
