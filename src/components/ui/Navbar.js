@@ -23,7 +23,7 @@ export default function Navbar() {
   const [avatarMenuOpen, setAvatarMenuOpen] =
     useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] =
-    useState(true)
+    useState(false)
   const avatarMenuTimeout = useRef(null)
 
   useEffect(() => {

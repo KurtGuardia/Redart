@@ -10,7 +10,19 @@ export default function VenueHeroSection({ venueId }) {
   const { venue, loading, error } = useVenueData(venueId)
 
   if (error) {
-    throw error
+    return (
+      <div className='relative h-64 md:h-96 w-full flex items-center justify-center text-center mb-12 shadow-lg'>
+        <div className='relative z-20 bg-white/10 w-[90%] backdrop-blur-md rounded-lg p-4 md:p-6 xl:px-14 2xl:px-20 shadow-lg'>
+          <h2 className='text-2xl text-red-500 md:text-4xl font-bold mb-4'>
+            Ocurrió un error
+          </h2>
+          <p className='text-md text-gray-400 md:text-lg mb-4'>
+            {`No se pudo cargar la foto de portada y nombre 😞. Error: ${error.message}`}
+          </p>
+        </div>
+        <div className='absolute inset-0 bg-gradient-to-br from-[var(--teal-700)] to-[var(--blue-800)] z-0'></div>
+      </div>
+    )
   }
 
   if (loading) {

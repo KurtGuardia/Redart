@@ -24,19 +24,7 @@ export default function Dashboard() {
     return <DashboardSkeleton />
   }
 
-  if (error) {
-    return (
-      <div className='text-red-500 p-4 text-center'>
-        Error: {error}
-        <button
-          onClick={() => signOutAndRedirect(auth, router)}
-          className='mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600'
-        >
-          Ir a Inicio de Sesión
-        </button>
-      </div>
-    )
-  }
+  if (error) throw error
 
   if (!userData) {
     console.log(
