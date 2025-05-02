@@ -2,7 +2,7 @@ import Link from 'next/link'
 import HeroBackgroundSlider from '../components/HeroBackgroundSlider'
 import MapView from '../components/map/MapView'
 import FeaturedEventsList from '../components/event/FeaturedEventsList'
-import Spots from '../components/ui/Spot'
+import Spots from '../components/ui/Spots'
 
 export default function HomePage() {
   const heroImages = [
@@ -14,6 +14,7 @@ export default function HomePage() {
   return (
     <>
       <div className='absolute top-0 left-0 right-0 opacity-80 bg-gradient-to-r from-[var(--secondary-color)] to-[var(--primary)] h-[80vh]' />
+      <Spots count={8} />
       <HeroBackgroundSlider images={heroImages}>
         <div className='mx-auto z-10 text-center flex flex-col justify-between align-center bg-white bg-opacity-25 rounded-3xl py-8'>
           <h1 className='text-3xl xl:text-5xl text-[var(--white)] md:text-4xl font-bold xl:w-[90%] w-[70%] mx-auto animate-fade-in-up'>

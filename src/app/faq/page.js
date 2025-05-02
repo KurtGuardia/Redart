@@ -1,5 +1,5 @@
 import FAQItem from '../../components/FAQItem'
-import Spots from '../../components/ui/Spot'
+import Spots from '../../components/ui/Spots'
 
 const faqs = [
   {

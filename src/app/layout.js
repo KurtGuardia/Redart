@@ -10,12 +10,12 @@ export const metadata = {
 }
 
 // Make the layout async
-export default async function RootLayout ( { children } ) {
+export default async function RootLayout({ children }) {
   return (
     <html lang='es' suppressHydrationWarning={true}>
       <body className='flex flex-col min-h-screen'>
         <Navbar />
-        <main className='relative flex flex-col justify-between items-center flex-grow'>
+        <main className='relative flex flex-col justify-between items-center flex-grow overflow-hidden'>
           {children}
         </main>
         <Footer />

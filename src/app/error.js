@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import Spots from '../components/ui/Spot'
+import Spots from '../components/ui/Spots'
 
 export default function Error({ error, reset }) {
   const [timeLeft, setTimeLeft] = useState(10)

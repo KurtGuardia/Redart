@@ -3,14 +3,14 @@ import Link from 'next/link'
 import MapView from '../../components/map/MapView'
 import VenueList from '../../components/venue/VenueList'
 import { useState } from 'react'
-import Spots from '../../components/ui/Spot'
+import Spots from '../../components/ui/Spots'
 
 export default function MapPage() {
   const [tab, setTab] = useState('map')
 
   return (
     <div className='map relative container mx-auto my-24'>
-      <Spots count={5} />
+      <Spots count={8} />
 
       <h1>Descubre la movida cultural que tengas cerca!</h1>
 

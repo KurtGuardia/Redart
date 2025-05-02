@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import Spots from '../../components/ui/Spot'
+import Spots from '../../components/ui/Spots'
 import VenueRegistrationForm from '../../components/register/VenueRegistrationForm'
 import UserRegistrationForm from '../../components/register/UserRegistrationForm'
 
@@ -11,7 +11,7 @@ export default function Register() {
 
   return (
     <>
-      <Spots count={5} />
+      <Spots count={6} />
       <div className='min-w-[40vw] mx-auto mt-32 mb-24'>
         {/* Tab Buttons Container - Note: Removed bottom border from here */}
         <div className='flex'>

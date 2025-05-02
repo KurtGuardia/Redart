@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { FaQuestionCircle } from 'react-icons/fa'
-import Spots from '../components/ui/Spot'
+import Spots from '../components/ui/Spots'
 
 export default function NotFound() {
   return (

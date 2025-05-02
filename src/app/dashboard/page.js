@@ -8,7 +8,7 @@ import DashboardSkeleton from '../../components/DashboardSkeleton'
 import VenueDashboard from '../../components/dashboard/VenueDashboard'
 import UserDashboard from '../../components/dashboard/UserDashboard'
 import { useUserData } from '../../hooks/useUserData'
-import Spots from '../../components/ui/Spot'
+import Spots from '../../components/ui/Spots'
 
 export default function Dashboard() {
   const router = useRouter()

@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { useFeaturedEvents } from '../../hooks/useFeaturedEvents'
 import EventCard from './EventCard'
-import Spots from '../ui/Spot'
+import Spots from '../ui/Spots'
 import Link from 'next/link'
 import EventDetailModal from './EventDetailModal'
 import EventCardSkeleton from './EventCardSkeleton'

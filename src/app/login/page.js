@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, Suspense } from 'react'
+import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import Spots from '../../components/ui/Spot'
+import Spots from '../../components/ui/Spots'
 
 function LoginForm() {
   const [email, setEmail] = useState('')
@@ -102,27 +102,13 @@ function LoginForm() {
   )
 }
 
-//TODO: delete when actual login is implemented
-// Loading fallback component
-function LoginFormFallback() {
-  return (
-    <div className='p-6'>
-      <h2 className='text-2xl font-bold mb-6 text-center'>
-        Cargando...
-      </h2>
-    </div>
-  )
-}
-
 export default function Login() {
   return (
     <>
-      <Spots count={4} />
+      <Spots count={5} />
       <div className='mx-auto my-24 container'>
         <div className='max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden'>
-          <Suspense fallback={<LoginFormFallback />}>
-            <LoginForm />
-          </Suspense>
+          <LoginForm />
         </div>
       </div>
     </>
