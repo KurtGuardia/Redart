@@ -1,32 +1,14 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { db } from '../../lib/firebase-client'
-import {
-  collection,
-  getDocs,
-  query,
-  orderBy,
-  limit,
-  startAfter,
-  Timestamp,
-  where,
-} from 'firebase/firestore'
 import { CATEGORIES } from '../../lib/constants'
+import { useEvents } from '../../hooks/useEvents' // Import the hook
 import EventCard from './EventCard'
 import EventDetailModal from './EventDetailModal'
 import EventCardSkeleton from './EventCardSkeleton'
 
-const ITEMS_PER_PAGE = 24
-
 const EventListView = () => {
-  const [eventsList, setEventsList] = useState([])
-  const [lastVisible, setLastVisible] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [isFetchingMore, setIsFetchingMore] =
-    useState(false)
-  const [hasMore, setHasMore] = useState(true)
-  const [error, setError] = useState(null)
+  // State managed by the component
   const [searchTerm, setSearchTerm] = useState('')
   const [filter, setFilter] = useState('all')
   const [selectedEvent, setSelectedEvent] = useState(null)
@@ -34,13 +16,17 @@ const EventListView = () => {
   const [debouncedSearchTerm, setDebouncedSearchTerm] =
     useState(searchTerm)
   const isInitialMount = useRef(true)
-  const searchInputRef = useRef(null)
+  const searchInputRef = useRef(null) // Keep ref for focus management
 
-  // Effect for initial data fetch on mount
-  useEffect(() => {
-    fetchEvents(searchTerm, filter, true)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  // Use the custom hook, passing the debounced search term and filter
+  const {
+    eventsList,
+    loading,
+    isFetchingMore,
+    hasMore,
+    error,
+    loadMoreEvents, // Get the load more function from the hook
+  } = useEvents(debouncedSearchTerm, filter)
 
   // Effect to debounce search term
   useEffect(() => {
@@ -53,26 +39,19 @@ const EventListView = () => {
     }
   }, [searchTerm])
 
-  // Effect to fetch data based on debounced search term or filter change (after initial mount)
-  useEffect(() => {
-    if (isInitialMount.current) {
-      // Initial mount is handled by the first effect
-      isInitialMount.current = false // Mark initial mount as passed *after* first effect runs
-      return
-    }
-    fetchEvents(debouncedSearchTerm, filter, true)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearchTerm, filter])
-
   // Effect to refocus search input after loading completes (post-initial mount)
+  // Keep this effect here as it interacts with the component's ref
   useEffect(() => {
-    // Only run if loading has just finished AND it wasn't the initial mount's loading sequence
-    if (!loading && !isInitialMount.current) {
-      // Optional: Check if the input exists before focusing
-      searchInputRef.current?.focus()
+    // Check only when loading transitions from true to false
+    if (!loading) {
+      if (isInitialMount.current) {
+        // If it was the initial mount, just mark it as finished and don't focus
+        isInitialMount.current = false
+      } else {
+        // If it wasn't the initial mount, focus the input
+        searchInputRef.current?.focus()
+      }
     }
-    // We depend on `loading` to trigger this effect when it changes.
-    // isInitialMount.current is checked inside, so it doesn't need to be a dependency.
   }, [loading])
 
   const openModal = (event) => {
@@ -83,141 +62,6 @@ const EventListView = () => {
   const closeModal = () => {
     setSelectedEvent(null)
     setIsModalOpen(false)
-  }
-
-  const fetchEvents = async (
-    currentSearchTerm = '',
-    currentCategoryFilter = 'all',
-    shouldReset = false,
-  ) => {
-    let currentLastVisible = lastVisible
-    if (shouldReset) {
-      setLoading(true)
-    } else {
-      setIsFetchingMore(true)
-    }
-
-    setError(null)
-
-    if (shouldReset) {
-      currentLastVisible = null
-    }
-
-    // Get the start of today for date filtering
-    const now = new Date()
-    const today = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-    )
-    const todayTimestamp = Timestamp.fromDate(today)
-
-    // Base query constraints
-    let eventsQuery = query(
-      collection(db, 'events'),
-      where('status', '==', 'active'),
-      where('date', '>=', todayTimestamp), // Only fetch future or today's events
-      orderBy('date', 'desc'),
-    )
-
-    // Add category filter if not 'all'
-    if (currentCategoryFilter !== 'all') {
-      eventsQuery = query(
-        eventsQuery,
-        where('category', '==', currentCategoryFilter),
-      )
-    }
-
-    if (currentLastVisible && !shouldReset) {
-      eventsQuery = query(
-        eventsQuery,
-        startAfter(currentLastVisible),
-      )
-    }
-
-    // Apply limit *after* all filters and ordering
-    eventsQuery = query(eventsQuery, limit(ITEMS_PER_PAGE))
-
-    try {
-      const eventsSnapshot = await getDocs(eventsQuery)
-      const newEventsData = eventsSnapshot.docs.map(
-        (doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }),
-      )
-
-      const filteredEvents = newEventsData.filter(
-        // Now only filter by search term client-side
-        (event) => {
-          const lowerSearchTerm =
-            currentSearchTerm.toLowerCase()
-
-          const matchesSearch =
-            !currentSearchTerm ||
-            event.title
-              ?.toLowerCase()
-              .includes(lowerSearchTerm) ||
-            event.description
-              ?.toLowerCase()
-              .includes(lowerSearchTerm) ||
-            event.venueName
-              ?.toLowerCase()
-              .includes(lowerSearchTerm) ||
-            event.city
-              ?.toLowerCase()
-              .includes(lowerSearchTerm)
-
-          // Date and category filtering are now handled by Firestore query
-          // We still need to ensure the date field exists, though less critical now
-          return (
-            matchesSearch && event.date instanceof Timestamp
-          )
-        },
-      )
-
-      const finalEvents = filteredEvents.map((event) => ({
-        ...event,
-        date: event.date?.toDate
-          ? event.date.toDate().toISOString()
-          : null,
-        createdAt: event.createdAt?.toDate
-          ? event.createdAt.toDate().toISOString()
-          : null,
-        updatedAt: event.updatedAt?.toDate
-          ? event.updatedAt.toDate().toISOString()
-          : null,
-      }))
-
-      setEventsList(
-        shouldReset
-          ? finalEvents
-          : (prevEvents) => [...prevEvents, ...finalEvents],
-      )
-
-      const lastDocSnapshot =
-        eventsSnapshot.docs[eventsSnapshot.docs.length - 1]
-      setLastVisible(lastDocSnapshot || null)
-      setHasMore(
-        eventsSnapshot.docs.length === ITEMS_PER_PAGE,
-      )
-    } catch (err) {
-      console.error(
-        'Error fetching events client-side:',
-        err,
-      )
-      setError(
-        err instanceof Error
-          ? err
-          : new Error('Error al cargar eventos.'),
-      )
-    } finally {
-      if (shouldReset) {
-        setLoading(false)
-      } else {
-        setIsFetchingMore(false)
-      }
-    }
   }
 
   const handleSearchChange = (e) => {
@@ -232,7 +76,8 @@ const EventListView = () => {
 
   const handleLoadMore = () => {
     if (!loading && !isFetchingMore && hasMore) {
-      fetchEvents(debouncedSearchTerm, filter, false)
+      // Call the function from the hook
+      loadMoreEvents()
     }
   }
 
@@ -248,7 +93,7 @@ const EventListView = () => {
             value={searchTerm}
             onChange={handleSearchChange}
             className='bg-white w-full px-4 xl:py-2 py-1 border-2 border-gray-300 rounded-lg shadow-sm  focus:border-teal-500 pr-10 focus-visible:outline-none'
-            disabled={loading || isFetchingMore}
+            disabled={loading || isFetchingMore} // Use hook's state
           />
 
           {searchTerm && (
@@ -277,7 +122,7 @@ const EventListView = () => {
             value={filter}
             onChange={handleCategoryFilterChange}
             className='w-full md:w-48 px-4 xl:py-2 py-1 border-2 border-gray-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500 outline-none appearance-none bg-white pr-8 cursor-pointer'
-            disabled={loading || isFetchingMore}
+            disabled={loading || isFetchingMore} // Use hook's state
           >
             <option value='all'>Categorías</option>
             {CATEGORIES.map((category) => (
@@ -302,18 +147,19 @@ const EventListView = () => {
       </div>
 
       {/* Display error message if fetch failed */}
-      {error && !loading && (
-        <p className='col-span-full text-center text-red-600 py-10'>
-          😞 Ocurrió un error al cargar los eventos:{' '}
-          {error.message}
-        </p>
-      )}
+      {error &&
+        !loading && ( // Use hook's state
+          <p className='col-span-full text-center text-red-600 py-10'>
+            😞 Ocurrió un error al cargar los eventos:{' '}
+            {error.message}
+          </p>
+        )}
 
       {/* Display loading skeletons while data is being
       fetched */}
-      {loading && (
+      {loading && ( // Use hook's state
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8'>
-          {Array.from({ length: 10 }).map((_, index) => (
+          {Array.from({ length: 4 }).map((_, index) => (
             <EventCardSkeleton
               key={`initial-skeleton-${index}`}
             />
@@ -322,55 +168,61 @@ const EventListView = () => {
       )}
 
       {/* Display event cards when data is loaded */}
-      {!loading && !error && (
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-8 gap-8 px-1 xl:px-16'>
-          {eventsList.map((event) => (
-            <EventCard
-              key={event.id}
-              onClick={() => openModal(event)}
-              title={event.title}
-              description={event.description}
-              date={event.date}
-              duration={event.duration}
-              venueName={event.venueName}
-              venueId={event.venueId}
-              address={event.address}
-              image={event.image || '/placeholder.svg'}
-              status={event.status}
-            />
-          ))}
-
-          {/* Display loading skeletons while fetching more */}
-          {isFetchingMore &&
-            Array.from({ length: 4 }).map((_, index) => (
-              <EventCardSkeleton
-                key={`loading-more-${index}`}
+      {!loading &&
+        !error && ( // Use hook's state
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-8 gap-8 px-1 xl:px-16'>
+            {eventsList.map((event) => (
+              <EventCard
+                key={event.id}
+                onClick={() => openModal(event)}
+                title={event.title}
+                description={event.description}
+                date={event.date}
+                duration={event.duration}
+                venueName={event.venueName}
+                venueId={event.venueId}
+                address={event.address}
+                image={event.image || '/placeholder.svg'}
+                status={event.status}
               />
             ))}
-        </div>
-      )}
+
+            {/* Display loading skeletons while fetching more */}
+            {isFetchingMore && // Use hook's state
+              Array.from({ length: 4 }).map((_, index) => (
+                <EventCardSkeleton
+                  key={`loading-more-${index}`}
+                />
+              ))}
+          </div>
+        )}
 
       {/* Show message if no events match the filters */}
-      {!loading && !error && eventsList.length === 0 && (
-        <p className='col-span-full text-center text-gray-500 py-10'>
-          No se encontraron eventos que coincidan con los
-          filtros.
-        </p>
-      )}
+      {!loading &&
+        !error &&
+        eventsList.length === 0 && ( // Use hook's state
+          <p className='col-span-full text-center text-gray-500 py-10'>
+            No se encontraron eventos que coincidan con los
+            filtros.
+          </p>
+        )}
 
       {/* Show load more button if there are more events to
       fetch */}
-      {!loading && !error && !isFetchingMore && hasMore && (
-        <div className='mt-12 text-center'>
-          <button
-            onClick={handleLoadMore}
-            className='bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-6 rounded-full transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed'
-            disabled={isFetchingMore}
-          >
-            Cargar más
-          </button>
-        </div>
-      )}
+      {!loading &&
+        !error &&
+        !isFetchingMore &&
+        hasMore && ( // Use hook's state
+          <div className='mt-12 text-center'>
+            <button
+              onClick={handleLoadMore}
+              className='bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-6 rounded-full transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed'
+              disabled={isFetchingMore} // Use hook's state
+            >
+              Cargar más
+            </button>
+          </div>
+        )}
 
       <EventDetailModal
         isOpen={isModalOpen}
