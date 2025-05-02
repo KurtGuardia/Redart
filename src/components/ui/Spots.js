@@ -103,7 +103,7 @@ const Spots = ({ count = 5 }) => {
           height: `${dynamicStyles.size}px`,
           borderRadius: '50%',
           background: `radial-gradient(circle, rgba(${color}, 0.5) 0%, rgba(${color}, 0) 50%)`,
-          filter: `blur(20px)`,
+          filter: 'blur(20px)',
           transition: 'opacity 0.3s ease-out',
         }
         return <div key={i} style={style}></div>

@@ -1,10 +1,16 @@
 'use client'
 
 import Link from 'next/link'
-import { FaWhatsapp, FaFacebook, FaInstagram, FaTwitter, FaEnvelope } from 'react-icons/fa'
+import {
+  FaWhatsapp,
+  FaFacebook,
+  FaInstagram,
+  FaTwitter,
+  FaEnvelope,
+} from 'react-icons/fa'
 
 const Footer = () => (
-  <footer className='bg-[var(--blue-800)] py-10 px-24'>
+  <footer className='bg-[var(--blue-800)] py-10 xl:py-5 px-24 xl:px-9'>
     <div className='max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8'>
       {/* Contact Section */}
       <div className='flex flex-col items-center md:items-start space-y-4'>
@@ -95,8 +101,8 @@ const Footer = () => (
     {/* Copyright Section */}
     <div className='mt-8 border-t border-white/20 pt-6 text-center'>
       <p className='text-white'>
-        &copy; {new Date().getFullYear()} {' '}
-        Radart - Todos los derechos reservados.
+        &copy; {new Date().getFullYear()} Radart - Todos los
+        derechos reservados.
       </p>
     </div>
   </footer>
