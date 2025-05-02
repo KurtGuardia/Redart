@@ -38,34 +38,21 @@ export function useVenueLocations(
           !fetchAll && (hasCity || hasCountryCode)
 
         if (useFilter) {
-          if (hasCountryCode) {
+          if (hasCity) {
+            q = query(
+              venuesCollection,
+              where('city', '==', filterParams.city),
+              // where('active', '==', true),
+              limit(100),
+            )
+          } else if (!hasCity && hasCountryCode) {
+            console.log('COUNTRY')
             q = query(
               venuesCollection,
               where('country', '==', filterParams.country),
               // where('active', '==', true),
               limit(100),
             )
-            // --- Commented out City Filter (kept for reference) ---
-            /* else if (hasCity) {
-            // This block is less likely to be used now but kept for reference
-            q = query(
-              venuesCollection,
-              where('city', '==', filterParams.city),
-              where(
-                'country',
-                '==',
-                filterParams.country || DEFAULT_FILTER.country, // Ensure country matches if city is specific
-              ),
-              // where('active', '==', true),
-              limit(100),
-            )
-          } */
-            // If filterParams exist but lack city/country, maybe use default or fetch all?
-            // Using default filter for this example:
-          } else {
-            // If filterParams exist but lack city/country, maybe use default or fetch all?
-            // Using default filter for this example:
-            q = query(venuesCollection, limit(100)) // Fallback to limit if no valid filter
           }
         } else {
           q = query(

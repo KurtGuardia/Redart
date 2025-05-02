@@ -91,9 +91,6 @@ export default function Map({
   isEditable = false,
 }) {
   const router = useRouter()
-  const [loadingLocation, setLoadingLocation] =
-    useState(true)
-  const [locationError, setLocationError] = useState('')
   const [mapCenter, setMapCenter] = useState(center || null)
   const initialMapZoom = zoom || DEFAULT_ZOOM
   const uniqueMapId = mapId
@@ -137,16 +134,8 @@ export default function Map({
             </span>{' '}
           </div>
         )}
-        {locationError && !loadingLocation && (
-          <div className='absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/80'>
-            <span className='text-red-600 font-semibold'>
-              {locationError}{' '}
-            </span>
-          </div>
-        )}
         {mapCenter && (
           <>
-            {' '}
             <MapContainer
               center={mapCenter}
               zoom={initialMapZoom}

@@ -19,16 +19,12 @@ async function fetchLocationDetails(lat, lng) {
       throw new Error('Mapbox API request failed')
     }
     const data = await response.json()
-
     const countryFeature = data.features.find((f) =>
       f.place_type.includes('country'),
     )
-    const cityFeature = data.features.find(
-      (f) =>
-        f.place_type.includes('place') ||
-        f.place_type.includes('locality'),
+    const cityFeature = data.features.find((f) =>
+      f.place_type.includes('place'),
     )
-
     return {
       city: cityFeature?.text || null,
       country: countryFeature?.text || null,
@@ -232,7 +228,7 @@ export function useUserLocationDetection() {
       }
 
       // --- Final State Update ---
-      setLoading(false) // Stop loading after all attempts
+      setLoading(false)
 
       // If still no location found AND permission isn't denied, set a final generic error
       if (
@@ -244,7 +240,7 @@ export function useUserLocationDetection() {
       }
     },
     [permissionState, error],
-  ) // Removed 'error' dependency to prevent loops if error setting triggers re-run
+  )
 
   // Effect to check initial permission state ONCE on mount
   useEffect(() => {
@@ -319,7 +315,7 @@ export function useUserLocationDetection() {
       // Potentially remove the onchange listener if needed, though it might auto-clean
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // Empty dependency array ensures this runs only once on mount
+  }, [])
 
   // Function to be called explicitly by UI (e.g., button click)
   const requestPermissionAndDetect =
@@ -332,9 +328,9 @@ export function useUserLocationDetection() {
         return
       }
 
-      setLoading(true) // Show loading indicator
-      setError(null) // Clear previous errors
-      setPermissionState('prompt') // 🆕 RESET the state to prompt/unknown before asking
+      setLoading(true) //
+      setError(null)
+      setPermissionState('prompt')
 
       try {
         // Check permission status FIRST before triggering prompt
@@ -343,7 +339,7 @@ export function useUserLocationDetection() {
             await navigator.permissions.query({
               name: 'geolocation',
             })
-          setPermissionState(permissionResult.state) // update to 'granted', 'prompt', or 'denied'
+          setPermissionState(permissionResult.state)
 
           if (permissionResult.state === 'denied') {
             setError(
@@ -379,7 +375,7 @@ export function useUserLocationDetection() {
             )
             setLocation(coords)
             setLocationDetails(details)
-            setPermissionState('granted') // ✅ Update to granted
+            setPermissionState('granted')
             setError(null)
           } else {
             setError('Coordenadas inválidas recibidas.')
@@ -421,8 +417,8 @@ export function useUserLocationDetection() {
     location,
     locationDetails,
     loading,
-    error, // Return the error state
-    permissionState, // Return the permission state
+    error,
+    permissionState,
     requestPermissionAndDetect,
   }
 }
