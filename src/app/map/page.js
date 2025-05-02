@@ -6,7 +6,7 @@ import { useState } from 'react'
 import Spots from '../../components/ui/Spot'
 
 export default function MapPage() {
-  const [tab, setTab] = useState('mapa')
+  const [tab, setTab] = useState('map')
 
   return (
     <div className='map relative container mx-auto my-24'>
@@ -18,28 +18,28 @@ export default function MapPage() {
       <div className='flex justify-center mt-8 mb-6'>
         <button
           className={`px-6 py-2 rounded-l-full font-semibold border-t border-b border-l border-gray-300 focus:outline-none transition-colors duration-200 ${
-            tab === 'mapa'
+            tab === 'map'
               ? 'bg-teal-600 text-white'
               : 'bg-white text-teal-700 hover:bg-teal-50'
           }`}
-          onClick={() => setTab('mapa')}
+          onClick={() => setTab('map')}
         >
           Mapa
         </button>
         <button
           className={`px-6 py-2 rounded-r-full font-semibold border-t border-b border-r border-gray-300 focus:outline-none transition-colors duration-200 ${
-            tab === 'lista'
+            tab === 'list'
               ? 'bg-teal-600 text-white'
               : 'bg-white text-teal-700 hover:bg-teal-50'
           }`}
-          onClick={() => setTab('lista')}
+          onClick={() => setTab('list')}
         >
           Lista
         </button>
       </div>
 
-      {tab === 'mapa' && <MapView />}
-      {tab === 'lista' && <VenueList />}
+      {tab === 'map' && <MapView />}
+      {tab === 'list' && <VenueList />}
 
       <div className='text-center mt-8'>
         <Link

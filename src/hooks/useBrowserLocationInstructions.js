@@ -62,7 +62,7 @@ export function useBrowserLocationInstructions() {
         ]
       case 'safari':
         return [
-          'En Safari, haz clic en "Safari" en la barra de menú y selecciona "Preferencias".',
+          'Haz clic en "Safari" en la barra de menú y selecciona "Preferencias".',
           'Haz clic en la pestaña "Sitios web".',
           'Selecciona "Ubicación" en la barra lateral.',
           'Busca este sitio web y selecciona "Permitir".',
