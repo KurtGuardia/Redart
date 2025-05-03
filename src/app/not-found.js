@@ -6,7 +6,7 @@ import Spots from '../components/ui/Spots'
 
 export default function NotFound() {
   return (
-    <div className='min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden'>
+    <div className='min-h-screen flex flex-col items-center justify-center px-4 relative'>
       <Spots count={5} />
 
       {/* Content Area */}

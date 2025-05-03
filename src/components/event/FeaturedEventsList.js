@@ -1,27 +1,13 @@
 'use client'
 
-import React, { useState } from 'react'
 import { useFeaturedEvents } from '../../hooks/useFeaturedEvents'
 import EventCard from './EventCard'
 import Spots from '../ui/Spots'
 import Link from 'next/link'
-import EventDetailModal from './EventDetailModal'
 import EventCardSkeleton from './EventCardSkeleton'
 
 export default function FeaturedEventsList() {
   const { events, loading } = useFeaturedEvents()
-  const [selectedEvent, setSelectedEvent] = useState(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-
-  const openModal = (event) => {
-    setSelectedEvent(event)
-    setIsModalOpen(true)
-  }
-
-  const closeModal = () => {
-    setSelectedEvent(null)
-    setIsModalOpen(false)
-  }
 
   return (
     <>
@@ -40,18 +26,7 @@ export default function FeaturedEventsList() {
               ))}
 
             {events.map((event) => (
-              <EventCard
-                key={event.id}
-                title={event.name || event.title}
-                description={event.description}
-                date={event.date}
-                address={event.address}
-                venueId={event.venueId}
-                venueName={event.venueName}
-                image={event.image || '/placeholder.svg'}
-                status={event.status}
-                onClick={() => openModal(event)}
-              />
+              <EventCard key={event.id} event={event} />
             ))}
           </div>
 
@@ -65,12 +40,6 @@ export default function FeaturedEventsList() {
           </div>
         </div>
       </section>
-
-      <EventDetailModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        event={selectedEvent}
-      />
     </>
   )
 }

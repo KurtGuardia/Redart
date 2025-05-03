@@ -66,6 +66,20 @@
   }
 }
 
+@keyframes debounce-spinner-animation {
+  from {
+    stroke-dashoffset: var(--circumference);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-debounce-spinner {
+  animation: debounce-spinner-animation var(--duration)
+    linear forwards;
+}
+
 .animate-fade-in-up {
   animation: fadeInUp 1s ease-out forwards;
 }

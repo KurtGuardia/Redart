@@ -1,12 +1,11 @@
 export const CATEGORIES = [
-  { value: '', label: '-' }, // Keep 'Categorias' or 'Todas' based on preference
+  { value: '', label: '-' },
   { value: 'music', label: 'Música' },
   { value: 'art', label: 'Arte' },
   { value: 'theater', label: 'Teatro' },
   { value: 'dance', label: 'Danza' },
   { value: 'comedy', label: 'Comedia' },
   { value: 'workshop', label: 'Taller' },
-  // Add other categories from EventDetailModal if they differ
   { value: 'conference', label: 'Conferencia' },
   { value: 'literature', label: 'Literatura' },
   { value: 'film', label: 'Cine' },

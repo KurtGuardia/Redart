@@ -44,7 +44,7 @@ export default function Error({ error, reset }) {
   }, [error])
 
   return (
-    <div className='min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden'>
+    <div className='min-h-screen flex flex-col items-center justify-center px-4 relative'>
       <Spots count={5} />
       {/* Follow cursor spotlight effect */}
       <div

@@ -3,7 +3,7 @@
 import EventCreateForm from './EventCreateForm'
 import EventList from './EventList'
 
-export default function EventManagementSection ( {
+export default function EventManagementSection({
   events,
   eventsLoading,
   filterStatus,
@@ -11,12 +11,11 @@ export default function EventManagementSection ( {
   onAddEvent,
   onEditEvent,
   onDeleteEvent,
-  onViewDetails,
   eventFormError,
   eventSuccess,
   setEventFormError,
   setEventSuccess,
-} ) {
+}) {
   return (
     <div className='bg-white rounded-lg shadow-lg p-6'>
       <h2 className='text-2xl md:text-3xl 2xl:text-4xl font-semibold mb-4 text-gray-800 flex items-center'>
@@ -51,7 +50,6 @@ export default function EventManagementSection ( {
         onFilterChange={onFilterChange}
         onEdit={onEditEvent}
         onDelete={onDeleteEvent}
-        onViewDetails={onViewDetails}
       />
     </div>
   )

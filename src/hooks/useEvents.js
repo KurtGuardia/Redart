@@ -19,6 +19,17 @@ import {
 const ITEMS_PER_PAGE = 24
 
 /**
+ * Normalizes a string by converting to lowercase, removing accents and diacritics.
+ * @param {string} str The string to normalize.
+ * @returns {string} The normalized string.
+ */
+const normalizeString = (str = '') =>
+  str
+    .normalize('NFD') // Decompose accented characters (e.g., 'é' -> 'e' + '´')
+    .replace(/[\u0300-\u036f]/g, '') // Remove the combining diacritical marks
+    .toLowerCase()
+
+/**
  * Custom hook to fetch and manage a list of events from Firestore.
  * Handles searching (client-side), filtering (server-side), pagination,
  * loading states, and errors.
@@ -117,22 +128,30 @@ export const useEvents = (searchTerm, categoryFilter) => {
         // Client-side filtering for search term
         const filteredEvents = newEventsData.filter(
           (event) => {
-            const lowerSearchTerm =
-              currentSearchTerm.toLowerCase()
+            // Normalize the search term once
+            const normalizedSearchTerm = normalizeString(
+              currentSearchTerm,
+            )
+
+            // If the normalized search term is empty, don't filter by search
+            if (!normalizedSearchTerm) {
+              return event.date instanceof Timestamp // Still ensure date is valid
+            }
+
+            // Check if any relevant field includes the normalized search term
             const matchesSearch =
-              !currentSearchTerm ||
-              event.title
-                ?.toLowerCase()
-                .includes(lowerSearchTerm) ||
-              event.description
-                ?.toLowerCase()
-                .includes(lowerSearchTerm) ||
-              event.venueName
-                ?.toLowerCase()
-                .includes(lowerSearchTerm) ||
-              event.city
-                ?.toLowerCase()
-                .includes(lowerSearchTerm)
+              normalizeString(event.title).includes(
+                normalizedSearchTerm,
+              ) ||
+              normalizeString(event.description).includes(
+                normalizedSearchTerm,
+              ) ||
+              normalizeString(event.venueName).includes(
+                normalizedSearchTerm,
+              ) ||
+              normalizeString(event.city).includes(
+                normalizedSearchTerm,
+              )
 
             return (
               matchesSearch &&

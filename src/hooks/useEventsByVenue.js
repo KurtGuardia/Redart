@@ -1,7 +1,7 @@
-'use client' // Hooks used in Client Components run client-side
+'use client'
 
 import { useState, useEffect } from 'react'
-import { db } from '../lib/firebase-client' // Adjust path if needed
+import { db } from '../lib/firebase-client'
 import {
   doc,
   getDoc,
@@ -11,7 +11,6 @@ import {
   getDocs,
 } from 'firebase/firestore'
 
-// Firestore 'in' query limit (currently 30)
 const IN_QUERY_LIMIT = 30
 
 export function useEventsByVenue(venueId) {
@@ -20,18 +19,17 @@ export function useEventsByVenue(venueId) {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    // Skip fetch if no venueId is provided
     if (!venueId) {
       setEvents([])
       setLoading(false)
-      setError(null) // Not an error, just no ID
+      setError(null)
       return
     }
 
     const fetchVenueAndEvents = async () => {
       setLoading(true)
       setError(null)
-      setEvents([]) // Clear previous events
+      setEvents([])
 
       try {
         // 1. Fetch the venue document

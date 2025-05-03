@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-// Re-add useVenueData import
 import { useVenueData } from '../../hooks/useVenueData'
 import { useVenueEvents } from '../../hooks/useVenueEvents'
 import { useVenueActions } from '../../hooks/useVenueActions'
@@ -10,38 +9,29 @@ import {
   venueFormFields,
   eventFormFields,
 } from '../../lib/constants'
-import EventDetailModal from '../../components/event/EventDetailModal'
 import VenueDetailsCard from './VenueDetailsCard'
 import EventManagementSection from './EventManagementSection'
 
-// Change prop back to venueId
 export default function VenueDashboard({ venueId }) {
-  // Re-introduce internal data fetching state using useVenueData
-  const {
-    venue,
-    loading: venueLoading,
-    error: venueError,
-    refreshVenue, // Get refresh function if needed by useVenueActions
-  } = useVenueData(venueId) // Use the hook internally
-
-  // Local UI state remains
   const [isEditModalOpen, setIsEditModalOpen] =
     useState(false)
   const [isEventEditModalOpen, setIsEventEditModalOpen] =
     useState(false)
   const [currentEvent, setCurrentEvent] = useState(null)
-  const [selectedEventDetail, setSelectedEventDetail] =
-    useState(null)
-  const [isDetailModalOpen, setIsDetailModalOpen] =
-    useState(false)
   const [filterStatus, setFilterStatus] = useState('all')
 
-  // Pass necessary props to hooks. Ensure useVenueActions gets refreshVenue if it needs it.
+  const {
+    venue,
+    loading: venueLoading,
+    error: venueError,
+    refreshVenue,
+  } = useVenueData(venueId)
+
   const {
     updateVenue,
     loading: venueUpdateLoading,
     error: venueUpdateError,
-  } = useVenueActions(venueId, venue, refreshVenue) // Pass refreshVenue again
+  } = useVenueActions(venueId, venue, refreshVenue)
 
   const {
     events,
@@ -54,7 +44,6 @@ export default function VenueDashboard({ venueId }) {
     clearMessages: clearEventMessages,
   } = useVenueEvents(venueId, venue)
 
-  // --- Event modal and delete logic remains the same ---
   const openEventEditModal = (event) => {
     if (!event || !event.id) {
       console.error(
@@ -107,16 +96,6 @@ export default function VenueDashboard({ venueId }) {
     setIsEventEditModalOpen(true)
   }
 
-  const openDetailModal = (event) => {
-    setSelectedEventDetail(event)
-    setIsDetailModalOpen(true)
-  }
-
-  const closeDetailModal = () => {
-    setSelectedEventDetail(null)
-    setIsDetailModalOpen(false)
-  }
-
   const confirmAndDeleteEvent = (eventId, image) => {
     if (
       window.confirm(
@@ -127,10 +106,8 @@ export default function VenueDashboard({ venueId }) {
     }
   }
 
-  // Loading state now includes initial venue loading from useVenueData
   const isLoading =
     venueLoading || eventsLoading || venueUpdateLoading
-  // Combine errors from all relevant hooks
   const displayError =
     venueError || eventError || venueUpdateError
 
@@ -139,7 +116,6 @@ export default function VenueDashboard({ venueId }) {
     return <div>Error: {displayError}</div>
   }
 
-  // Show specific errors from event/update actions if they occur, even if venue loaded
   if ((eventError || venueUpdateError) && venue) {
     console.error(
       'Error in VenueDashboard (events or update):',
@@ -148,7 +124,6 @@ export default function VenueDashboard({ venueId }) {
     // Display these errors via toast or inline messages within the rendered dashboard below.
   }
 
-  // Render the main dashboard structure
   return (
     <>
       {/* Header section */}
@@ -182,7 +157,6 @@ export default function VenueDashboard({ venueId }) {
           onAddEvent={addEvent}
           onEditEvent={openEventEditModal}
           onDeleteEvent={confirmAndDeleteEvent}
-          onViewDetails={openDetailModal}
           eventFormError={eventError}
           eventSuccess={eventSuccess}
           setEventFormError={clearEventMessages}
@@ -232,12 +206,6 @@ export default function VenueDashboard({ venueId }) {
         data={currentEvent}
         isLoading={eventsLoading}
         error={eventError}
-      />
-
-      <EventDetailModal
-        isOpen={isDetailModalOpen}
-        onClose={closeDetailModal}
-        event={selectedEventDetail}
       />
     </>
   )

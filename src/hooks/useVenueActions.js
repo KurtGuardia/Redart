@@ -73,7 +73,7 @@ export const useVenueActions = (
           currentVenueData,
         )
 
-        // --- Trigger Success Callback --- (e.g., to refresh data via useVenueData)
+        // --- Trigger Success Callback
         if (
           onUpdateSuccess &&
           typeof onUpdateSuccess === 'function'

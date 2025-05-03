@@ -2,21 +2,18 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { CATEGORIES } from '../../lib/constants'
-import { useEvents } from '../../hooks/useEvents' // Import the hook
+import { useEvents } from '../../hooks/useEvents'
 import EventCard from './EventCard'
-import EventDetailModal from './EventDetailModal'
 import EventCardSkeleton from './EventCardSkeleton'
 
 const EventListView = () => {
-  // State managed by the component
   const [searchTerm, setSearchTerm] = useState('')
   const [filter, setFilter] = useState('all')
-  const [selectedEvent, setSelectedEvent] = useState(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [spinnerKey, setSpinnerKey] = useState(0)
   const [debouncedSearchTerm, setDebouncedSearchTerm] =
     useState(searchTerm)
   const isInitialMount = useRef(true)
-  const searchInputRef = useRef(null) // Keep ref for focus management
+  const searchInputRef = useRef(null) // ref for focus
 
   // Use the custom hook, passing the debounced search term and filter
   const {
@@ -25,7 +22,7 @@ const EventListView = () => {
     isFetchingMore,
     hasMore,
     error,
-    loadMoreEvents, // Get the load more function from the hook
+    loadMoreEvents,
   } = useEvents(debouncedSearchTerm, filter)
 
   // Effect to debounce search term
@@ -40,6 +37,7 @@ const EventListView = () => {
   }, [searchTerm])
 
   // Effect to refocus search input after loading completes (post-initial mount)
+
   // Keep this effect here as it interacts with the component's ref
   useEffect(() => {
     // Check only when loading transitions from true to false
@@ -54,19 +52,10 @@ const EventListView = () => {
     }
   }, [loading])
 
-  const openModal = (event) => {
-    setSelectedEvent(event)
-    setIsModalOpen(true)
-  }
-
-  const closeModal = () => {
-    setSelectedEvent(null)
-    setIsModalOpen(false)
-  }
-
   const handleSearchChange = (e) => {
     const newSearchTerm = e.target.value
     setSearchTerm(newSearchTerm)
+    setSpinnerKey((prevKey) => prevKey + 1) // Increment key to reset animation
   }
 
   const handleCategoryFilterChange = (e) => {
@@ -85,7 +74,43 @@ const EventListView = () => {
     <>
       {/* Search and Filter */}
       <div className='flex flex-col md:flex-row items-center justify-center gap-4 mb-8'>
-        <div className='relative w-full md:w-1/3'>
+        {/* Search Input with Spinner */}
+        <div className='relative w-full md:w-1/3 flex items-center gap-2'>
+          {/* Animated Spinner */}
+          <svg
+            key={spinnerKey}
+            className='w-5 h-5 text-teal-600 shrink-0'
+            viewBox='0 0 20 20'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'
+            style={{
+              '--circumference': 2 * Math.PI * 8,
+              '--duration': '1000ms',
+            }}
+          >
+            {/* Background track */}
+            <circle
+              cx='10'
+              cy='10'
+              r='8'
+              stroke='currentColor'
+              strokeWidth='2'
+              strokeOpacity='0.3' // Lighter track
+            />
+            {/* Animated progress arc */}
+            <circle
+              cx='10'
+              cy='10'
+              r='8'
+              stroke='currentColor'
+              strokeWidth='2'
+              strokeDasharray='var(--circumference)'
+              strokeDashoffset='var(--circumference)' // Start empty
+              transform='rotate(-90 10 10)'
+              className='animate-debounce-spinner'
+            />
+          </svg>
+
           <input
             type='text'
             placeholder='Buscar eventos, lugares, ciudades...'
@@ -93,7 +118,7 @@ const EventListView = () => {
             value={searchTerm}
             onChange={handleSearchChange}
             className='bg-white w-full px-4 xl:py-2 py-1 border-2 border-gray-300 rounded-lg shadow-sm  focus:border-teal-500 pr-10 focus-visible:outline-none'
-            disabled={loading || isFetchingMore} // Use hook's state
+            disabled={loading || isFetchingMore}
           />
 
           {searchTerm && (
@@ -117,12 +142,13 @@ const EventListView = () => {
             </button>
           )}
         </div>
-        <div className='relative w-full md:w-auto'>
+        {/* Category Filter */}
+        <div className='relative w-full md:w-auto shrink-0'>
           <select
             value={filter}
             onChange={handleCategoryFilterChange}
             className='w-full md:w-48 px-4 xl:py-2 py-1 border-2 border-gray-300 rounded-lg shadow-sm focus:ring-teal-500 focus:border-teal-500 outline-none appearance-none bg-white pr-8 cursor-pointer'
-            disabled={loading || isFetchingMore} // Use hook's state
+            disabled={loading || isFetchingMore}
           >
             <option value='all'>Categorías</option>
             {CATEGORIES.map((category) => (
@@ -147,17 +173,16 @@ const EventListView = () => {
       </div>
 
       {/* Display error message if fetch failed */}
-      {error &&
-        !loading && ( // Use hook's state
-          <p className='col-span-full text-center text-red-600 py-10'>
-            😞 Ocurrió un error al cargar los eventos:{' '}
-            {error.message}
-          </p>
-        )}
+      {error && !loading && (
+        <p className='col-span-full text-center text-red-600 py-10'>
+          😞 Ocurrió un error al cargar los eventos:{' '}
+          {error.message}
+        </p>
+      )}
 
       {/* Display loading skeletons while data is being
       fetched */}
-      {loading && ( // Use hook's state
+      {loading && (
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8'>
           {Array.from({ length: 4 }).map((_, index) => (
             <EventCardSkeleton
@@ -168,67 +193,41 @@ const EventListView = () => {
       )}
 
       {/* Display event cards when data is loaded */}
-      {!loading &&
-        !error && ( // Use hook's state
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-8 gap-8 px-1 xl:px-16'>
-            {eventsList.map((event) => (
-              <EventCard
-                key={event.id}
-                onClick={() => openModal(event)}
-                title={event.title}
-                description={event.description}
-                date={event.date}
-                duration={event.duration}
-                venueName={event.venueName}
-                venueId={event.venueId}
-                address={event.address}
-                image={event.image || '/placeholder.svg'}
-                status={event.status}
+      {!loading && !error && (
+        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 xl:gap-8 gap-8 px-1 xl:px-16'>
+          {eventsList.map((event) => (
+            <EventCard key={event.id} event={event} />
+          ))}
+          {isFetchingMore &&
+            Array.from({ length: 4 }).map((_, index) => (
+              <EventCardSkeleton
+                key={`loading-more-${index}`}
               />
             ))}
-
-            {/* Display loading skeletons while fetching more */}
-            {isFetchingMore && // Use hook's state
-              Array.from({ length: 4 }).map((_, index) => (
-                <EventCardSkeleton
-                  key={`loading-more-${index}`}
-                />
-              ))}
-          </div>
-        )}
+        </div>
+      )}
 
       {/* Show message if no events match the filters */}
-      {!loading &&
-        !error &&
-        eventsList.length === 0 && ( // Use hook's state
-          <p className='col-span-full text-center text-gray-500 py-10'>
-            No se encontraron eventos que coincidan con los
-            filtros.
-          </p>
-        )}
+      {!loading && !error && eventsList.length === 0 && (
+        <p className='col-span-full text-center text-gray-500 py-10'>
+          No se encontraron eventos que coincidan con los
+          filtros.
+        </p>
+      )}
 
       {/* Show load more button if there are more events to
       fetch */}
-      {!loading &&
-        !error &&
-        !isFetchingMore &&
-        hasMore && ( // Use hook's state
-          <div className='mt-12 text-center'>
-            <button
-              onClick={handleLoadMore}
-              className='bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-6 rounded-full transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed'
-              disabled={isFetchingMore} // Use hook's state
-            >
-              Cargar más
-            </button>
-          </div>
-        )}
-
-      <EventDetailModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        event={selectedEvent}
-      />
+      {!loading && !error && !isFetchingMore && hasMore && (
+        <div className='mt-12 text-center'>
+          <button
+            onClick={handleLoadMore}
+            className='bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-6 rounded-full transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed'
+            disabled={isFetchingMore}
+          >
+            Cargar más
+          </button>
+        </div>
+      )}
     </>
   )
 }
