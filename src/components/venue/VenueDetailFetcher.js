@@ -2,12 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { db } from '../../lib/firebase-client' // Updated path
-import {
-  doc,
-  getDoc,
-  runTransaction,
-  Timestamp,
-} from 'firebase/firestore'
+import { doc, getDoc } from 'firebase/firestore'
 import Image from 'next/image'
 import MapComponent from '../map/MapComponent' // Updated path
 import {
@@ -25,6 +20,7 @@ import { useAuth } from '../../hooks/useAuth' // Import the auth hook
 import StarRatingInput from '../ui/StarRatingInput' // Assuming you have a Button component
 import Link from 'next/link'
 import LocationPinIcon from '../LocationPinIcon'
+import useRatingSystem from '../../hooks/useRatingSystem' // Import the new hook
 
 export default function VenueDetailFetcher({ venueId }) {
   const [venue, setVenueData] = useState(null)
@@ -34,24 +30,24 @@ export default function VenueDetailFetcher({ venueId }) {
     useState(null)
   const { user, loadingAuth } = useAuth()
 
-  const [userRating, setUserRating] = useState(0)
-  const [isSubmittingRating, setIsSubmittingRating] =
-    useState(false)
-  const [ratingError, setRatingError] = useState(null)
-  const [ratingSuccess, setRatingSuccess] = useState(false)
-
-  useEffect(() => {
-    if (venue?.ratings && user?.uid) {
-      const existingRating = venue.ratings.find(
-        (r) => r.userId === user.uid,
-      )
-      setUserRating(
-        existingRating ? existingRating.score : 0,
-      )
-    } else {
-      setUserRating(0)
-    }
-  }, [venue, user])
+  // Use the new rating hook instead of managing rating state directly
+  const {
+    userRating,
+    isSubmittingRating,
+    isDeletingRating,
+    ratingError,
+    ratingSuccess,
+    deleteSuccess,
+    handleRatingSubmit,
+    handleDeleteRating,
+    updateUserRating,
+  } = useRatingSystem({
+    targetId: venueId,
+    targetType: 'venue',
+    targetName: venue?.name || 'Local sin nombre',
+    user,
+    onUpdateTarget: setVenueData,
+  })
 
   let averageRating = 0
   let ratingCount = 0
@@ -68,6 +64,13 @@ export default function VenueDetailFetcher({ venueId }) {
       ratingCount = scores.length
     }
   }
+
+  // Update user rating when venue or user changes
+  useEffect(() => {
+    if (venue && user) {
+      updateUserRating(venue)
+    }
+  }, [venue, user, updateUserRating])
 
   useEffect(() => {
     if (!venueId) {
@@ -148,118 +151,6 @@ export default function VenueDetailFetcher({ venueId }) {
 
     fetchData()
   }, [venueId])
-
-  const handleRatingSubmit = async (newRating) => {
-    if (!user) {
-      setRatingError('Debes iniciar sesión para puntuar.')
-      return
-    }
-    if (!venue) {
-      setRatingError('Datos del local no cargados.')
-      return
-    }
-
-    setIsSubmittingRating(true)
-    setRatingError(null)
-    setRatingSuccess(false)
-
-    const venueRef = doc(db, 'venues', venueId)
-    const userRef = doc(db, 'users', user.uid)
-
-    const ratingTimestamp = Timestamp.now()
-
-    try {
-      await runTransaction(db, async (transaction) => {
-        const venueDoc = await transaction.get(venueRef)
-        if (!venueDoc.exists()) {
-          throw new Error('El local ya no existe.')
-        }
-        const currentVenueData = venueDoc.data()
-        let currentRatings = Array.isArray(
-          currentVenueData.ratings,
-        )
-          ? currentVenueData.ratings
-          : []
-
-        const userDoc = await transaction.get(userRef)
-        if (!userDoc.exists()) {
-          setCurrentUserRole('venue')
-          throw new Error('Usuario no encontrado.')
-        }
-
-        const currentUserData = userDoc.data()
-        let currentUserRatings = Array.isArray(
-          currentUserData.ratings,
-        )
-          ? currentUserData.ratings
-          : []
-
-        const updatedVenueRatings = currentRatings.filter(
-          (r) => r.userId !== user.uid,
-        )
-        updatedVenueRatings.push({
-          userId: user.uid,
-          score: newRating,
-          updatedAt: ratingTimestamp,
-        })
-        transaction.update(venueRef, {
-          ratings: updatedVenueRatings,
-        })
-
-        const updatedUserRatings =
-          currentUserRatings.filter(
-            (r) => r.targetId !== venueId,
-          )
-        updatedUserRatings.push({
-          targetId: venueId,
-          name: venue.name,
-          type: 'venue',
-          score: newRating,
-          updatedAt: ratingTimestamp,
-        })
-        transaction.update(userRef, {
-          ratings: updatedUserRatings,
-        })
-      })
-
-      setVenueData((prevVenue) => ({
-        ...prevVenue,
-        ratings: prevVenue.ratings
-          ? [
-              ...prevVenue.ratings.filter(
-                (r) => r.userId !== user.uid,
-              ),
-              {
-                userId: user.uid,
-                score: newRating,
-                updatedAt: ratingTimestamp.toDate(),
-              },
-            ]
-          : [
-              {
-                userId: user.uid,
-                score: newRating,
-                updatedAt: ratingTimestamp.toDate(),
-              },
-            ],
-      }))
-      setUserRating(newRating)
-      setRatingSuccess(true)
-      console.log('Rating submitted successfully!')
-      setTimeout(() => setRatingSuccess(false), 3000)
-    } catch (error) {
-      console.error(
-        'Error submitting rating transaction:',
-        error,
-      )
-      setRatingError(
-        error.message || 'Error al enviar la puntuación.',
-      )
-      setTimeout(() => setRatingError(null), 5000)
-    } finally {
-      setIsSubmittingRating(false)
-    }
-  }
 
   const isLoading = loadingVenue || loadingAuth
 
@@ -555,12 +446,21 @@ export default function VenueDetailFetcher({ venueId }) {
                   <StarRatingInput
                     initialRating={userRating}
                     onRatingSubmit={handleRatingSubmit}
-                    disabled={isSubmittingRating}
+                    onDeleteClick={handleDeleteRating}
+                    showDeleteButton={userRating > 0}
+                    disabled={
+                      isSubmittingRating || isDeletingRating
+                    }
                     size={28}
                   />
                   {isSubmittingRating && (
-                    <p className='text-sm text-gray-500 mt-2'>
+                    <p className='text-sm text-gray-500 mt-2 animate-pulse'>
                       Enviando...
+                    </p>
+                  )}
+                  {isDeletingRating && (
+                    <p className='text-sm text-gray-500 mt-2 animate-pulse'>
+                      Eliminando...
                     </p>
                   )}
                   {ratingError && (
@@ -571,6 +471,11 @@ export default function VenueDetailFetcher({ venueId }) {
                   {ratingSuccess && (
                     <p className='text-sm text-green-500 mt-2'>
                       ¡Gracias por tu puntuación!
+                    </p>
+                  )}
+                  {deleteSuccess && (
+                    <p className='text-sm text-green-500 mt-2'>
+                      Tu puntuación ha sido eliminada.
                     </p>
                   )}
                   {currentUserRole && (

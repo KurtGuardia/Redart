@@ -2,16 +2,15 @@
 
 import React, { useMemo } from 'react'
 import VenueEventListItem from '../event/VenueEventListItem'
-import { hasEventPassed } from '../../lib/utils' // Import hasEventPassed
+import { hasEventPassed } from '../../lib/utils'
 
 export default function EventList({
-  events, // Original list (useful for checking if *any* events exist)
+  events,
   loading,
   filterStatus,
   onFilterChange,
   onEdit,
   onDelete,
-  onViewDetails,
 }) {
   const filteredEvents = useMemo(() => {
     if (!events) return [] // Handle cases where events might not be loaded yet

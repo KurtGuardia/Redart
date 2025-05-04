@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import DashboardSkeleton from '../DashboardSkeleton'
 import RatedList from './RatedList'
 import { formatTimestamp } from '../../lib/utils'
@@ -9,6 +9,30 @@ export default function UserDashboard({
   userData,
   loading,
 }) {
+  // Add state to manage the user's ratings locally
+  const [userRatings, setUserRatings] = useState(
+    Array.isArray(userData?.ratings)
+      ? userData.ratings
+      : [],
+  )
+
+  // Update state when userData changes (e.g., on initial load)
+  React.useEffect(() => {
+    if (userData && Array.isArray(userData.ratings)) {
+      setUserRatings(userData.ratings)
+    }
+  }, [userData])
+
+  // Handler for when an item is deleted from one of the RatedList components
+  const handleItemDeleted = (targetId, type) => {
+    // Update local state to remove the deleted rating
+    setUserRatings((prevRatings) =>
+      prevRatings.filter(
+        (item) => item.targetId !== targetId,
+      ),
+    )
+  }
+
   if (loading) {
     return <DashboardSkeleton />
   }
@@ -21,14 +45,11 @@ export default function UserDashboard({
     )
   }
 
-  const ratings = Array.isArray(userData.ratings)
-    ? userData.ratings
-    : []
-
-  const ratedVenues = ratings.filter(
+  // Filter ratings by type using the local state
+  const ratedVenues = userRatings.filter(
     (fav) => fav.type === 'venue',
   )
-  const ratedEvents = ratings.filter(
+  const ratedEvents = userRatings.filter(
     (fav) => fav.type === 'event',
   )
 
@@ -45,12 +66,14 @@ export default function UserDashboard({
           title='Locales Puntuados'
           items={ratedVenues}
           type='venue'
+          onItemDeleted={handleItemDeleted}
         />
 
         <RatedList
           title='Eventos Puntuados'
           items={ratedEvents}
           type='event'
+          onItemDeleted={handleItemDeleted}
         />
       </div>
       <p className='text-[var(--blue-500)] text-xs mt-6'>

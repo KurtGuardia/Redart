@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import EventData from '../../../components/event/EventData'
+import Spots from '../../../components/ui/Spots'
 
 export default function EventDetailPage({ params }) {
   const eventId = params.eventId
@@ -9,9 +10,11 @@ export default function EventDetailPage({ params }) {
   }
 
   return (
-    <div className='container mx-auto px-4 py-8'>
+    // Wrapped to leave this as server side and in the component hace client side data fetching (using server side code was not possible this project)
+    <>
+      <Spots count={8} />
       <EventData eventId={eventId} />
-    </div>
+    </>
   )
 }
 
@@ -25,7 +28,5 @@ export async function generateMetadata({ params }) {
     title: 'Detalles del Evento | Radarte',
     description:
       'Descubre los detalles de este evento en Radarte.',
-    // You could potentially add generic Open Graph tags here too
-    // openGraph: { ... }
   }
 }
