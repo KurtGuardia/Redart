@@ -26,7 +26,7 @@ export default function VenuePage({ params }) {
           {/* Upcoming Events Section */}
           <section className='mb-10 md:mb-12 border-b border-gray-200/80 pb-8'>
             <h2 className='text-2xl 2xl:text-4xl md:text-3xl font-bold text-[var(--teal-800)] mb-6'>
-              Próximos Eventos
+              Eventos
             </h2>
             <VenueEventListWrapper venueId={venueId} />
           </section>

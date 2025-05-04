@@ -488,9 +488,8 @@ export default function VenueDetailFetcher({ venueId }) {
               ) : (
                 <p className='text-sm text-gray-600 italic'>
                   <Link
-                    variant='link'
-                    className='p-0 h-auto text-[var(--secondary-color)]'
-                    onClick={() => {}}
+                    className='p-0 h-auto text-[var(--teal-500)] font-semibold hover:underline'
+                    href={'/login'}
                   >
                     Inicia sesión
                   </Link>{' '}

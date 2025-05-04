@@ -1,14 +1,10 @@
 'use client'
 
-import { useState } from 'react'
 import VenueEventListItem from '../event/VenueEventListItem'
 import { useEventsByVenue } from '../../hooks/useEventsByVenue'
-import { useIsIndexPage } from '../../hooks/useIsIndexPage'
 import { Skeleton } from '../ui/Skeleton'
 
 const VenueEventListWrapper = ({ venueId }) => {
-  const isIndexPage = useIsIndexPage()
-
   const { events, loading, error } =
     useEventsByVenue(venueId)
 

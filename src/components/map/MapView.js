@@ -82,6 +82,15 @@ export default function MapView({ ...props }) {
     return null
   }, [userCoords, permissionState])
 
+  function handleAllowLocation() {
+    setShowLocationModal(false)
+    requestPermissionAndDetect()
+  }
+
+  function handleDenyLocation() {
+    setShowLocationModal(false)
+  }
+
   if (isLoading) {
     return (
       <div className='flex flex-col gap-4 w-full mx-auto bg-gray-100/50 rounded-xl shadow-md p-6 animate-pulse'>
@@ -173,13 +182,4 @@ export default function MapView({ ...props }) {
       </p>
     </div>
   )
-
-  function handleAllowLocation() {
-    setShowLocationModal(false)
-    requestPermissionAndDetect()
-  }
-
-  function handleDenyLocation() {
-    setShowLocationModal(false)
-  }
 }

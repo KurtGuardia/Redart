@@ -36,6 +36,7 @@ const normalizeString = (str = '') =>
  *
  * @param {string} searchTerm - The term to filter events by (client-side).
  * @param {string} categoryFilter - The category to filter events by ('all' or specific category, server-side).
+ * @param {string|null} cityFilter - The city to filter events by (server-side).
  * @returns {object} An object containing:
  *  - eventsList: Array of fetched event objects.
  *  - loading: Boolean indicating if the initial fetch or a reset fetch is in progress.
@@ -44,7 +45,12 @@ const normalizeString = (str = '') =>
  *  - error: Error object if fetching failed, otherwise null.
  *  - loadMoreEvents: Function to fetch the next page of events.
  */
-export const useEvents = (searchTerm, categoryFilter) => {
+export const useEvents = (
+  searchTerm,
+  categoryFilter,
+  cityFilter = null,
+  initialFetchEnabled = true, // New parameter to control initial fetch
+) => {
   const [eventsList, setEventsList] = useState([])
   const [lastVisible, setLastVisible] = useState(null)
   const [loading, setLoading] = useState(true) // Start loading initially
@@ -59,6 +65,7 @@ export const useEvents = (searchTerm, categoryFilter) => {
     async (
       currentSearchTerm,
       currentCategoryFilter,
+      currentCityFilter,
       loadMore = false,
     ) => {
       // Determine loading state based on whether it's a pagination request
@@ -99,6 +106,14 @@ export const useEvents = (searchTerm, categoryFilter) => {
         eventsQuery = query(
           eventsQuery,
           where('category', '==', currentCategoryFilter),
+        )
+      }
+
+      // Add city filter if provided
+      if (currentCityFilter) {
+        eventsQuery = query(
+          eventsQuery,
+          where('city', '==', currentCityFilter),
         )
       }
 
@@ -215,7 +230,7 @@ export const useEvents = (searchTerm, categoryFilter) => {
     [], // Keep dependencies empty as the function definition itself doesn't change based on props/state.
   )
 
-  // Effect to fetch events when searchTerm or categoryFilter changes (after initial mount)
+  // Effect to fetch events when searchTerm, categoryFilter, or cityFilter changes (after initial mount)
   useEffect(() => {
     // Skip the effect on the very first render, initial fetch is handled below
     if (isInitialMount.current) {
@@ -223,19 +238,47 @@ export const useEvents = (searchTerm, categoryFilter) => {
       return
     }
     // Fetch with reset=true (loadMore=false)
-    fetchEventsInternal(searchTerm, categoryFilter, false) // Call the latest version of the fetch function
-  }, [searchTerm, categoryFilter, fetchEventsInternal]) // Rerun when filters or the fetch function changes
+    fetchEventsInternal(
+      searchTerm,
+      categoryFilter,
+      cityFilter,
+      false,
+    ) // Call the latest version of the fetch function
+  }, [
+    searchTerm,
+    categoryFilter,
+    cityFilter,
+    fetchEventsInternal,
+  ]) // Rerun when filters or the fetch function changes
 
   // Effect for the initial fetch on mount
   useEffect(() => {
-    fetchEventsInternal(searchTerm, categoryFilter, false)
+    // Only run the initial fetch if enabled
+    if (initialFetchEnabled) {
+      fetchEventsInternal(
+        searchTerm,
+        categoryFilter,
+        cityFilter,
+        false,
+      )
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // Run only once on mount
+  }, [initialFetchEnabled]) // Rerun if initialFetchEnabled changes from false to true
 
   // Function to trigger loading the next page
   const loadMoreEvents = useCallback(() => {
-    fetchEventsInternal(searchTerm, categoryFilter, true)
-  }, [fetchEventsInternal, searchTerm, categoryFilter])
+    fetchEventsInternal(
+      searchTerm,
+      categoryFilter,
+      cityFilter,
+      true,
+    )
+  }, [
+    fetchEventsInternal,
+    searchTerm,
+    categoryFilter,
+    cityFilter,
+  ])
 
   return {
     eventsList,
