@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import {
   FaEye,
   FaEyeSlash,
@@ -23,9 +22,9 @@ import {
   serverTimestamp,
   getDoc,
 } from 'firebase/firestore'
+import { translateFirebaseAuthError } from '../../lib/firebaseErrors'
 
 const UserRegistrationForm = ({}) => {
-  // --- State Variables ---
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -41,7 +40,6 @@ const UserRegistrationForm = ({}) => {
     useState(false)
   const router = useRouter()
 
-  // --- Effects ---
   // Redirect authenticated users
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -164,7 +162,11 @@ const UserRegistrationForm = ({}) => {
           'Este correo electrónico ya está en uso. Intenta iniciar sesión.',
         )
       } else {
-        setError(`Error en el registro: ${error.message}`)
+        setError(
+          `Error en el registro: ${translateFirebaseAuthError(
+            error.message,
+          )}`,
+        )
       }
     } finally {
       setRegisterLoading(false)
@@ -228,18 +230,6 @@ const UserRegistrationForm = ({}) => {
 
   return (
     <>
-      {/* Display Error/Success Messages */}
-      {error && (
-        <div className='mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-center'>
-          {error}
-        </div>
-      )}
-      {message && (
-        <div className='mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded text-center'>
-          {message}
-        </div>
-      )}
-
       {/* Email/Password Form */}
       <form
         onSubmit={handleEmailPasswordSubmit}
@@ -420,6 +410,18 @@ const UserRegistrationForm = ({}) => {
             </p>
           )}
         </div>
+
+        {/* Display Error/Success Messages */}
+        {error && (
+          <div className='mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-center'>
+            {error}
+          </div>
+        )}
+        {message && (
+          <div className='mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded text-center'>
+            {message}
+          </div>
+        )}
 
         {/* Submit Button */}
         <button

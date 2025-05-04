@@ -113,6 +113,7 @@ const EventCard = ({ event }) => {
               type='button'
               onClick={(e) => {
                 e.stopPropagation()
+                e.preventDefault()
                 const calendarUrl = addToGoogleCalendar({
                   title,
                   date,
@@ -143,6 +144,7 @@ const EventCard = ({ event }) => {
               type='button'
               onClick={(e) => {
                 e.stopPropagation()
+                e.preventDefault()
                 router.push(`/venues/${venueId}`)
               }}
             >

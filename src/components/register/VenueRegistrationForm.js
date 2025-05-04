@@ -35,6 +35,7 @@ import {
   validateInstagramUrl,
   validateWhatsappNumber,
 } from '../../lib/utils' // Adjust path as needed
+import { translateFirebaseAuthError } from '../../lib/firebaseErrors'
 
 // Define constants for form limits
 const DESCRIPTION_MAX_LENGTH = 500
@@ -315,7 +316,12 @@ const VenueRegistrationForm = ({}) => {
         window.location.href = '/dashboard'
       }, 1000) // Short delay, since setup page will handle polling
     } catch (error) {
-      setError(`Error en el registro: ${error.message}`)
+      console.error('Error en el registro:', error)
+      setError(
+        `Error en el registro: ${translateFirebaseAuthError(
+          error.code, // Pass the error code here
+        )}`,
+      )
 
       // Clean up any created resources if we have a user
       if (userCredential && userCredential.user) {
@@ -367,12 +373,6 @@ const VenueRegistrationForm = ({}) => {
 
   return (
     <>
-      {/* Display Error/Success Messages */}
-      {error && (
-        <div className='mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded'>
-          {error}
-        </div>
-      )}
       <form onSubmit={handleSubmit}>
         {/* Step 1: Campos Obligatorios */}
         {currentStep === 1 && (
@@ -1094,7 +1094,10 @@ const VenueRegistrationForm = ({}) => {
                       ? 'bg-teal-500 text-white'
                       : 'bg-gray-200 text-gray-500'
                   }
-                  transition-colors duration-200 relative group`}
+                  transition-colors duration-200 relative group disabled:cursor-not-allowed`}
+                disabled={
+                  currentStep === 1 && !isStep1Complete()
+                }
                 onClick={() => setCurrentStep(step.num)}
                 tabIndex={0}
                 aria-label={`Paso ${step.num}: ${step.tooltip}`}
@@ -1111,6 +1114,13 @@ const VenueRegistrationForm = ({}) => {
             </React.Fragment>
           ))}
         </div>
+
+        {/* Display Error/Success Messages */}
+        {error && (
+          <div className='mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded'>
+            {error}
+          </div>
+        )}
 
         {/* Navigation/Submit Button */}
         {currentStep < 3 ? (
@@ -1149,6 +1159,7 @@ const VenueRegistrationForm = ({}) => {
           </button>
         )}
       </form>
+
       {message && (
         <div className='mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded'>
           {message}
