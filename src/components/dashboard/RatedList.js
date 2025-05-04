@@ -17,7 +17,7 @@ export default function RatedList({
         type === 'event'
           ? 'bg-[var(--primary-transparent)] text-[var(--gray-600)]'
           : 'bg-[var(--secondary-color-transparent)] text-[var(--blue-800)]'
-      } min-w-[320px] flex flex-col`}
+      } md:min-w-[420px] flex flex-col`}
     >
       <h2 className='text-xl font-semibold mb-4'>
         {title}

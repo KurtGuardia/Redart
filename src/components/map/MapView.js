@@ -94,7 +94,7 @@ export default function MapView({ ...props }) {
   if (isLoading) {
     return (
       <div className='flex flex-col gap-4 w-full mx-auto bg-gray-100/50 rounded-xl shadow-md p-6 animate-pulse'>
-        <Skeleton className='w-full h-[60vh] rounded-lg bg-gray-300' />
+        <Skeleton className='w-full h-[40vh] md:h-[60vh] rounded-lg bg-gray-300' />
       </div>
     )
   }
@@ -131,7 +131,7 @@ export default function MapView({ ...props }) {
     return (
       <div
         className={`mx-auto rounded-lg overflow-hidden ${
-          isHomePage ? 'w-[80%]' : 'w-full'
+          isHomePage ? 'w-full md:w-[80%]' : 'w-full'
         }`}
       >
         {locations && locations.length > 0 ? (

@@ -226,7 +226,7 @@ export default function EventCreateForm({
         </div>
 
         {/* Category */}
-        <div>
+        <div className='col-span-2 md:col-span-1'>
           <label
             htmlFor='eventCategory'
             className='block text-sm font-medium text-gray-700 mb-1'
@@ -250,7 +250,7 @@ export default function EventCreateForm({
         </div>
 
         {/* Price & Currency */}
-        <div>
+        <div className='col-span-2 md:col-span-1'>
           <label
             htmlFor='eventPrice'
             className='block text-sm font-medium text-gray-700 mb-1'
@@ -297,7 +297,7 @@ export default function EventCreateForm({
         </div>
 
         {/* Date */}
-        <div>
+        <div className='col-span-2 md:col-span-1'>
           <label
             htmlFor='eventDate'
             className='block text-sm font-medium text-gray-700 mb-1'
@@ -317,7 +317,7 @@ export default function EventCreateForm({
         </div>
 
         {/* Duration (optional) */}
-        <div>
+        <div className='col-span-2 md:col-span-1'>
           <label
             htmlFor='eventDuration'
             className='block text-sm font-medium text-gray-700 mb-1'
@@ -395,7 +395,7 @@ export default function EventCreateForm({
               type='file'
               accept='image/*'
               onChange={handleImageChange}
-              className='flex-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none focus:border-transparent text-sm md:text-base 2xl:text-lg'
+              className='flex-1 w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none focus:border-transparent text-sm md:text-base 2xl:text-lg'
             />
             {image && (
               <div className='h-16 w-16 relative border rounded overflow-hidden'>

@@ -12,7 +12,7 @@ export default function Register() {
   return (
     <>
       <Spots count={6} />
-      <div className='min-w-[40vw] mx-auto mt-32 mb-24'>
+      <div className='min-w-[40vw] max-w-[90%] mx-auto mt-32 mb-24'>
         {/* Tab Buttons Container - Note: Removed bottom border from here */}
         <div className='flex'>
           {/* User Tab */}

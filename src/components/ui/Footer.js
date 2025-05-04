@@ -10,7 +10,7 @@ import {
 } from 'react-icons/fa'
 
 const Footer = () => (
-  <footer className='bg-[var(--blue-800)] py-10 xl:py-5 px-24 xl:px-9'>
+  <footer className='bg-[var(--blue-800)] py-10 xl:py-5 px-5 sm:px-24 xl:px-9'>
     <div className='max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8'>
       {/* Contact Section */}
       <div className='flex flex-col items-center md:items-start space-y-4'>

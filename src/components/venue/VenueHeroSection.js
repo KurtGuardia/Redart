@@ -13,10 +13,10 @@ export default function VenueHeroSection({ venueId }) {
     return (
       <div className='relative h-64 md:h-96 w-full flex items-center justify-center text-center mb-12 shadow-lg'>
         <div className='relative z-20 bg-white/10 w-[90%] backdrop-blur-md rounded-lg p-4 md:p-6 xl:px-14 2xl:px-20 shadow-lg'>
-          <h2 className='text-2xl text-red-500 md:text-4xl font-bold mb-4'>
+          <h2 className='text-xl text-red-500 md:text-3xl font-bold mb-4'>
             Ocurrió un error
           </h2>
-          <p className='text-md text-gray-400 md:text-lg mb-4'>
+          <p className='text-sm text-gray-400 md:text-base mb-4'>
             {`No se pudo cargar la foto de portada y nombre 😞. Error: ${error.message}`}
           </p>
         </div>
@@ -31,9 +31,9 @@ export default function VenueHeroSection({ venueId }) {
         <div className='relative w-full h-72 md:h-96 flex items-end justify-center text-center overflow-hidden mb-12 shadow-lg bg-white'>
           <div className='relative z-20 mb-8 p-4 md:mb-12'>
             <div className='bg-gray-400/30 backdrop-blur-md rounded-lg p-4 md:p-6 shadow-lg space-y-3'>
-              <Skeleton className='h-8 md:h-12 w-64 md:w-72 mx-auto bg-gray-400/50' />
-              <Skeleton className='h-5 md:h-6 w-60 md:w-80 mx-auto bg-gray-400/50' />
-              <Skeleton className='h-5 md:h-6 w-60 md:w-80 mx-auto bg-gray-400/50' />
+              <Skeleton className='h-7 md:h-10 w-56 md:w-64 mx-auto bg-gray-400/50' />
+              <Skeleton className='h-4 md:h-5 w-52 md:w-72 mx-auto bg-gray-400/50' />
+              <Skeleton className='h-4 md:h-5 w-52 md:w-72 mx-auto bg-gray-400/50' />
             </div>
           </div>
         </div>
@@ -67,7 +67,7 @@ export default function VenueHeroSection({ venueId }) {
   return (
     <>
       <div
-        className={`relative w-full md:h-[50vh] overflow-hidden flex items-center justify-center text-center mb-12 shadow-lg`}
+        className={`relative w-full mt-12 md:pt-24 md:h-[50vh] overflow-hidden flex items-center justify-center text-center mb-12 shadow-lg`}
       >
         {heroImageUrl ? (
           <>
@@ -83,8 +83,9 @@ export default function VenueHeroSection({ venueId }) {
         ) : (
           <div className='absolute inset-0 bg-gradient-to-br from-[var(--teal-700)] to-[var(--blue-800)] z-0'></div>
         )}
-        <div className='relative z-20 bg-white/10 backdrop-blur-md rounded-lg p-4 md:p-6 xl:px-14 2xl:px-20 shadow-lg'>
-          <h1 className='text-3xl md:text-5xl 2xl:text-7xl font-bold text-white mb-2'>
+        <div className='relative w-full sm:w-[unset] z-20 bg-white/10 backdrop-blur-md rounded-lg px-4 py-12 md:p-6 xl:px-14 2xl:px-20 shadow-lg'>
+          <h1 className='text-2xl md:text-4xl 2xl:text-6xl font-bold text-white mb-2'>
+            {' '}
             {venue.name}
           </h1>
           <div>
@@ -92,10 +93,10 @@ export default function VenueHeroSection({ venueId }) {
               href={googleMapsUrl}
               target='_blank'
               rel='noopener noreferrer'
-              className='inline-flex items-center text-md md:text-lg 2xl:text-xl font-medium text-gray-200 hover:underline transition-colors duration-200'
+              className='hidden md:inline-flex items-center text-base 2xl:text-lg font-medium text-gray-200 hover:underline transition-colors duration-200'
             >
               <LocationPinIcon />
-              <span className='ml-1'>
+              <span className='ml-1 w-fit'>
                 {venue.address} - {venue.city},{' '}
                 {venue.country}
               </span>
@@ -105,7 +106,7 @@ export default function VenueHeroSection({ venueId }) {
       </div>
 
       {venue.description && (
-        <p className='mb-12 md:mb-16 border-b border-gray-200/80 rounded-xl bg-[var(--blue-800-transparent)] p-8 2xl:py-12 2xl:px-20 xl:max-w-[80%] mx-auto whitespace-pre-wrap leading-relaxed 2xl:leading-normal text-2xl 2xl:text-3xl text-center text-white'>
+        <p className='mb-12 md:mb-16 border-b border-gray-200/80 rounded-xl bg-[var(--blue-800-transparent)] p-2 md:p-8 xl:max-w-[80%] mx-4 md:mx-auto md:leading-normal text-base md:text-2xl text-center text-white'>
           {venue.description}
         </p>
       )}

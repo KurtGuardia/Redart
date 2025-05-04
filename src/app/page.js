@@ -13,14 +13,14 @@ export default function HomePage() {
 
   return (
     <>
-      <div className='absolute top-0 left-0 right-0 opacity-80 bg-gradient-to-r from-[var(--secondary-color)] to-[var(--primary)] h-[80vh]' />
+      <div className='absolute top-0 left-0 right-0 opacity-80 bg-gradient-to-r from-[var(--secondary-color)] to-[var(--primary)] h-screen lg:h-[80vh]' />
       <Spots count={8} />
       <HeroBackgroundSlider images={heroImages}>
         <div className='mx-auto z-10 text-center flex flex-col justify-between align-center bg-white bg-opacity-25 rounded-3xl py-8'>
-          <h1 className='text-3xl xl:text-5xl text-[var(--white)] md:text-4xl font-bold xl:w-[90%] w-[70%] mx-auto animate-fade-in-up'>
+          <h1 className='text-2xl sm:text-3xl xl:text-5xl text-[var(--white)] md:text-4xl font-bold xl:w-[90%] w-[70%] mx-auto animate-fade-in-up'>
             Descubre la vibrante escena artística de Bolivia
           </h1>
-          <p className='font-semibold text-xl xl:text-3xl max-w-2xl mx-auto mb-8 animate-fade-in-up'>
+          <p className='font-semibold text-xl xl:text-3xl max-w-2xl mx-auto my-8 animate-fade-in-up'>
             Encuentra eventos, espacios y artistas en tu
             ciudad
           </p>
@@ -43,7 +43,7 @@ export default function HomePage() {
           <h2 className='text-3xl xl:text-5xl font-bold mb-12'>
             Sobre nosotros
           </h2>
-          <p className='flex-1 text-lg xl:text-2xl  font-semibold mx-auto mb-14 leading-relaxed px-8 text-center'>
+          <p className='flex-1 text-lg xl:text-2xl font-semibold mx-auto mb-14 leading-relaxed px-3 xl:px-8 text-center'>
             Radart conecta artistas, espacios y amantes del
             arte en Bolivia. Nuestra misión es visibilizar
             la cultura y crear una comunidad que celebre la
@@ -62,10 +62,10 @@ export default function HomePage() {
         <div className='w-full absolute top-0 left-0 bg-[var(--teal-700)] opacity-70 h-full' />
       </section>
 
-      <section className='map mt-24'>
-        <div className='relative container mx-auto px-4 w-full md:w-[80%] 2xl:w-full'>
+      <section className='map mt-24 px-4'>
+        <div className='relative container mx-auto w-full md:w-[80%] 2xl:w-full'>
           <Spots count={4} />
-          <h2 className='text-3xl xl:text-5xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--blue-600)] to-[var(--blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg'>
+          <h2 className='text-2xl xl:text-5xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--blue-600)] to-[var(--blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg'>
             Explora los espacios culturales
           </h2>
           <p className='text-center text-md xl:text-2xl font-light mb-12'>
@@ -78,8 +78,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className='join text-center container mx-auto mb-48 mt-24'>
-        <h2 className='text-3xl xl:text-5xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--blue-600)] to-[var(--blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg transform-gpu hover:scale-105 transition-transform'>
+      <section className='join text-center container mx-auto mb-48 mt-24 px-4'>
+        <h2 className='text-2xl xl:text-5xl font-bold text-center mb-8 bg-gradient-to-r from-[var(--blue-600)] to-[var(--blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg transform-gpu hover:scale-105 transition-transform'>
           ¿Quieres unirte a la comunidad de Radart?
         </h2>
         <p className='text-center text-md xl:text-2xl font-semibold max-w-2xl mx-auto mb-8 animate-fade-in-up'>

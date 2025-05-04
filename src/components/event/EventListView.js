@@ -519,10 +519,10 @@ const EventListView = () => {
       {/* City filter label */}
       {cityFilter?.city && (
         <div className='flex justify-center mb-4'>
-          <div className='inline-flex items-center gap-2 px-4 py-1 bg-teal-100 text-teal-800 rounded-full'>
+          <div className='inline-flex text-center items-center gap-2 px-4 py-1 bg-teal-100 text-teal-800 rounded-full'>
             <svg
               xmlns='http://www.w3.org/2000/svg'
-              className='h-5 w-5'
+              className='h-7 w-7'
               viewBox='0 0 20 20'
               fill='currentColor'
             >

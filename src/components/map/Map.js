@@ -125,7 +125,7 @@ export default function Map({
     <div className='flex flex-col gap-4 h-full'>
       <div
         id={uniqueMapId}
-        className={`w-full h-[60vh] mx-auto map-container relative`}
+        className={`w-full h-[40vh] md:h-[60vh] mx-auto map-container relative`}
       >
         {!mapCenter && (
           <div className='absolute inset-0 z-20 flex flex-col items-center justify-center'>

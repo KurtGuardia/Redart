@@ -269,8 +269,8 @@ const EditModal = ({
       />
 
       {/* Modal */}
-      <div className='flex items-center justify-center min-h-screen py-4'>
-        <div className='relative bg-white rounded-lg shadow-xl max-w-xl w-full mx-auto p-6 px-12 z-[9999]'>
+      <div className='flex items-center justify-center min-h-screen py-4 mx-2'>
+        <div className='relative bg-white rounded-lg shadow-xl max-w-xl w-full mx-auto p-4 md:px-12 z-[9999]'>
           {/* Close button */}
           <button
             className='absolute top-3 right-3 text-gray-400 hover:text-gray-500'

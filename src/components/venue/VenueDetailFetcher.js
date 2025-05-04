@@ -226,7 +226,7 @@ export default function VenueDetailFetcher({ venueId }) {
 
   return (
     <section className='mb-10 md:mb-12 border-b border-gray-200/80 pb-8'>
-      <div className='flex flex-col lg:flex-row gap-8 lg:gap-12'>
+      <div className='flex flex-col lg:flex-row gap-16'>
         {/* Left Column: Map */}
         <div className='lg:w-1/2 flex flex-col'>
           <h2 className='text-2xl lg:text-3xl 2xl:text-4xl font-bold text-[var(--teal-800)] mb-1'>
@@ -272,12 +272,11 @@ export default function VenueDetailFetcher({ venueId }) {
         </div>
 
         {/* Right Column: Details */}
-        <div className='lg:w-1/2 space-y-8'>
-          <h2 className='text-2xl 2xl:text-4xl md:text-3xl font-bold text-[var(--teal-800)] mb-4'>
+        <div className='lg:w-1/2 space-y-8 flex flex-col items-center lg:items-start'>
+          <h2 className='text-2xl 2xl:text-4xl md:text-3xl font-bold text-[var(--teal-800)] md:mb-4 text-center lg:text-left'>
             Detalles Adicionales
           </h2>
-
-          <div className='flex flex-col md:flex-row justify-start md:items-end gap-4 mb-6'>
+          <div className='flex flex-col items-center lg:flex-row lg:justify-start lg:items-end gap-4 mb-6 w-full'>
             {/* Logo Section */}
             <div className='flex-shrink-0'>
               {' '}
@@ -286,8 +285,8 @@ export default function VenueDetailFetcher({ venueId }) {
                 // Use placeholder if venue.logo is missing
                 src={venue.logo || '/placeholder.svg'}
                 alt={`${venue.name} Logo`}
-                width={150}
-                height={100}
+                width={120} // Reduced logo size
+                height={80} // Reduced logo size
                 style={{ objectFit: 'contain' }} // Keep object-fit contain
                 className='rounded-md bg-gray-200 dark:bg-gray-700' // Added subtle bg for placeholder
                 // Optional: Add onError handler for broken image links
@@ -296,9 +295,8 @@ export default function VenueDetailFetcher({ venueId }) {
                 }}
               />
             </div>
-
             {/* Rating Section */}
-            {ratingCount > 0 && (
+            {ratingCount > 0 ? (
               <div className='flex items-center gap-2 text-lg md:text-xl text-yellow-400'>
                 <span className='font-bold'>
                   {averageRating.toFixed(1)}
@@ -312,12 +310,15 @@ export default function VenueDetailFetcher({ venueId }) {
                   )
                 </span>
               </div>
+            ) : (
+              <div className='h-6'></div> /* Placeholder to maintain spacing when no rating */
             )}
           </div>
-
           {venue.capacity && (
-            <div>
-              <h3 className='font-semibold text-gray-700 text-base 2xl:text-2xl mb-3'>
+            <div className='w-full text-center lg:text-left'>
+              <h3 className='font-semibold text-gray-700 text-base 2xl:text-2xl mb-3 inline-flex items-center gap-2'>
+                {' '}
+                {/* Inline-flex for icon+text */}
                 <span
                   className='text-2xl 2xl:text-3xl'
                   title='Capacidad'
@@ -326,62 +327,65 @@ export default function VenueDetailFetcher({ venueId }) {
                 </span>{' '}
                 Capacidad
               </h3>
-              <p className='text-gray-900 text-base 2xl:text-xl pl-12'>
+              <p className='text-gray-900 text-base 2xl:text-xl lg:pl-12'>
+                {' '}
+                {/* Conditional padding */}
                 {venue.capacity} personas
               </p>
             </div>
           )}
-
-          <div>
-            <h3 className='font-semibold text-gray-700 mb-3 flex items-center gap-2 text-base 2xl:text-2xl'>
+          <div className='w-full text-center lg:text-left'>
+            <h3 className='font-semibold text-gray-700 mb-3 inline-flex items-center gap-2 text-base 2xl:text-2xl'>
+              {' '}
+              {/* Inline-flex */}
               <span className='text-xl 2xl:text-3xl'>
                 ✨
               </span>{' '}
-              Servicios
+              Comodidades{' '}
+              {/* Changed title to match label */}
             </h3>
-            <ul className='list-none space-y-1 pl-12'>
-              {venue.amenities &&
-                venue.amenities.length > 0 && (
-                  <div className='flex flex-wrap gap-2'>
-                    {venue.amenities.map(
-                      (amenity, index) => (
-                        <span
-                          key={index}
-                          className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs 2xl:text-base font-medium bg-teal-100 text-teal-800'
-                        >
-                          <svg
-                            className='w-3 h-3 mr-1'
-                            fill='none'
-                            stroke='currentColor'
-                            viewBox='0 0 24 24'
-                          >
-                            <path
-                              strokeLinecap='round'
-                              strokeLinejoin='round'
-                              strokeWidth={2}
-                              d='M5 13l4 4L19 7'
-                            />
-                          </svg>
-                          {amenity}
-                        </span>
-                      ),
-                    )}
-                  </div>
-                )}
-            </ul>
+            {venue.amenities &&
+              venue.amenities.length > 0 && (
+                <div className='flex flex-wrap justify-center lg:justify-start gap-2 lg:pl-12'>
+                  {venue.amenities.map((amenity, index) => (
+                    <span
+                      key={index}
+                      className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs 2xl:text-base font-medium bg-teal-100 text-teal-800'
+                    >
+                      <svg
+                        className='w-3 h-3 mr-1'
+                        fill='none'
+                        stroke='currentColor'
+                        viewBox='0 0 24 24'
+                      >
+                        <path
+                          strokeLinecap='round'
+                          strokeLinejoin='round'
+                          strokeWidth={2}
+                          d='M5 13l4 4L19 7'
+                        />
+                      </svg>
+                      {amenity}
+                    </span>
+                  ))}
+                </div>
+              )}
           </div>
-
           {(venue.facebookUrl ||
             venue.instagramUrl ||
             venue.whatsappNumber) && (
-            <div>
-              <h3 className='font-semibold text-gray-700 mb-3 flex items-center gap-2 text-base 2xl:text-2xl'>
+            <div className='w-full text-center lg:text-left'>
+              <h3 className='font-semibold text-gray-700 mb-3 inline-flex items-center gap-2 text-base 2xl:text-2xl'>
+                {' '}
+                {/* Inline-flex */}
                 <span className='text-xl 2xl:text-3xl'>
                   🌐
                 </span>{' '}
                 Contacto / Redes
               </h3>
-              <div className='space-y-2 pl-12'>
+              <div className='space-y-2 flex flex-col items-center lg:items-start lg:pl-12'>
+                {' '}
+                {/* Centered items, conditional padding */}
                 {venue.facebookUrl && (
                   <a
                     href={venue.facebookUrl}
@@ -432,15 +436,20 @@ export default function VenueDetailFetcher({ venueId }) {
               </div>
             </div>
           )}
-
-          <div>
-            <h3 className='font-semibold text-gray-700 mb-3 flex items-center gap-2 text-base 2xl:text-2xl'>
+          <div className='w-full text-center lg:text-left'>
+            {' '}
+            {/* Centered text */}
+            <h3 className='font-semibold text-gray-700 mb-3 inline-flex items-center gap-2 text-base 2xl:text-2xl'>
+              {' '}
+              {/* Inline-flex */}
               <span className='text-xl 2xl:text-3xl'>
                 ⭐
               </span>{' '}
               Tu Puntuación
             </h3>
-            <div className='pl-12'>
+            <div className='flex flex-col items-center lg:items-start lg:pl-12'>
+              {' '}
+              {/* Centered items, conditional padding */}
               {user ? (
                 <>
                   <StarRatingInput

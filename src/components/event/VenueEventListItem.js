@@ -110,21 +110,21 @@ export default function VenueEventListItem({
           {/* Middle: Info */}
           <div className='flex-1 min-w-0'>
             <div className='flex items-center gap-2 mb-1 flex-wrap'>
-              <h3 className='text-lg 2xl:text-2xl font-semibold truncate'>
+              <h3 className='text-base 2xl:text-2xl font-semibold'>
                 {event.title || 'Evento sin título'}
               </h3>
               <span
-                className={`text-xs 2xl:text-sm px-2 py-0.5 rounded-full tracking-wider ${categoryColor}`}
+                className={`hidden md:inline-block text-xs 2xl:text-sm px-2 py-0.5 rounded-full tracking-wider ${categoryColor}`}
               >
                 {categoryLabel}
               </span>
             </div>
 
-            <p className='text-sm 2xl:text-lg mt-1 truncate'>
+            <p className='text-xs md:text-sm 2xl:text-lg mt-1'>
               {eventDateTime}
             </p>
 
-            <div className='flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs 2xl:text-base'>
+            <div className='flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs md:text-sm 2xl:text-base'>
               <span className='flex items-center'>
                 <svg
                   className='w-4 h-4 mr-1'

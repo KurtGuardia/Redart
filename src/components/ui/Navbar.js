@@ -7,7 +7,7 @@ import useHasScrolled from '../../hooks/useHasScrolled'
 import { auth } from '../../lib/firebase-client'
 import { signOutAndRedirect } from '../../lib/utils'
 import {
-  Avatar as RadixAvatar, // Renamed to avoid conflict if needed, though not strictly necessary here
+  Avatar,
   AvatarFallback,
   AvatarImage,
 } from '@radix-ui/react-avatar'
@@ -149,7 +149,7 @@ export default function Navbar() {
                   tabIndex={-1}
                   aria-label='Ir al dashboard'
                 >
-                  <RadixAvatar>
+                  <Avatar>
                     <AvatarImage
                       src={
                         venue?.logo ||
@@ -162,7 +162,7 @@ export default function Navbar() {
                       {venue?.name?.[0]?.toUpperCase() ||
                         'U'}
                     </AvatarFallback>
-                  </RadixAvatar>
+                  </Avatar>
                 </div>
                 {avatarMenuOpen && (
                   <button
@@ -284,35 +284,33 @@ export default function Navbar() {
           <div className='pt-4 pb-3 border-t border-gray-200'>
             {user ? (
               <div className='px-4 flex items-center justify-between'>
-                <div className='flex items-center'>
-                  <div
-                    className='flex-shrink-0 h-10 w-10 cursor-pointer'
-                    onClick={handleAvatarClick}
-                  >
-                    <RadixAvatar>
-                      <AvatarImage
-                        src={
-                          venue?.logo ||
-                          'https://img.icons8.com/ios/50/000000/user--v1.png'
-                        }
-                        alt={venue?.name || user.email}
-                        className='h-full w-full object-cover rounded-full ring-1 ring-gray-300'
-                      />
-                      <AvatarFallback className='h-full w-full flex items-center justify-center rounded-full bg-muted text-white'>
-                        {venue?.name?.[0]?.toUpperCase() ||
-                          'U'}
-                      </AvatarFallback>
-                    </RadixAvatar>
-                  </div>
-                  <div className='ml-3'>
-                    <div className='text-base font-medium text-gray-800'>
-                      {venue?.name || user.email}
-                    </div>
-                  </div>
+                <div
+                  className='flex items-center cursor-pointer'
+                  onClick={handleAvatarClick}
+                >
+                  <Avatar className='h-10 w-10 min-w-[2.5rem]'>
+                    <AvatarImage
+                      src={
+                        venue?.logo ||
+                        'https://img.icons8.com/ios/50/000000/user--v1.png'
+                      }
+                      alt={venue?.name || user.email}
+                      className='h-full w-full object-cover rounded-full ring-1 ring-gray-300'
+                    />
+                    <AvatarFallback className='h-full w-full flex items-center justify-center rounded-full bg-muted text-white'>
+                      {venue?.name?.[0]?.toUpperCase() ||
+                        'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                  <p className='mx-2 text-base text-center font-medium text-gray-800'>
+                    {venue?.name || user.displayName}
+                  </p>
                 </div>
                 <button
                   onClick={handleSignOut}
                   className='ml-auto flex-shrink-0 bg-red-500 p-1 rounded-md text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 text-xs'
+                  tabIndex={0}
+                  aria-label='Cerrar sesión'
                 >
                   Cerrar Sesión
                 </button>

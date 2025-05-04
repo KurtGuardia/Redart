@@ -132,46 +132,44 @@ export default function VenueDetailsCard({
       </h2>
 
       {/* Logo and Venue Name */}
-      <div className='flex items-center mb-4'>
-        <div className='flex items-center'>
-          <Image
-            src={venue.logo || './placeholder.svg'}
-            alt={`Logo de ${venue.name || 'el local'}`}
-            width={80}
-            height={80}
-            className='object-cover rounded-full border-2 border-teal-500 shadow-md mr-4'
-          />
-          <h3 className='text-xl md:text-2xl 2xl:text-3xl font-bold text-gray-800'>
-            {venue.name || 'Establecimiento artistico'}
-          </h3>
-          {/* Ratings Display */}
-          {Array.isArray(venue.ratings) &&
-            venue.ratings.length > 0 && (
-              <div className='flex items-center ml-4'>
-                <span
-                  className='text-yellow-500 text-lg'
-                  title='Puntuación promedio'
-                >
-                  ⭐
-                </span>
-                <span className='ml-1 text-yellow-600 font-semibold text-base -mb-[5px]'>
-                  {(
-                    venue.ratings.reduce(
-                      (sum, r) =>
-                        sum +
-                        (typeof r.score === 'number'
-                          ? r.score
-                          : 0),
-                      0,
-                    ) / venue.ratings.length
-                  ).toFixed(1)}
-                </span>
-                <span className='ml-1 text-gray-500 text-xs -mb-[5px]'>
-                  ({venue.ratings.length})
-                </span>
-              </div>
-            )}
-        </div>
+      <div className='flex flex-col sm:flex-row sm:justify-center items-center mb-4'>
+        <Image
+          src={venue.logo || './placeholder.svg'}
+          alt={`Logo de ${venue.name || 'el local'}`}
+          width={80}
+          height={80}
+          className='object-cover rounded-full border-2 border-teal-500 shadow-md sm:mr-4'
+        />
+        <h3 className='text-xl md:text-2xl 2xl:text-3xl font-bold text-gray-800'>
+          {venue.name || 'Establecimiento artistico'}
+        </h3>
+        {/* Ratings Display */}
+        {Array.isArray(venue.ratings) &&
+          venue.ratings.length > 0 && (
+            <div className='flex items-center sm:ml-4'>
+              <span
+                className='text-yellow-500 text-lg'
+                title='Puntuación promedio'
+              >
+                ⭐
+              </span>
+              <span className='ml-1 text-yellow-600 font-semibold text-base -mb-[5px]'>
+                {(
+                  venue.ratings.reduce(
+                    (sum, r) =>
+                      sum +
+                      (typeof r.score === 'number'
+                        ? r.score
+                        : 0),
+                    0,
+                  ) / venue.ratings.length
+                ).toFixed(1)}
+              </span>
+              <span className='ml-1 text-gray-500 text-xs -mb-[5px]'>
+                ({venue.ratings.length})
+              </span>
+            </div>
+          )}
       </div>
 
       {/* Map Display */}

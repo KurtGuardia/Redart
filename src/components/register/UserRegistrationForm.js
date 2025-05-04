@@ -15,6 +15,7 @@ import {
   GoogleAuthProvider,
   FacebookAuthProvider,
   onAuthStateChanged,
+  updateProfile, // Import updateProfile
 } from 'firebase/auth'
 import {
   doc,
@@ -149,6 +150,10 @@ const UserRegistrationForm = ({}) => {
         )
       const user = userCredential.user
 
+      // Update the user's profile with the name
+      await updateProfile(user, {
+        displayName: name.trim(),
+      })
       // Now create the user document in Firestore
       await createUserDocument(user, { name: name.trim() }) // Pass the entered name
 
@@ -233,7 +238,7 @@ const UserRegistrationForm = ({}) => {
       {/* Email/Password Form */}
       <form
         onSubmit={handleEmailPasswordSubmit}
-        className='min-w-96 mx-auto'
+        className='sm:min-w-96 mx-auto'
       >
         {/* Name */}
         <div className='mb-4'>
@@ -453,9 +458,7 @@ const UserRegistrationForm = ({}) => {
           disabled={registerLoading || socialLoading}
         >
           <FaGoogle className='text-red-500' />
-          {socialLoading
-            ? 'Procesando...'
-            : 'Continuar con Google'}
+          {socialLoading ? 'Procesando...' : 'con Google'}
         </button>
         {/* Add Facebook button if configured */}
         <button
@@ -465,9 +468,7 @@ const UserRegistrationForm = ({}) => {
           disabled={registerLoading || socialLoading}
         >
           <FaFacebook />
-          {socialLoading
-            ? 'Procesando...'
-            : 'Continuar con Facebook'}
+          {socialLoading ? 'Procesando...' : 'con Facebook'}
         </button>
       </div>
     </>

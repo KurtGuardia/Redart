@@ -61,7 +61,7 @@ export default function UserDashboard({
         </h1>
       </div>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-8 xl:gap-12'>
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 xl:gap-12'>
         <RatedList
           title='Locales Puntuados'
           items={ratedVenues}

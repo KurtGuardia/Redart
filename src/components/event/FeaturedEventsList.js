@@ -11,7 +11,7 @@ export default function FeaturedEventsList() {
 
   return (
     <>
-      <section className='featured-events py-16 mt-24'>
+      <section className='featured-events py-16 mt-18'>
         <div className='relative mx-auto px-4'>
           <Spots count={5} />
           <h2 className='text-3xl xl:text-5xl font-bold text-center mb-10 xl:mb-16   bg-gradient-to-r from-[var(--blue-600)] to-[var(--blue-900)] bg-clip-text text-transparent px-6 py-3 rounded-lg'>

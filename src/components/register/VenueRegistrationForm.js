@@ -78,6 +78,10 @@ const VenueRegistrationForm = ({}) => {
   const [currentStep, setCurrentStep] = useState(1)
   const [passwordValid, setPasswordValid] = useState(null) // null = untouched, false = invalid, true = valid
   const nextBtnRef = useRef(null)
+  const [searchInputValue, setSearchInputValue] =
+    useState('') // Add this new state for search input
+  const [localSearchResult, setLocalSearchResult] =
+    useState(null) // Add state for map controller
 
   // Redirect authenticated users
   useEffect(() => {
@@ -131,7 +135,7 @@ const VenueRegistrationForm = ({}) => {
     searchError,
     searchResult, // The result object { lat, lng, address, ... } after selection
   } = useAddressSearch(
-    address, // Use address state as initial query
+    searchInputValue, // Use searchInputValue as the query source
     selectedCity, // Use selectedCity state for context
     (result) => {
       // --- Callback when a suggestion is clicked ---
@@ -142,15 +146,25 @@ const VenueRegistrationForm = ({}) => {
       }
       setSelectedLocation(newLocation) // Update the location state
 
-      // Optionally update form fields
-      if (!address && result.address)
-        setAddress(result.address) // Populate address if empty
-      // Maybe update city/country if needed, though user selects them separately here
-      // if (!selectedCity && result.city) setSelectedCity(result.city);
+      // Don't update searchInputValue when suggestion is clicked
 
       setShowSuggestions(false) // Hide suggestions
     },
   )
+
+  // Custom wrapper for suggestion clicks to avoid searchQuery/searchInputValue mismatch
+  const handleSuggestionClickWrapper = (suggestion) => {
+    // Extract coordinates directly from the suggestion
+    const [lng, lat] = suggestion.center
+    const result = { lat, lng }
+
+    // Update the map location and search result for MapController
+    setSelectedLocation({ lat, lng })
+    setLocalSearchResult(result) // Set our local search result for map controller
+
+    // Keep suggestions hidden
+    setShowSuggestions(false)
+  }
 
   // --- Handlers & Logic ---
   const handleCountryChange = (e) => {
@@ -671,7 +685,6 @@ const VenueRegistrationForm = ({}) => {
                 </span>
               </label>
 
-              {/* --- NEW: Address Search Input --- */}
               <div className='relative mb-3'>
                 <label
                   htmlFor='address-search-register'
@@ -682,8 +695,11 @@ const VenueRegistrationForm = ({}) => {
                 <input
                   id='address-search-register'
                   type='text'
-                  value={searchQuery}
-                  onChange={handleInputChange}
+                  value={searchInputValue}
+                  onChange={(e) => {
+                    setSearchInputValue(e.target.value)
+                    handleInputChange(e)
+                  }}
                   onFocus={() => setShowSuggestions(true)}
                   // onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
                   placeholder='Escribe una dirección...'
@@ -699,14 +715,15 @@ const VenueRegistrationForm = ({}) => {
                 {/* Suggestions List */}
                 {showSuggestions &&
                   suggestions.length > 0 && (
-                    <div className='absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto'>
+                    <div className='absolute z-[1010] w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto'>
                       {suggestions.map((s) => (
                         <button
                           key={s.id}
                           type='button'
-                          onClick={() =>
-                            handleSuggestionClick(s)
-                          }
+                          onClick={() => {
+                            // Don't change the search input when suggestion clicked
+                            handleSuggestionClickWrapper(s)
+                          }}
                           onMouseDown={(e) =>
                             e.preventDefault()
                           }
@@ -744,7 +761,7 @@ const VenueRegistrationForm = ({}) => {
                   } // Zoom in if selected
                   isEditable={true}
                   hideSearch={true} // *** IMPORTANT: Hide Map.js internal search ***
-                  searchResultForMap={searchResult} // *** Pass hook's result to MapController ***
+                  searchResultForMap={localSearchResult} // Use our local state instead of hook's searchResult
                   onLocationSelect={(
                     location, // Use the (renamed) state setter
                   ) => setSelectedLocation(location)}

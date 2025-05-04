@@ -2,26 +2,27 @@
 
 import { useState } from 'react'
 
-const FAQItem = ( { question, answer } ) => {
-  const [isOpen, setIsOpen] = useState( false )
+const FAQItem = ({ question, answer }) => {
+  const [isOpen, setIsOpen] = useState(false)
 
   const toggleOpen = () => {
-    setIsOpen( !isOpen )
+    setIsOpen(!isOpen)
   }
 
   return (
     <div className='rounded-md bg-white shadow-md'>
       <button
-        className='flex justify-between items-center w-full text-left p-4 2xl:p-6 focus:outline-none'
+        className='flex justify-between items-center w-full text-left p-2 md:py-2 2xl:p-6 focus:outline-none'
         onClick={toggleOpen}
         aria-expanded={isOpen}
       >
-        <span className='text-xl 2xl:text-3xl font-semibold text-[var(--teal-800)]'>
+        <span className='text-lg  2xl:text-3xl font-semibold text-[var(--teal-800)]'>
           {question}
         </span>
         <svg
-          className={`w-6 h-6 text-gray-500 transition-transform duration-300 ${isOpen ? 'transform rotate-180' : ''
-            }`}
+          className={`w-6 h-6 min-w-6 text-gray-500 transition-transform duration-300 ${
+            isOpen ? 'transform rotate-180' : ''
+          }`}
           fill='none'
           stroke='currentColor'
           viewBox='0 0 24 24'

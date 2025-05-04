@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useUserData } from '../../hooks/useUserData'
+import { FaEye, FaEyeSlash } from 'react-icons/fa' // Import eye icons
 import { translateFirebaseAuthError } from '../../lib/firebaseErrors' // Import the translator
 
 export default function LoginForm() {
@@ -11,6 +12,8 @@ export default function LoginForm() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
   const router = useRouter()
+  const [loginLoading, setLoginLoading] = useState(false) // State for login process
+  const [showPassword, setShowPassword] = useState(false) // State for password visibility
   const searchParams = useSearchParams()
   const { userId, loading: userLoading } = useUserData()
 
@@ -61,6 +64,7 @@ export default function LoginForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setLoginLoading(true) // Start loading
     try {
       const { signInWithEmailAndPassword } = await import(
         'firebase/auth'
@@ -85,6 +89,8 @@ export default function LoginForm() {
         error.code,
         error.message,
       )
+    } finally {
+      setLoginLoading(false) // Stop loading regardless of outcome
     }
   }
 
@@ -94,41 +100,77 @@ export default function LoginForm() {
         Iniciar sesión
       </h2>
       <form onSubmit={handleSubmit}>
-        <div className='mb-5'>
-          {' '}
-          {/* Increased margin slightly */}
-          <label
-            htmlFor='email'
-            className='block text-gray-700 font-bold mb-2 text-lg'
-          >
-            Correo electrónico
-          </label>
+        <label
+          htmlFor='email'
+          className='block text-gray-700 font-bold mb-2 text-lg'
+        >
+          Correo electrónico
+        </label>
+        <div className='relative mb-10'>
           <input
+            aria-label='Correo electrónico'
             type='email'
             id='email'
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500'
+            className='w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500' // Added pr-10, changed to rounded-lg
             required
+            autoComplete='email'
           />
+          {email && (
+            <button
+              type='button'
+              onClick={() => setEmail('')} // Centered vertically
+              className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600'
+              aria-label='Clear email input'
+            >
+              &#x2715; {/* Multiplication X sign */}
+            </button>
+          )}
         </div>
-        <div className='mb-5'>
-          {' '}
-          {/* Increased margin slightly */}
-          <label
-            htmlFor='password'
-            className='block text-gray-700 font-bold mb-2 text-lg'
-          >
-            Contraseña
-          </label>
+        {/* Password input */}{' '}
+        <label
+          htmlFor='password'
+          className='block text-gray-700 font-bold mb-2 text-lg'
+        >
+          Contraseña
+        </label>
+        <div className='relative mb-10'>
           <input
-            type='password'
+            aria-label='Contraseña'
+            type={showPassword ? 'text' : 'password'} // Toggle type
             id='password'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500'
+            className='w-full px-3 py-2 pr-16 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500' // Added pr-16, changed to rounded-lg
             required
+            autoComplete='current-password'
           />
+          {/* Container for password icons */}
+          <div className='absolute inset-y-0 right-0 pr-3 flex items-center space-x-2'>
+            {password && (
+              <button
+                type='button'
+                onClick={() => setPassword('')}
+                className='text-gray-400 hover:text-gray-600' // Removed absolute positioning
+                aria-label='Clear password input'
+              >
+                &#x2715; {/* Multiplication X sign */}
+              </button>
+            )}
+            <button
+              type='button'
+              onClick={() => setShowPassword(!showPassword)}
+              className='text-gray-400 hover:text-gray-600' // Removed absolute positioning
+              aria-label={
+                showPassword
+                  ? 'Hide password'
+                  : 'Show password'
+              }
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
         </div>
         {/* Error message moved here */}
         {error && (
@@ -138,12 +180,13 @@ export default function LoginForm() {
         )}
         <button
           type='submit'
-          className='w-full bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 transition duration-300'
+          className='w-full bg-teal-600 text-white py-2 px-4 rounded-lg hover:bg-teal-700 transition duration-300 disabled:opacity-70 disabled:cursor-not-allowed' // Changed to rounded-lg
+          disabled={loginLoading} // Disable button when loading
         >
-          Iniciar sesión
+          {loginLoading ? 'Iniciando...' : 'Iniciar sesión'}
         </button>
       </form>
-      <p className='mt-4 text-xl'>
+      <p className='mt-4 text-base lg:text-xl'>
         ¿No tienes una cuenta? | {''}
         <Link
           className='text-teal-600 hover:underline'

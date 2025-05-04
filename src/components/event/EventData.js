@@ -197,7 +197,7 @@ export default function EventData({ eventId }) {
 
       {status?.label && (
         <div
-          className={`mx-auto my-10 block w-fit ${status.labelBgClass} px-4 lg:px-10 py-1 lg:py-4 text-center font-bold text-lg 2xl:text-xl tracking-widest shadow-lg whitespace-nowrap rounded-md text-white`}
+          className={`mx-auto my-10 mt-0 block w-fit ${status.labelBgClass} px-4 lg:px-10 py-1 lg:py-4 text-center font-bold text-lg 2xl:text-xl tracking-widest shadow-lg whitespace-nowrap rounded-md text-white`}
         >
           {status.label}
         </div>
@@ -217,7 +217,7 @@ export default function EventData({ eventId }) {
       )}
 
       <div
-        className={`min-w-[70%] 2xl:max-w-[80%] flex flex-col lg:flex-row gap-8 lg:gap-12 p-4 lg:p-8 xl:p-14 mb-10 md:mb-12 mx-auto bg-white rounded-xl shadow-lg ${status?.cardBgClass}`}
+        className={`min-w-[70%] 2xl:max-w-[80%] flex flex-col lg:flex-row gap-8 lg:gap-12 p-4 lg:p-8 xl:p-14 mb-10 md:mb-12 mx-2 sm:mx-auto bg-white rounded-xl shadow-lg ${status?.cardBgClass}`}
       >
         <div className='lg:w-1/2 flex flex-col'>
           <h2 className='text-xl lg:text-2xl 2xl:text-3xl font-bold text-[var(--teal-800)] mb-4'>
@@ -463,7 +463,8 @@ export default function EventData({ eventId }) {
 
       {localEvent.ticketUrl &&
         !hasEventPassed(localEvent.date) &&
-        localEvent.status !== 'cancelled' && (
+        localEvent.status !== 'cancelled' &&
+        localEvent.status !== 'suspended' && (
           <div className='text-center mb-8 lg:mb-12 2xl:mb-16'>
             <a
               href={localEvent.ticketUrl}
