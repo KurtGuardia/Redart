@@ -1066,16 +1066,29 @@ const EditModal = ({
                             name={key}
                             type='file'
                             accept={
-                              field.accept || 'image/*'
+                              field.accept ||
+                              'image/png, image/jpeg, image/jpg, image/gif, image/svg+xml, image/*'
                             }
                             onChange={(e) => {
                               if (
                                 e.target.files &&
                                 e.target.files[0]
                               ) {
+                                const file =
+                                  e.target.files[0]
+                                console.log(
+                                  `EditModal - Image selected: ${
+                                    file.name
+                                  }, type: ${
+                                    file.type
+                                  }, size: ${Math.round(
+                                    file.size / 1024,
+                                  )}KB`,
+                                )
+
                                 setFormData({
                                   ...formData,
-                                  [key]: e.target.files[0],
+                                  [key]: file,
                                 })
                               }
                             }}

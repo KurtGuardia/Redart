@@ -29,8 +29,24 @@ export default function EventCreateForm({
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
+
+      // Log detailed file information for debugging
+      console.log('EventCreateForm - Image selected:', {
+        name: file.name,
+        type: file.type,
+        size: `${Math.round(file.size / 1024)}KB`,
+        lastModified: new Date(
+          file.lastModified,
+        ).toISOString(),
+      })
+
       // --- Image Validation (Client-side) ---
       if (file.size > MAX_IMAGE_SIZE_BYTES) {
+        console.warn(
+          `Image too large: ${Math.round(
+            file.size / 1024,
+          )}KB > ${MAX_IMAGE_SIZE_MB}MB`,
+        )
         if (setEventFormError)
           setEventFormError(
             `La imagen no debe superar los ${MAX_IMAGE_SIZE_MB}MB.`,
@@ -39,8 +55,10 @@ export default function EventCreateForm({
         e.target.value = '' // Clear the file input visually
         return
       }
-      // Optional: Add check for image type (e.g., file.type.startsWith('image/'))
+
+      // Check if it's a valid image type
       if (!file.type.startsWith('image/')) {
+        console.warn(`Invalid file type: ${file.type}`)
         if (setEventFormError)
           setEventFormError(
             'Por favor selecciona un archivo de imagen válido (JPEG, PNG, GIF, etc.).',
@@ -49,7 +67,26 @@ export default function EventCreateForm({
         e.target.value = ''
         return
       }
-      // --- End Image Validation ---
+
+      // Ensure PNG is accepted
+      const validImageTypes = [
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/gif',
+        'image/svg+xml',
+      ]
+      if (!validImageTypes.includes(file.type)) {
+        console.warn(
+          `Image type not explicitly supported: ${file.type}. Will attempt to process anyway.`,
+        )
+        // Continue anyway since it passed the image/ check above
+      }
+
+      // Special handling for PNG files
+      if (file.type === 'image/png') {
+        console.log('Processing PNG file:', file.name)
+      }
 
       setImage(file)
       if (setEventFormError) setEventFormError('') // Clear error on new valid image
@@ -141,7 +178,6 @@ export default function EventCreateForm({
         })
       return // Stop submission
     }
-    // --- End Client-Side Validation ---
 
     const formData = {
       title: title.trim(),
@@ -182,26 +218,6 @@ export default function EventCreateForm({
       <h3 className='text-lg md:text-xl 2xl:text-2xl font-semibold w-fit text-gray-800 my-4 border-b pb-2'>
         Crear Nuevo Evento
       </h3>
-
-      {/* Error Message Display (using prop from parent) */}
-      {eventFormError && (
-        <div className='bg-red-50 border-l-4 border-red-500 p-4 mb-4 error-message-selector text-xs md:text-sm 2xl:text-base'>
-          {' '}
-          {/* Added class for potential scrolling */}
-          <p className='text-red-700 text-xs md:text-sm 2xl:text-base'>
-            {eventFormError}
-          </p>
-        </div>
-      )}
-
-      {/* Success Message Display (using prop from parent) */}
-      {eventSuccess && (
-        <div className='bg-green-50 border-l-4 border-green-500 p-4 mb-4 text-xs md:text-sm 2xl:text-base'>
-          <p className='text-green-700 text-xs md:text-sm 2xl:text-base'>
-            {eventSuccess}
-          </p>
-        </div>
-      )}
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6 text-sm md:text-base 2xl:text-lg'>
         {/* Title */}
@@ -393,7 +409,7 @@ export default function EventCreateForm({
             <input
               id='eventImage'
               type='file'
-              accept='image/*'
+              accept='image/png, image/jpeg, image/jpg, image/gif, image/svg+xml, image/*'
               onChange={handleImageChange}
               className='flex-1 w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:outline-none focus:border-transparent text-sm md:text-base 2xl:text-lg'
             />
@@ -433,6 +449,26 @@ export default function EventCreateForm({
           </p>
         </div>
       </div>
+
+      {/* Error Message Display (using prop from parent) */}
+      {eventFormError && (
+        <div className='bg-red-50 border-l-4 border-red-500 p-4 mb-4 error-message-selector text-xs md:text-sm 2xl:text-base'>
+          {' '}
+          {/* Added class for potential scrolling */}
+          <p className='text-red-700 text-xs md:text-sm 2xl:text-base'>
+            {eventFormError}
+          </p>
+        </div>
+      )}
+
+      {/* Success Message Display (using prop from parent) */}
+      {eventSuccess && (
+        <div className='bg-green-50 border-l-4 border-green-500 p-4 mb-4 text-xs md:text-sm 2xl:text-base'>
+          <p className='text-green-700 text-xs md:text-sm 2xl:text-base'>
+            {eventSuccess}
+          </p>
+        </div>
+      )}
 
       {/* Submit Button */}
       <div className='mt-8 text-sm md:text-base 2xl:text-lg'>

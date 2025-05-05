@@ -636,14 +636,36 @@ export async function compressImage(
   try {
     // Skip compression for small images
     if (imageFile.size <= maxSizeKB * 1024) {
+      console.log(
+        `Image ${
+          imageFile.name
+        } is already small (${Math.round(
+          imageFile.size / 1024,
+        )}KB), skipping compression`,
+      )
       return imageFile
     }
+
+    // Log image information for debugging
+    console.log(
+      `Compressing image: ${imageFile.name}, type: ${
+        imageFile.type
+      }, size: ${Math.round(imageFile.size / 1024)}KB`,
+    )
+
+    // Special handling for PNG files
+    const isPNG = imageFile.type === 'image/png'
 
     const options = {
       maxSizeMB: maxSizeKB / 1024,
       maxWidthOrHeight: 1920,
       useWebWorker: true,
       fileType: imageFile.type,
+      // Less aggressive compression for PNGs to maintain quality
+      ...(isPNG && {
+        initialQuality: 0.8,
+        alwaysKeepResolution: true,
+      }),
     }
 
     const compressedFile = await imageCompression(
@@ -652,16 +674,31 @@ export async function compressImage(
     )
 
     // Create a new file with the same name but compressed content
-    return new File([compressedFile], imageFile.name, {
-      type: imageFile.type,
-      lastModified: Date.now(),
-    })
+    const resultFile = new File(
+      [compressedFile],
+      imageFile.name,
+      {
+        type: imageFile.type,
+        lastModified: Date.now(),
+      },
+    )
+
+    console.log(
+      `Compression complete: ${Math.round(
+        resultFile.size / 1024,
+      )}KB (${Math.round(
+        (resultFile.size / imageFile.size) * 100,
+      )}% of original)`,
+    )
+
+    return resultFile
   } catch (error) {
     console.error(
-      `Error compressing image ${imageFile.name}:`,
+      `Error compressing image ${imageFile.name} (type: ${imageFile.type}):`,
       error,
     )
-    return imageFile // Return original on error
+    // On error, return the original file to prevent blocking the upload
+    return imageFile
   }
 }
 

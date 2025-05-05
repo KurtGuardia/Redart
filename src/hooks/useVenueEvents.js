@@ -127,6 +127,7 @@ export const useVenueEvents = (venueId, venue) => {
             ? formData.ticketUrl.trim()
             : null,
           status: 'active',
+          featured: false,
           venueName: venue?.name || '',
           location: venue?.location || null,
           address: venue?.address || '',

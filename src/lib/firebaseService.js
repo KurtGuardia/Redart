@@ -523,12 +523,32 @@ export const uploadEventImage = async (
 ) => {
   if (!file || !venueId || !eventId) return null
   try {
+    console.log(
+      `Starting event image upload: ${file.name}, type: ${
+        file.type
+      }, size: ${Math.round(file.size / 1024)}KB`,
+    )
     const compressedFile = await compressImage(file) // Use util
+    console.log(
+      `After compression: ${compressedFile.name}, type: ${
+        compressedFile.type
+      }, size: ${Math.round(compressedFile.size / 1024)}KB`,
+    )
+
     const filename = `${Date.now()}_${compressedFile.name}`
     const storagePath = `venues/${venueId}/events/${eventId}/${filename}`
     const storageRef = ref(storage, storagePath)
-    await uploadBytes(storageRef, compressedFile)
+
+    // Upload with metadata to ensure correct content-type
+    const metadata = {
+      contentType: compressedFile.type,
+    }
+
+    await uploadBytes(storageRef, compressedFile, metadata)
     const downloadURL = await getDownloadURL(storageRef)
+    console.log(
+      `Event image upload successful: ${downloadURL}`,
+    )
     return downloadURL
   } catch (error) {
     console.error(
@@ -548,12 +568,32 @@ export const uploadEventImage = async (
 export const uploadVenueLogo = async (file, venueId) => {
   if (!file || !venueId) return null
   try {
+    console.log(
+      `Starting venue logo upload: ${file.name}, type: ${
+        file.type
+      }, size: ${Math.round(file.size / 1024)}KB`,
+    )
     const compressedFile = await compressImage(file) // Use util
+    console.log(
+      `After compression: ${compressedFile.name}, type: ${
+        compressedFile.type
+      }, size: ${Math.round(compressedFile.size / 1024)}KB`,
+    )
+
     const filename = `${Date.now()}_${compressedFile.name}`
     const storagePath = `venues/${venueId}/logo/${filename}`
     const storageRef = ref(storage, storagePath)
-    await uploadBytes(storageRef, compressedFile)
+
+    // Upload with metadata to ensure correct content-type
+    const metadata = {
+      contentType: compressedFile.type,
+    }
+
+    await uploadBytes(storageRef, compressedFile, metadata)
     const downloadURL = await getDownloadURL(storageRef)
+    console.log(
+      `Venue logo upload successful: ${downloadURL}`,
+    )
     return downloadURL
   } catch (error) {
     console.error(
@@ -595,6 +635,10 @@ export const uploadPhotos = async (photos, venueId) => {
   if (photoFiles.length === 0) return []
 
   try {
+    console.log(
+      `Starting upload of ${photoFiles.length} photos for venue ${venueId}`,
+    )
+
     // Compress first
     const compressedPhotos = await compressMultipleImages(
       photoFiles,
@@ -603,18 +647,30 @@ export const uploadPhotos = async (photos, venueId) => {
     const uploadPromises = compressedPhotos.map(
       async (photo) => {
         try {
+          console.log(
+            `Uploading photo: ${photo.name}, type: ${
+              photo.type
+            }, size: ${Math.round(photo.size / 1024)}KB`,
+          )
           const timestamp = new Date().getTime()
           const fileName = `${timestamp}_${photo.name}`
           const storageRef = ref(
             storage,
             `venues/${venueId}/photos/${fileName}`,
           )
-          await uploadBytes(storageRef, photo)
+
+          // Upload with metadata to ensure correct content-type
+          const metadata = {
+            contentType: photo.type,
+          }
+
+          await uploadBytes(storageRef, photo, metadata)
           const url = await getDownloadURL(storageRef)
+          console.log(`Photo upload successful: ${url}`)
           return url
         } catch (uploadError) {
           console.error(
-            `Error uploading photo ${photo.name}:`,
+            `Error uploading photo ${photo.name} (type: ${photo.type}):`,
             uploadError,
           )
           return null // Return null for failed uploads

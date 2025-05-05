@@ -808,10 +808,19 @@ const VenueRegistrationForm = ({}) => {
                   type='file'
                   id='logo'
                   name='logo'
-                  accept='image/*'
+                  accept='image/png, image/jpeg, image/jpg, image/gif, image/svg+xml, image/*'
                   onChange={(e) => {
                     const file = e.target.files[0]
                     if (file) {
+                      console.log(
+                        `Logo selected: ${
+                          file.name
+                        }, type: ${
+                          file.type
+                        }, size: ${Math.round(
+                          file.size / 1024,
+                        )}KB`,
+                      )
                       setLogo(file)
                     }
                   }}
@@ -1073,10 +1082,23 @@ const VenueRegistrationForm = ({}) => {
               <input
                 type='file'
                 id='photos'
-                accept='image/*'
+                accept='image/png, image/jpeg, image/jpg, image/gif, image/svg+xml, image/*'
                 multiple
                 onChange={(e) => {
                   const files = Array.from(e.target.files)
+
+                  // Log file types for debugging
+                  files.forEach((file) => {
+                    console.log(
+                      `Photo selected: ${
+                        file.name
+                      }, type: ${
+                        file.type
+                      }, size: ${Math.round(
+                        file.size / 1024,
+                      )}KB`,
+                    )
+                  })
 
                   if (files.length > MAX_PHOTOS) {
                     setMessage(
