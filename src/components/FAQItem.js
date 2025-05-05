@@ -16,7 +16,7 @@ const FAQItem = ({ question, answer }) => {
         onClick={toggleOpen}
         aria-expanded={isOpen}
       >
-        <span className='text-lg  2xl:text-3xl font-semibold text-[var(--teal-800)]'>
+        <span className='text-lg  2xl:text-2xl font-semibold text-[var(--teal-800)]'>
           {question}
         </span>
         <svg
@@ -37,7 +37,7 @@ const FAQItem = ({ question, answer }) => {
         </svg>
       </button>
       {isOpen && (
-        <p className='text-base 2xl:text-2xl p-4 bg-gray-100 rounded-b-md text-[var(--blue-800)] leading-relaxed'>
+        <p className='text-base 2xl:text-xl p-4 bg-gray-100 rounded-b-md text-[var(--blue-800)] leading-relaxed'>
           {answer}
         </p>
       )}

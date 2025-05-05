@@ -91,7 +91,9 @@ export default function useRatingSystem({
 
         const userDoc = await transaction.get(userRef)
         if (!userDoc.exists()) {
-          throw new Error('Usuario no encontrado.')
+          throw new Error(
+            'Usuario no encontrado - Puntuación es solo para cuentas personales.',
+          )
         }
         const currentUserData = userDoc.data()
         let currentUserRatings = Array.isArray(
@@ -245,7 +247,9 @@ export default function useRatingSystem({
           userDoc.exists(),
         )
         if (!userDoc.exists()) {
-          throw new Error('Usuario no encontrado.')
+          throw new Error(
+            'Usuario no encontrado - Puntuación es solo para cuentas personales.',
+          )
         }
         const currentUserData = userDoc.data()
         let currentUserRatings = Array.isArray(

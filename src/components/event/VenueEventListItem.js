@@ -32,7 +32,7 @@ const getCategoryColor = (category) => {
 export default function VenueEventListItem({
   event,
   onEdit,
-  onDelete, // Keep onDelete prop for the button
+  onDelete,
   onClickItem,
   isDashboardPage = false,
 }) {
@@ -86,7 +86,6 @@ export default function VenueEventListItem({
   return (
     <li onClick={() => onClickItem && onClickItem(event)}>
       {/* Left: Image */}
-      {/* Wrap content in Link, remove onClick from li */}
       <Link
         href={`/events/${event.id}`}
         className={`flex items-start gap-4 p-2 2xl:p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 w-full ${backgroundClass} ${opacityClass} ${textColorClass}`}
@@ -107,10 +106,9 @@ export default function VenueEventListItem({
 
         {/* Right Side Container (Info + Badge + Actions) */}
         <div className='w-full flex justify-between items-start gap-2'>
-          {/* Middle: Info */}
           <div className='flex-1 min-w-0'>
             <div className='flex items-center gap-2 mb-1 flex-wrap'>
-              <h3 className='text-base 2xl:text-2xl font-semibold'>
+              <h3 className='text-sm 2xl:text-2xl font-semibold leading-normal'>
                 {event.title || 'Evento sin título'}
               </h3>
               <span

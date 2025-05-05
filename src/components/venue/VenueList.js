@@ -3,9 +3,9 @@ import Image from 'next/image'
 import { useUserLocationDetection } from '../../hooks/useUserLocationDetection'
 import { useEffect, useState } from 'react'
 import { useVenueLocations } from '../../hooks/useVenueLocations'
-import { Skeleton } from '../ui/Skeleton' // Import the Skeleton component
-import { useBrowserLocationInstructions } from '../../hooks/useBrowserLocationInstructions' // Import the hook
-import DeniedLocationInstructions from '../DeniedLocationInstructions' // Import the component
+import { Skeleton } from '../ui/Skeleton'
+import { useBrowserLocationInstructions } from '../../hooks/useBrowserLocationInstructions'
+import DeniedLocationInstructions from '../DeniedLocationInstructions'
 import Modal from '../ui/Modal'
 
 export default function VenueList() {
@@ -189,6 +189,15 @@ export default function VenueList() {
     )
   }
 
+  function handleAllowLocation() {
+    setShowLocationModal(false)
+    requestPermissionAndDetect()
+  }
+
+  function handleDenyLocation() {
+    setShowLocationModal(false)
+  }
+
   return (
     <div
       className={`mx-auto rounded-lg overflow-hidden flex flex-col justify-center items-center text-center h-[60vh] bg-gray-100 p-4 w-full`}
@@ -215,13 +224,4 @@ export default function VenueList() {
       </p>
     </div>
   )
-
-  function handleAllowLocation() {
-    setShowLocationModal(false)
-    requestPermissionAndDetect()
-  }
-
-  function handleDenyLocation() {
-    setShowLocationModal(false)
-  }
 }

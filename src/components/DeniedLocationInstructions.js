@@ -9,6 +9,7 @@ export default function DeniedLocationInstructions({
   browser,
   instructions,
   userLocationError,
+  eventOrLocationScreen,
 }) {
   return (
     <div
@@ -51,7 +52,12 @@ export default function DeniedLocationInstructions({
           'Necesitamos tu permiso de ubicación para mostrar sitios cercanos.'}{' '}
         <br />
         <br />
-        Necesitamos tu ubicación para mostrarte los sitios
+        Necesitamos tu ubicación para mostrarte los{' '}
+        {`${
+          eventOrLocationScreen === 'events'
+            ? 'eventos'
+            : 'lugares'
+        }`}{' '}
         que tengas cerca.
       </p>
       <p className='text-[var(--blue-800)] mb-6 bg-[var(--secondary-color-transparent)] rounded-md px-4 py-2 shadow-sm animate-bounce mt-8 lg:mt-2'>

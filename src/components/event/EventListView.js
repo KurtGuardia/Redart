@@ -53,7 +53,7 @@ const EventListView = () => {
     debouncedSearchTerm,
     filter,
     cityFilter?.city,
-    isLocationCheckComplete,
+    isLocationCheckComplete, // Revert back to using this directly
   )
 
   // Effect for city filter based on user location
@@ -335,52 +335,8 @@ const EventListView = () => {
           browser={browser}
           instructions={instructions}
           userLocationError={userLocationError}
+          eventOrLocationScreen={'events'}
         />
-
-        {/* Display event cards when data is loaded */}
-        <div className='mt-8'>
-          <h2 className='text-lg text-center mb-6 text-teal-700 font-semibold'>
-            Mostrando todos los eventos disponibles
-          </h2>
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 xl:gap-8 gap-8 px-1 xl:px-16'>
-            {eventsList.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
-            {isFetchingMore &&
-              Array.from({ length: 4 }).map((_, index) => (
-                <EventCardSkeleton
-                  key={`loading-more-${index}`}
-                />
-              ))}
-          </div>
-        </div>
-
-        {/* Show message if no events match the filters */}
-        {!isLoading &&
-          !eventsError &&
-          eventsList.length === 0 && (
-            <p className='col-span-full text-center text-gray-500 py-10'>
-              No se encontraron eventos que coincidan con
-              los filtros.
-            </p>
-          )}
-
-        {/* Show load more button if there are more events to fetch */}
-        {!isLoading &&
-          isLocationCheckComplete && // Only show when location check is done
-          !eventsError &&
-          !isFetchingMore &&
-          hasMore && (
-            <div className='mt-12 text-center'>
-              <button
-                onClick={handleLoadMore}
-                className='bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-6 rounded-full transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed'
-                disabled={isFetchingMore}
-              >
-                Cargar más
-              </button>
-            </div>
-          )}
       </>
     )
   }
@@ -564,9 +520,10 @@ const EventListView = () => {
       )}
 
       {/* Display event cards when data is loaded */}
-      {isLocationCheckComplete && // Only render when location check is done
+      {isLocationCheckComplete && // 1. Location check must be done
         !loadingEvents && // And events are not loading (initial or filter change)
-        !eventsError && ( // Wait for location *and* events
+        !eventsError && // 2. No event fetch error
+        (permissionState !== 'granted' || !!cityFilter) && ( // 3. If granted, ensure cityFilter is set
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 xl:gap-8 gap-8 px-1 xl:px-16'>
             {eventsList.map((event) => (
               <EventCard key={event.id} event={event} />
@@ -584,7 +541,9 @@ const EventListView = () => {
       {!isLoading &&
         isLocationCheckComplete && // Only show when location check is done
         !eventsError && // Wait for location before showing "no events"
-        eventsList.length === 0 && (
+        (permissionState !== 'granted' || !!cityFilter) && // If granted, ensure cityFilter is set before showing "no events"
+        eventsList.length === 0 &&
+        !loadingEvents && ( // Also ensure events are not currently loading
           <p className='col-span-full text-center text-gray-500 py-10'>
             No se encontraron eventos que coincidan con los
             filtros.
@@ -595,6 +554,7 @@ const EventListView = () => {
       {!isLoading &&
         !loadingUserLocation &&
         !eventsError && // Wait for location before showing "load more"
+        (permissionState !== 'granted' || !!cityFilter) && // If granted, ensure cityFilter is set
         !isFetchingMore &&
         hasMore && (
           <div className='mt-12 text-center'>
