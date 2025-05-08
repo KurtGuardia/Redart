@@ -9,23 +9,19 @@ export default function UserDashboard({
   userData,
   loading,
 }) {
-  // Add state to manage the user's ratings locally
   const [userRatings, setUserRatings] = useState(
     Array.isArray(userData?.ratings)
       ? userData.ratings
       : [],
   )
 
-  // Update state when userData changes (e.g., on initial load)
   React.useEffect(() => {
     if (userData && Array.isArray(userData.ratings)) {
       setUserRatings(userData.ratings)
     }
   }, [userData])
 
-  // Handler for when an item is deleted from one of the RatedList components
   const handleItemDeleted = (targetId, type) => {
-    // Update local state to remove the deleted rating
     setUserRatings((prevRatings) =>
       prevRatings.filter(
         (item) => item.targetId !== targetId,
@@ -45,7 +41,6 @@ export default function UserDashboard({
     )
   }
 
-  // Filter ratings by type using the local state
   const ratedVenues = userRatings.filter(
     (fav) => fav.type === 'venue',
   )

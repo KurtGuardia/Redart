@@ -8,10 +8,10 @@ import { doc, getDoc } from 'firebase/firestore'
  * Hook to manage authentication state and fetch initial user/venue role.
  * Fetches detailed data only if the role is 'user'.
  * For 'venue' role, it only identifies the role and provides the ID.
+ * Therefore userData will contain full user data OR just { id, role: 'venue' }
  */
 export function useUserData() {
   const [userId, setUserId] = useState(null)
-  // userData will contain full user data OR just { id, role: 'venue' }
   const [userData, setUserData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -34,10 +34,23 @@ export function useUserData() {
               'users',
               currentUserId,
             )
-            const userDocSnap = await getDoc(userDocRef)
+            let attempts = 0
+            let userDocSnap = await getDoc(userDocRef)
+
+            // Try up to 3 times if doc doesn't exist
+            while (!userDocSnap.exists() && attempts < 3) {
+              console.log(
+                'User doc not found, retrying...',
+                attempts + 1,
+              )
+              await new Promise((resolve) =>
+                setTimeout(resolve, 500),
+              )
+              userDocSnap = await getDoc(userDocRef)
+              attempts++
+            }
 
             if (userDocSnap.exists()) {
-              // Found in 'users' - Fetch and prepare detailed user data
               const fetchedUserData = {
                 id: userDocSnap.id,
                 ...userDocSnap.data(),
@@ -54,6 +67,8 @@ export function useUserData() {
                 fetchedUserData.updatedAt =
                   fetchedUserData.updatedAt.toDate()
               }
+
+              // Process ratings if they exist
               if (Array.isArray(fetchedUserData.ratings)) {
                 fetchedUserData.ratings =
                   fetchedUserData.ratings.map((rated) => ({
@@ -63,10 +78,11 @@ export function useUserData() {
                       : rated.updatedAt,
                   }))
               }
+
               setUserData(fetchedUserData)
             } else {
               setUserData({
-                id: currentUserId, // Use the auth UID as the ID
+                id: currentUserId,
                 role: 'venue',
               })
             }
@@ -80,7 +96,6 @@ export function useUserData() {
             setLoading(false)
           }
         } else {
-          // No user logged in
           setLoading(false)
         }
       },

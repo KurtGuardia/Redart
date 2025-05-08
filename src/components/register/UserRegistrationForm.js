@@ -39,6 +39,7 @@ const UserRegistrationForm = ({}) => {
   const [showPassword, setShowPassword] = useState(false)
   const [showRepeatPassword, setShowRepeatPassword] =
     useState(false)
+  const [userRole, setUserRole] = useState('user') // In the future could be "artist"
   const router = useRouter()
 
   // Redirect authenticated users
@@ -82,9 +83,8 @@ const UserRegistrationForm = ({}) => {
     const userSnap = await getDoc(userRef)
 
     if (!userSnap.exists()) {
-      // Only create if it doesn't exist
       const { displayName, email } = user
-      const createdAt = serverTimestamp() // Use server timestamp for creation
+      const createdAt = serverTimestamp()
       try {
         await setDoc(userRef, {
           name:
@@ -93,9 +93,10 @@ const UserRegistrationForm = ({}) => {
             'Usuario Anónimo',
           email,
           createdAt,
-          updatedAt: createdAt, // Initially same as createdAt
+          updatedAt: createdAt,
           ratings: [],
-          ...additionalData, // Allow overriding defaults
+          role: userRole,
+          ...additionalData,
         })
       } catch (error) {
         console.error('Error al crear el usuario: ', error)
@@ -158,8 +159,6 @@ const UserRegistrationForm = ({}) => {
       await createUserDocument(user, { name: name.trim() })
 
       setMessage('¡Registro exitoso! Redirigiendo...')
-      // Redirect is handled by onAuthStateChanged effect
-      setTimeout(() => router.push('/dashboard'), 1000)
     } catch (error) {
       console.error('Email/Pass Signup Error:', error)
       if (error.code === 'auth/email-already-in-use') {
@@ -202,9 +201,7 @@ const UserRegistrationForm = ({}) => {
       // Create or update user document in Firestore
       await createUserDocument(user)
 
-      setMessage(
-        '¡Inicio de sesión exitoso! Redirigiendo...',
-      )
+      setMessage('¡Registro exitoso! Redirigiendo...')
       // Redirect is handled by onAuthStateChanged effect
     } catch (error) {
       console.error('Social Signup Error:', error)
@@ -434,9 +431,46 @@ const UserRegistrationForm = ({}) => {
           className='w-full bg-teal-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-teal-600 transition duration-300 disabled:opacity-70'
           disabled={registerLoading || socialLoading}
         >
-          {registerLoading
-            ? 'Creando cuenta...'
-            : 'Crear cuenta'}
+          {registerLoading ? (
+            <span className='flex items-center justify-center'>
+              <svg
+                key='register-spinner' // Static key, or manage with state if re-animation is needed
+                className='w-5 h-5 mr-2 text-white shrink-0' // Changed color to white, added margin
+                viewBox='0 0 20 20'
+                fill='none'
+                xmlns='http://www.w3.org/2000/svg'
+                style={{
+                  '--circumference': 2 * Math.PI * 8,
+                  '--duration': '1000ms', // Make sure 'animate-debounce-spinner' uses this
+                }}
+              >
+                {/* Background track */}
+                <circle
+                  cx='10'
+                  cy='10'
+                  r='8'
+                  stroke='currentColor'
+                  strokeWidth='2'
+                  strokeOpacity='0.3' // Lighter track
+                />
+                {/* Animated progress arc */}
+                <circle
+                  cx='10'
+                  cy='10'
+                  r='8'
+                  stroke='currentColor'
+                  strokeWidth='2'
+                  strokeDasharray='var(--circumference)'
+                  strokeDashoffset='var(--circumference)' // Start empty
+                  transform='rotate(-90 10 10)'
+                  className='animate-debounce-spinner' // Ensure this CSS animation is defined
+                />
+              </svg>
+              Creando cuenta...
+            </span>
+          ) : (
+            'Crear cuenta'
+          )}
         </button>
       </form>
 

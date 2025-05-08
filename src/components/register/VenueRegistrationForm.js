@@ -10,14 +10,14 @@ import {
   auth,
   db,
   storage,
-} from '../../lib/firebase-client' // Adjust path as needed
+} from '../../lib/firebase-client'
 import {
   doc,
   GeoPoint,
   setDoc,
   deleteDoc,
 } from 'firebase/firestore'
-import MapComponent from '../map/MapComponent' // Adjust path as needed
+import MapComponent from '../map/MapComponent'
 import {
   getDownloadURL,
   ref,
@@ -27,22 +27,20 @@ import Image from 'next/image'
 import {
   AMENITIES_OPTIONS,
   COUNTRIES_AND_CITIES,
-} from '../../lib/constants' // Adjust path as needed
+} from '../../lib/constants'
 import {
   compressImage,
   compressMultipleImages,
   validateFacebookUrl,
   validateInstagramUrl,
   validateWhatsappNumber,
-} from '../../lib/utils' // Adjust path as needed
+} from '../../lib/utils'
 import { translateFirebaseAuthError } from '../../lib/firebaseErrors'
 
-// Define constants for form limits
 const DESCRIPTION_MAX_LENGTH = 500
 const MAX_PHOTOS = 5
 
 const VenueRegistrationForm = ({}) => {
-  // --- State Variables ---
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [logo, setLogo] = useState(null)
@@ -79,25 +77,20 @@ const VenueRegistrationForm = ({}) => {
   const [passwordValid, setPasswordValid] = useState(null) // null = untouched, false = invalid, true = valid
   const nextBtnRef = useRef(null)
   const [searchInputValue, setSearchInputValue] =
-    useState('') // Add this new state for search input
+    useState('')
   const [localSearchResult, setLocalSearchResult] =
-    useState(null) // Add state for map controller
+    useState(null)
 
-  // Redirect authenticated users
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        // User is signed in, redirect them to the dashboard.
         router.push('/dashboard')
       }
-      // If user is null, they are not signed in, so stay on the register page.
     })
 
-    // Cleanup subscription on unmount
     return () => unsubscribe()
   }, [router])
 
-  // Check if passwords match
   useEffect(() => {
     if (repeatPassword) {
       setPasswordsMatch(password === repeatPassword)
@@ -106,7 +99,6 @@ const VenueRegistrationForm = ({}) => {
     }
   }, [password, repeatPassword])
 
-  // Password validation effect
   useEffect(() => {
     if (password.length === 0) {
       setPasswordValid(null)
@@ -119,8 +111,6 @@ const VenueRegistrationForm = ({}) => {
       setPasswordValid(true)
     }
   }, [password])
-
-  // Inside the VenueRegistrationForm component function, after state declarations
 
   const {
     handleInputChange,
@@ -213,10 +203,9 @@ const VenueRegistrationForm = ({}) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setError('') // Clear previous errors
+    setError('')
     setMessage('')
 
-    // --- Start Validation ---
     const passwordError = validatePassword(password)
     if (passwordError) {
       setError(passwordError)
@@ -246,7 +235,6 @@ const VenueRegistrationForm = ({}) => {
       )
       return
     }
-    // --- End Validation ---
 
     setRegisterLoading(true)
     let userCredential = null
@@ -292,7 +280,8 @@ const VenueRegistrationForm = ({}) => {
         }),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        active: true, // Venues are active by default upon registration
+        active: true,
+        role: 'venue',
       }
 
       // Step 3: Add main venue document to 'venues' collection
@@ -310,7 +299,6 @@ const VenueRegistrationForm = ({}) => {
         lastUpdated: new Date().toISOString(),
       })
 
-      // Success! Show success message and redirect to dashboard
       setMessage(
         '¡Registro exitoso! Redirigiendo al panel...',
       )
@@ -318,7 +306,7 @@ const VenueRegistrationForm = ({}) => {
       // Wait a moment to ensure Firestore operations are complete
       setTimeout(() => {
         window.location.href = '/dashboard'
-      }, 1000) // Short delay, since setup page will handle polling
+      }, 1000)
     } catch (error) {
       console.error('Error en el registro:', error)
       setError(
