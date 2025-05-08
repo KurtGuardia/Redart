@@ -30,17 +30,6 @@ export default function EventCreateForm({
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
 
-      // Log detailed file information for debugging
-      console.log('EventCreateForm - Image selected:', {
-        name: file.name,
-        type: file.type,
-        size: `${Math.round(file.size / 1024)}KB`,
-        lastModified: new Date(
-          file.lastModified,
-        ).toISOString(),
-      })
-
-      // --- Image Validation (Client-side) ---
       if (file.size > MAX_IMAGE_SIZE_BYTES) {
         console.warn(
           `Image too large: ${Math.round(
@@ -52,11 +41,10 @@ export default function EventCreateForm({
             `La imagen no debe superar los ${MAX_IMAGE_SIZE_MB}MB.`,
           )
         setImage(null)
-        e.target.value = '' // Clear the file input visually
+        e.target.value = ''
         return
       }
 
-      // Check if it's a valid image type
       if (!file.type.startsWith('image/')) {
         console.warn(`Invalid file type: ${file.type}`)
         if (setEventFormError)
@@ -81,11 +69,6 @@ export default function EventCreateForm({
           `Image type not explicitly supported: ${file.type}. Will attempt to process anyway.`,
         )
         // Continue anyway since it passed the image/ check above
-      }
-
-      // Special handling for PNG files
-      if (file.type === 'image/png') {
-        console.log('Processing PNG file:', file.name)
       }
 
       setImage(file)

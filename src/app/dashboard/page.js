@@ -27,7 +27,7 @@ export default function Dashboard() {
   if (error) throw error
 
   if (!userData) {
-    console.log(
+    console.error(
       'Página de Dashboard: Carga completa, sin errores, pero sin datos de usuario. Mostrando esqueleto/error.',
     )
     return <DashboardSkeleton />

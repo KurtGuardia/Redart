@@ -90,7 +90,7 @@ export const fetchVenueEvents = async (venueId) => {
       console.log(
         'fetchVenueEvents: Venue document not found.',
       )
-      return [] // Venue doesn't exist
+      return []
     }
 
     // 2. Get the array of event IDs
@@ -98,15 +98,14 @@ export const fetchVenueEvents = async (venueId) => {
     const eventIds = venueData.events || []
 
     if (!Array.isArray(eventIds) || eventIds.length === 0) {
-      // console.log("fetchVenueEvents: No event IDs found in the venue's event array.");
-      return [] // No events linked
+      return []
     }
 
     // 3. Fetch full event details from the main events collection
     const eventPromises = eventIds
       .filter(
         (eventId) => eventId && typeof eventId === 'string',
-      ) // Filter out invalid IDs
+      )
       .map(async (eventId) => {
         const eventDocRef = doc(db, 'events', eventId)
         const eventSnapshot = await getDoc(eventDocRef)
@@ -250,10 +249,6 @@ export const updateEventDetails = async (
   try {
     // Handle Image Update Logic
     if (newImageFile instanceof File) {
-      // === New image uploaded ===
-      console.log(
-        'updateEventDetails: New image file detected for upload.',
-      )
       // 1. Delete the old image *before* uploading the new one (if old exists)
       if (oldImageUrl) {
         await deleteStorageFile(oldImageUrl) // Use generic deletion helper
@@ -273,10 +268,6 @@ export const updateEventDetails = async (
         // Optionally throw an error here or inform the user
       }
     } else if (newImageFile === null && oldImageUrl) {
-      // === Image explicitly removed ===
-      console.log(
-        `updateEventDetails: Event image explicitly removed for ${eventId}.`,
-      )
       await deleteStorageFile(oldImageUrl)
       finalImageUrl = null
     }
@@ -484,14 +475,12 @@ export const updateVenueDetails = async (
 
     // --- Update Firestore ---
     await updateDoc(venueRef, formattedData)
-    console.log(`Venue ${venueId} updated successfully.`)
 
     // --- Sync to venues_locations ---
-    // Construct the data needed for sync using the FINAL updated values
     const dataForSync = {
-      ...currentVenueData, // Start with old data
-      ...formattedData, // Overwrite with updates (includes final logo, photos, location)
-      active: formattedData.active !== false, // Ensure active status is correct
+      ...currentVenueData,
+      ...formattedData,
+      active: formattedData.active !== false,
     }
     await syncVenueLocationData(venueId, dataForSync)
 
@@ -503,7 +492,7 @@ export const updateVenueDetails = async (
     // return updatedDoc.exists() ? { id: venueId, ...updatedDoc.data() } : null;
   } catch (error) {
     console.error(`Error updating venue ${venueId}:`, error)
-    throw error // Re-throw for the caller
+    throw error
   }
 }
 
@@ -523,17 +512,7 @@ export const uploadEventImage = async (
 ) => {
   if (!file || !venueId || !eventId) return null
   try {
-    console.log(
-      `Starting event image upload: ${file.name}, type: ${
-        file.type
-      }, size: ${Math.round(file.size / 1024)}KB`,
-    )
     const compressedFile = await compressImage(file) // Use util
-    console.log(
-      `After compression: ${compressedFile.name}, type: ${
-        compressedFile.type
-      }, size: ${Math.round(compressedFile.size / 1024)}KB`,
-    )
 
     const filename = `${Date.now()}_${compressedFile.name}`
     const storagePath = `venues/${venueId}/events/${eventId}/${filename}`
@@ -546,9 +525,7 @@ export const uploadEventImage = async (
 
     await uploadBytes(storageRef, compressedFile, metadata)
     const downloadURL = await getDownloadURL(storageRef)
-    console.log(
-      `Event image upload successful: ${downloadURL}`,
-    )
+
     return downloadURL
   } catch (error) {
     console.error(
@@ -568,17 +545,7 @@ export const uploadEventImage = async (
 export const uploadVenueLogo = async (file, venueId) => {
   if (!file || !venueId) return null
   try {
-    console.log(
-      `Starting venue logo upload: ${file.name}, type: ${
-        file.type
-      }, size: ${Math.round(file.size / 1024)}KB`,
-    )
     const compressedFile = await compressImage(file) // Use util
-    console.log(
-      `After compression: ${compressedFile.name}, type: ${
-        compressedFile.type
-      }, size: ${Math.round(compressedFile.size / 1024)}KB`,
-    )
 
     const filename = `${Date.now()}_${compressedFile.name}`
     const storagePath = `venues/${venueId}/logo/${filename}`
@@ -591,9 +558,7 @@ export const uploadVenueLogo = async (file, venueId) => {
 
     await uploadBytes(storageRef, compressedFile, metadata)
     const downloadURL = await getDownloadURL(storageRef)
-    console.log(
-      `Venue logo upload successful: ${downloadURL}`,
-    )
+
     return downloadURL
   } catch (error) {
     console.error(
@@ -635,10 +600,6 @@ export const uploadPhotos = async (photos, venueId) => {
   if (photoFiles.length === 0) return []
 
   try {
-    console.log(
-      `Starting upload of ${photoFiles.length} photos for venue ${venueId}`,
-    )
-
     // Compress first
     const compressedPhotos = await compressMultipleImages(
       photoFiles,
@@ -647,11 +608,6 @@ export const uploadPhotos = async (photos, venueId) => {
     const uploadPromises = compressedPhotos.map(
       async (photo) => {
         try {
-          console.log(
-            `Uploading photo: ${photo.name}, type: ${
-              photo.type
-            }, size: ${Math.round(photo.size / 1024)}KB`,
-          )
           const timestamp = new Date().getTime()
           const fileName = `${timestamp}_${photo.name}`
           const storageRef = ref(
@@ -666,7 +622,6 @@ export const uploadPhotos = async (photos, venueId) => {
 
           await uploadBytes(storageRef, photo, metadata)
           const url = await getDownloadURL(storageRef)
-          console.log(`Photo upload successful: ${url}`)
           return url
         } catch (uploadError) {
           console.error(
@@ -742,9 +697,7 @@ export const deleteStorageFile = async (
   try {
     const fileRef = ref(storage, filePath)
     await deleteObject(fileRef)
-    console.log(
-      `deleteStorageFile: File deleted successfully from path: ${filePath}`,
-    )
+
     return true
   } catch (error) {
     // Handle specific 'object-not-found' error gracefully

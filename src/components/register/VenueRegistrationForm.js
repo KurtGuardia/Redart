@@ -123,32 +123,22 @@ const VenueRegistrationForm = ({}) => {
   // Inside the VenueRegistrationForm component function, after state declarations
 
   const {
-    searchQuery,
-    // setSearchQuery, // Optional: Get setter if needed
     handleInputChange,
     suggestions,
     showSuggestions,
     setShowSuggestions,
-    handleSuggestionClick,
-    // handleSearchClick,
     isSearching,
     searchError,
-    searchResult, // The result object { lat, lng, address, ... } after selection
   } = useAddressSearch(
-    searchInputValue, // Use searchInputValue as the query source
-    selectedCity, // Use selectedCity state for context
+    searchInputValue, //
+    selectedCity,
     (result) => {
-      // --- Callback when a suggestion is clicked ---
-      console.log('Address search result selected:', result)
       const newLocation = {
         lat: result.lat,
         lng: result.lng,
       }
-      setSelectedLocation(newLocation) // Update the location state
-
-      // Don't update searchInputValue when suggestion is clicked
-
-      setShowSuggestions(false) // Hide suggestions
+      setSelectedLocation(newLocation) /
+        setShowSuggestions(false)
     },
   )
 
@@ -812,15 +802,6 @@ const VenueRegistrationForm = ({}) => {
                   onChange={(e) => {
                     const file = e.target.files[0]
                     if (file) {
-                      console.log(
-                        `Logo selected: ${
-                          file.name
-                        }, type: ${
-                          file.type
-                        }, size: ${Math.round(
-                          file.size / 1024,
-                        )}KB`,
-                      )
                       setLogo(file)
                     }
                   }}
@@ -1086,19 +1067,6 @@ const VenueRegistrationForm = ({}) => {
                 multiple
                 onChange={(e) => {
                   const files = Array.from(e.target.files)
-
-                  // Log file types for debugging
-                  files.forEach((file) => {
-                    console.log(
-                      `Photo selected: ${
-                        file.name
-                      }, type: ${
-                        file.type
-                      }, size: ${Math.round(
-                        file.size / 1024,
-                      )}KB`,
-                    )
-                  })
 
                   if (files.length > MAX_PHOTOS) {
                     setMessage(

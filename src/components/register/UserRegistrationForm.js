@@ -8,14 +8,14 @@ import {
   FaGoogle,
   FaFacebook,
 } from 'react-icons/fa'
-import { auth, db } from '../../lib/firebase-client' // Adjust path as needed
+import { auth, db } from '../../lib/firebase-client'
 import {
   createUserWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
   FacebookAuthProvider,
   onAuthStateChanged,
-  updateProfile, // Import updateProfile
+  updateProfile,
 } from 'firebase/auth'
 import {
   doc,
@@ -155,11 +155,11 @@ const UserRegistrationForm = ({}) => {
         displayName: name.trim(),
       })
       // Now create the user document in Firestore
-      await createUserDocument(user, { name: name.trim() }) // Pass the entered name
+      await createUserDocument(user, { name: name.trim() })
 
       setMessage('¡Registro exitoso! Redirigiendo...')
       // Redirect is handled by onAuthStateChanged effect
-      // setTimeout(() => router.push('/dashboard'), 1000); // Optional direct redirect
+      setTimeout(() => router.push('/dashboard'), 1000)
     } catch (error) {
       console.error('Email/Pass Signup Error:', error)
       if (error.code === 'auth/email-already-in-use') {

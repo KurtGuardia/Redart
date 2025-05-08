@@ -39,13 +39,11 @@ const EditModal = ({
   fields,
   saveButtonText = 'Guardar Cambios',
 }) => {
-  // Inside the EditModal component function
   const [formData, setFormData] = useState({})
   const [currentMapLocation, setCurrentMapLocation] =
     useState(null)
   const [isMounted, setIsMounted] = useState(false)
 
-  // Generate a unique map ID for each modal instance
   const mapId = useMemo(
     () =>
       `map-${Math.random().toString(36).substring(2, 9)}`,
@@ -54,19 +52,17 @@ const EditModal = ({
 
   const {
     searchQuery,
-    setSearchQuery, // Get setter to potentially clear it
+    setSearchQuery,
     handleInputChange,
     suggestions,
     showSuggestions,
     setShowSuggestions,
     handleSuggestionClick,
-    handleSearchClick, // Might not need the explicit search button
     isSearching,
     searchError,
-    searchResult, // This is the result object { lat, lng, address, ... } after selection
   } = useAddressSearch(
-    formData?.address || '', // Initial query from form data
-    formData?.city || '', // Initial city context from form data
+    formData?.address || '',
+    formData?.city || '',
     (result) => {
       // --- Callback when a suggestion is clicked ---
       console.log('Address search result selected:', result)
@@ -76,27 +72,22 @@ const EditModal = ({
       }
       setCurrentMapLocation(newLocation) // Update the map's target location
 
-      //  update form fields based on search result
       setFormData((prev) => ({
         ...prev,
-        // Update address/city only if they seem more specific or missing
+
         address: result.address || prev.address || '',
         city: result.city || prev.city || '',
-        // DO NOT update formData.location here directly. Let save handle it.
       }))
-      // clear search query after selection
-      setSearchQuery(result.address || '') // Or clear completely: setSearchQuery('');
-      setShowSuggestions(false) // Hide suggestions after selection
+
+      setSearchQuery(result.address || '')
+      setShowSuggestions(false)
     },
   )
 
-  // Modify the useEffect for initial data
   useEffect(() => {
     if (data && isOpen) {
-      // Also check isOpen to reset when reopened
-      setFormData(data) // Set the main form data
+      setFormData(data)
 
-      // Initialize currentMapLocation from data.location (expecting GeoPoint or old format)
       let initialLat = null
       let initialLng = null
 
@@ -105,14 +96,12 @@ const EditModal = ({
           data.location.latitude != null &&
           data.location.longitude != null
         ) {
-          // It's likely a GeoPoint
           initialLat = data.location.latitude
           initialLng = data.location.longitude
         } else if (
           data.location.lat != null &&
           data.location.lng != null
         ) {
-          // It might be the old { lat, lng } format
           initialLat = data.location.lat
           initialLng = data.location.lng
         }
@@ -123,17 +112,16 @@ const EditModal = ({
             lng: initialLng,
           })
         } else {
-          setCurrentMapLocation(null) // No valid initial location
+          setCurrentMapLocation(null) //
         }
       } else {
-        setCurrentMapLocation(null) // No location in data
+        setCurrentMapLocation(null)
       }
     } else if (!isOpen) {
-      // Optionally reset state when modal closes
       setFormData({})
       setCurrentMapLocation(null)
     }
-  }, [data, isOpen]) // Depend on data and isOpen
+  }, [data, isOpen])
 
   // Client-side only rendering for the portal
   useEffect(() => {
@@ -156,30 +144,6 @@ const EditModal = ({
       }
     }
   }, [mapId])
-
-  // Inside the EditModal component function
-
-  const handleMapClickSelect = (locationFromClick) => {
-    // locationFromClick is { lat, lng, latitude, longitude }
-    setCurrentMapLocation({
-      // Update map location state
-      lat: locationFromClick.lat,
-      lng: locationFromClick.lng,
-    })
-    //Clear search query if user clicks map instead
-    setSearchQuery('')
-    //Perform reverse geocoding here to update address/city fields in formData
-    fetchReverseGeocode(
-      locationFromClick.lat,
-      locationFromClick.lng,
-    ).then((details) => {
-      setFormData((prev) => ({
-        ...prev,
-        address: details.address,
-        city: details.city,
-      }))
-    })
-  }
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -256,10 +220,8 @@ const EditModal = ({
     onSave(processedData)
   }
 
-  // Render nothing on the server
   if (!isMounted || !isOpen) return null
 
-  // Render the modal in a portal
   return createPortal(
     <div className='fixed inset-0 z-[9999] overflow-y-auto'>
       {/* Backdrop */}
@@ -1076,15 +1038,6 @@ const EditModal = ({
                               ) {
                                 const file =
                                   e.target.files[0]
-                                console.log(
-                                  `EditModal - Image selected: ${
-                                    file.name
-                                  }, type: ${
-                                    file.type
-                                  }, size: ${Math.round(
-                                    file.size / 1024,
-                                  )}KB`,
-                                )
 
                                 setFormData({
                                   ...formData,

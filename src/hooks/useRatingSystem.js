@@ -184,11 +184,6 @@ export default function useRatingSystem({
    * Deletes the user's rating for a target (venue or event)
    */
   const handleDeleteRating = async () => {
-    console.log('[handleDeleteRating] Initiated for:', {
-      targetId,
-      targetType,
-      userId: user?.uid,
-    })
     if (!user) {
       setRatingError(
         'Debes iniciar sesión para eliminar tu puntuación.',
@@ -208,9 +203,6 @@ export default function useRatingSystem({
       return
     }
 
-    console.log(
-      '[handleDeleteRating] Proceeding with deletion...',
-    )
     setIsDeletingRating(true)
     setRatingError(null)
     setDeleteSuccess(false)
@@ -220,32 +212,14 @@ export default function useRatingSystem({
 
     try {
       await runTransaction(db, async (transaction) => {
-        console.log(
-          '[handleDeleteRating] Transaction started. Refs:',
-          {
-            targetRef: targetRef.path,
-            userRef: userRef.path,
-          },
-        )
         // 1. Get latest data
         const targetDoc = await transaction.get(targetRef)
-        console.log(
-          '[handleDeleteRating] Fetched targetDoc. Exists:',
-          targetDoc.exists(),
-        )
         if (!targetDoc.exists()) {
-          console.warn(
-            `[handleDeleteRating] Target document ${targetRef.path} not found. Proceeding to remove rating from user only.`,
-          )
           // If target doesn't exist, we can't update its ratings, but we still need to update the user's ratings.
           // Initialize target-related variables safely.
           // No need to initialize currentTargetRatings here, it's handled later.
         }
         const userDoc = await transaction.get(userRef)
-        console.log(
-          '[handleDeleteRating] Fetched userDoc. Exists:',
-          userDoc.exists(),
-        )
         if (!userDoc.exists()) {
           throw new Error(
             'Usuario no encontrado - Puntuación es solo para cuentas personales.',
@@ -267,47 +241,20 @@ export default function useRatingSystem({
           )
             ? currentTargetData.ratings
             : []
-          console.log(
-            '[handleDeleteRating] Current target ratings:',
-            currentTargetRatings,
-          )
           updatedTargetRatings =
             currentTargetRatings.filter(
               (r) => r.userId !== user.uid,
             )
         }
-        console.log(
-          '[handleDeleteRating] Updated target ratings:',
-          updatedTargetRatings,
-        )
-
-        console.log(
-          '[handleDeleteRating] Current user ratings:',
-          currentUserRatings,
-        )
-        const updatedUserRatings =
-          currentUserRatings.filter(
-            (r) => r.targetId !== targetId,
-          )
-        console.log(
-          '[handleDeleteRating] Updated user ratings:',
-          updatedUserRatings,
-        )
 
         // 3. Update both documents in the transaction
         // Only update target if it exists
         if (targetDoc.exists()) {
-          console.log(
-            '[handleDeleteRating] Updating target document...',
-          )
           transaction.update(targetRef, {
             ratings: updatedTargetRatings,
           })
         }
 
-        console.log(
-          '[handleDeleteRating] Updating user document...',
-        )
         transaction.update(userRef, {
           ratings: updatedUserRatings,
         })
@@ -315,9 +262,6 @@ export default function useRatingSystem({
 
       // 4. Update UI state
       setUserRating(0)
-      console.log(
-        '[handleDeleteRating] Transaction successful. Setting deleteSuccess.',
-      )
       setDeleteSuccess(true)
 
       // 5. Update parent component state via callback

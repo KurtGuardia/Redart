@@ -38,9 +38,6 @@ export function useUserData() {
 
             if (userDocSnap.exists()) {
               // Found in 'users' - Fetch and prepare detailed user data
-              console.log(
-                `User found in 'users': ${currentUserId}`,
-              )
               const fetchedUserData = {
                 id: userDocSnap.id,
                 ...userDocSnap.data(),

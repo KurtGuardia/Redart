@@ -46,7 +46,6 @@ export function useVenueLocations(
               limit(100),
             )
           } else if (!hasCity && hasCountryCode) {
-            console.log('COUNTRY')
             q = query(
               venuesCollection,
               where('country', '==', filterParams.country),

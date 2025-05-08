@@ -636,22 +636,8 @@ export async function compressImage(
   try {
     // Skip compression for small images
     if (imageFile.size <= maxSizeKB * 1024) {
-      console.log(
-        `Image ${
-          imageFile.name
-        } is already small (${Math.round(
-          imageFile.size / 1024,
-        )}KB), skipping compression`,
-      )
       return imageFile
     }
-
-    // Log image information for debugging
-    console.log(
-      `Compressing image: ${imageFile.name}, type: ${
-        imageFile.type
-      }, size: ${Math.round(imageFile.size / 1024)}KB`,
-    )
 
     // Special handling for PNG files
     const isPNG = imageFile.type === 'image/png'
@@ -681,14 +667,6 @@ export async function compressImage(
         type: imageFile.type,
         lastModified: Date.now(),
       },
-    )
-
-    console.log(
-      `Compression complete: ${Math.round(
-        resultFile.size / 1024,
-      )}KB (${Math.round(
-        (resultFile.size / imageFile.size) * 100,
-      )}% of original)`,
     )
 
     return resultFile
