@@ -13,7 +13,6 @@ import Spots from '../../components/ui/Spots'
 export default function Dashboard() {
   const router = useRouter()
   const { userId, userData, loading, error } = useUserData()
-  console.log('userData: ' + userData)
 
   useEffect(() => {
     if (!loading && !userId && !error) {
@@ -35,7 +34,6 @@ export default function Dashboard() {
   }
 
   const renderDashboard = () => {
-    console.log(userData.role)
     switch (userData.role) {
       case 'venue':
         return <VenueDashboard venueId={userId} />

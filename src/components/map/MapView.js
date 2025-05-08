@@ -82,13 +82,9 @@ export default function MapView({ ...props }) {
     return null
   }, [userCoords, permissionState])
 
-  function handleAllowLocation() {
+  function handleClick() {
     setShowLocationModal(false)
     requestPermissionAndDetect()
-  }
-
-  function handleDenyLocation() {
-    setShowLocationModal(false)
   }
 
   if (isLoading) {
@@ -163,8 +159,8 @@ export default function MapView({ ...props }) {
       <Modal
         isOpen={showLocationModal}
         onClose={() => setShowLocationModal(false)}
-        onReject={handleDenyLocation}
-        onAccept={handleAllowLocation}
+        onReject={handleClick}
+        onAccept={handleClick}
         title='¿Permites acceso a tu ubicación?'
       >
         Para mostrarte los locales más cercanos, necesitamos
