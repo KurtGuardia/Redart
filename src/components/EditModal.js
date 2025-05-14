@@ -3,7 +3,6 @@
 import { useEffect, useState, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import dynamic from 'next/dynamic'
-import { GeoPoint } from 'firebase/firestore'
 import { useAddressSearch } from '../hooks/useAddressSearch'
 import {
   compressImage,
@@ -43,6 +42,7 @@ const EditModal = ({
   const [currentMapLocation, setCurrentMapLocation] =
     useState(null)
   const [isMounted, setIsMounted] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const mapId = useMemo(
     () =>
@@ -85,6 +85,7 @@ const EditModal = ({
   )
 
   useEffect(() => {
+    setIsLoading(false)
     if (data && isOpen) {
       setFormData(data)
 
@@ -155,6 +156,7 @@ const EditModal = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setIsLoading(true)
 
     // Create a copy of the form data for processing
     let processedData = { ...formData }
@@ -226,7 +228,7 @@ const EditModal = ({
     <div className='fixed inset-0 z-[9999] overflow-y-auto'>
       {/* Backdrop */}
       <div
-        className='fixed inset-0 bg-black bg-opacity-50 transition-opacity'
+        className='fixed inset-0 bg-black bg-opacity-70 backdrop-blur-md transition-opacity'
         onClick={onClose}
       />
 
@@ -481,175 +483,175 @@ const EditModal = ({
                       </div>
                     )
 
-                  case 'map':
-                    // Use currentMapLocation for checks and centering
-                    const hasLocation =
-                      currentMapLocation &&
-                      currentMapLocation.lat != null &&
-                      currentMapLocation.lng != null
+                  // case 'map':
+                  //   // Use currentMapLocation for checks and centering
+                  //   const hasLocation =
+                  //     currentMapLocation &&
+                  //     currentMapLocation.lat != null &&
+                  //     currentMapLocation.lng != null
 
-                    return (
-                      <div key={key} className='my-4'>
-                        <label className='block text-sm font-medium text-gray-700 mb-1'>
-                          {field.label}
-                          {field.required && (
-                            <span className='text-red-500'>
-                              *
-                            </span>
-                          )}
-                        </label>
+                  //   return (
+                  //     <div key={key} className='my-4'>
+                  //       <label className='block text-sm font-medium text-gray-700 mb-1'>
+                  //         {field.label}
+                  //         {field.required && (
+                  //           <span className='text-red-500'>
+                  //             *
+                  //           </span>
+                  //         )}
+                  //       </label>
 
-                        {field.description && (
-                          <p className='text-base text-gray-500 mb-2'>
-                            {field.description}
-                          </p>
-                        )}
+                  //       {field.description && (
+                  //         <p className='text-base text-gray-500 mb-2'>
+                  //           {field.description}
+                  //         </p>
+                  //       )}
 
-                        {/* --- NEW: Address Search Input --- */}
-                        <div className='relative mb-3'>
-                          <label
-                            htmlFor='address-search'
-                            className='block text-xs font-medium text-gray-600 mb-1'
-                          >
-                            Buscar Dirección o Lugar
-                          </label>
-                          <input
-                            id='address-search'
-                            type='text'
-                            value={searchQuery}
-                            onChange={handleInputChange}
-                            onFocus={() =>
-                              setShowSuggestions(true)
-                            }
-                            // onBlur={() => setTimeout(() => setShowSuggestions(false), 150)} // Delay hiding to allow click
-                            placeholder='Escribe una dirección...'
-                            className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none'
-                            disabled={isSearching}
-                            autoComplete='off'
-                          />
-                          {isSearching && (
-                            <span className='absolute right-2 top-8 text-xs text-gray-500'>
-                              Buscando...
-                            </span>
-                          )}
-                          {/* Suggestions List */}
-                          {showSuggestions &&
-                            suggestions.length > 0 && (
-                              <div className='absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto'>
-                                {suggestions.map((s) => (
-                                  <button
-                                    key={s.id}
-                                    type='button' // Prevent form submission
-                                    onClick={() =>
-                                      handleSuggestionClick(
-                                        s,
-                                      )
-                                    }
-                                    onMouseDown={(e) =>
-                                      e.preventDefault()
-                                    } // Prevents input blur before click registers
-                                    className='block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
-                                  >
-                                    {s.place_name}
-                                  </button>
-                                ))}
-                              </div>
-                            )}
-                          {searchError && (
-                            <p className='text-red-500 text-xs mt-1'>
-                              {searchError}
-                            </p>
-                          )}
-                        </div>
+                  //       {/* --- NEW: Address Search Input --- */}
+                  //       <div className='relative mb-3'>
+                  //         <label
+                  //           htmlFor='address-search'
+                  //           className='block text-xs font-medium text-gray-600 mb-1'
+                  //         >
+                  //           Buscar Dirección o Lugar
+                  //         </label>
+                  //         <input
+                  //           id='address-search'
+                  //           type='text'
+                  //           value={searchQuery}
+                  //           onChange={handleInputChange}
+                  //           onFocus={() =>
+                  //             setShowSuggestions(true)
+                  //           }
+                  //           // onBlur={() => setTimeout(() => setShowSuggestions(false), 150)} // Delay hiding to allow click
+                  //           placeholder='Escribe una dirección...'
+                  //           className='w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none'
+                  //           disabled={isSearching}
+                  //           autoComplete='off'
+                  //         />
+                  //         {isSearching && (
+                  //           <span className='absolute right-2 top-8 text-xs text-gray-500'>
+                  //             Buscando...
+                  //           </span>
+                  //         )}
+                  //         {/* Suggestions List */}
+                  //         {showSuggestions &&
+                  //           suggestions.length > 0 && (
+                  //             <div className='absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto'>
+                  //               {suggestions.map((s) => (
+                  //                 <button
+                  //                   key={s.id}
+                  //                   type='button' // Prevent form submission
+                  //                   onClick={() =>
+                  //                     handleSuggestionClick(
+                  //                       s,
+                  //                     )
+                  //                   }
+                  //                   onMouseDown={(e) =>
+                  //                     e.preventDefault()
+                  //                   } // Prevents input blur before click registers
+                  //                   className='block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
+                  //                 >
+                  //                   {s.place_name}
+                  //                 </button>
+                  //               ))}
+                  //             </div>
+                  //           )}
+                  //         {searchError && (
+                  //           <p className='text-red-500 text-xs mt-1'>
+                  //             {searchError}
+                  //           </p>
+                  //         )}
+                  //       </div>
 
-                        {/* Show instruction message when no location is set */}
-                        {!hasLocation && (
-                          <div className='bg-blue-50 p-2 mb-3 text-base text-gray-700 rounded-md'>
-                            <p className='flex items-center'>
-                              <svg
-                                className='h-5 w-5 mr-1'
-                                fill='none'
-                                viewBox='0 0 24 24'
-                                stroke='currentColor'
-                              >
-                                <path
-                                  strokeLinecap='round'
-                                  strokeLinejoin='round'
-                                  strokeWidth={2}
-                                  d='M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
-                                />
-                              </svg>
-                              Haz clic en el mapa para
-                              seleccionar la ubicación
-                              exacta de tu local
-                            </p>
-                          </div>
-                        )}
+                  //       {/* Show instruction message when no location is set */}
+                  //       {!hasLocation && (
+                  //         <div className='bg-blue-50 p-2 mb-3 text-base text-gray-700 rounded-md'>
+                  //           <p className='flex items-center'>
+                  //             <svg
+                  //               className='h-5 w-5 mr-1'
+                  //               fill='none'
+                  //               viewBox='0 0 24 24'
+                  //               stroke='currentColor'
+                  //             >
+                  //               <path
+                  //                 strokeLinecap='round'
+                  //                 strokeLinejoin='round'
+                  //                 strokeWidth={2}
+                  //                 d='M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
+                  //               />
+                  //             </svg>
+                  //             Haz clic en el mapa para
+                  //             seleccionar la ubicación
+                  //             exacta de tu local
+                  //           </p>
+                  //         </div>
+                  //       )}
 
-                        <div className='h-72 w-full rounded-lg overflow-hidden'>
-                          <MapComponent
-                            mapId={mapId}
-                            small={true}
-                            hideSearch={false}
-                            isEditable={true}
-                            center={
-                              hasLocation
-                                ? [
-                                    formData.location
-                                      .latitude ||
-                                      formData.location.lat,
-                                    formData.location
-                                      .longitude ||
-                                      formData.location.lng,
-                                  ]
-                                : [-17.389499, -66.156123] // Default center for Bolivia
-                            }
-                            venues={
-                              // Only include venue if BOTH latitude and longitude are valid numbers
-                              hasLocation &&
-                              typeof (
-                                formData.location
-                                  .latitude ||
-                                formData.location.lat
-                              ) === 'number' &&
-                              typeof (
-                                formData.location
-                                  .longitude ||
-                                formData.location.lng
-                              ) === 'number' &&
-                              !isNaN(
-                                formData.location
-                                  .latitude ||
-                                  formData.location.lat,
-                              ) &&
-                              !isNaN(
-                                formData.location
-                                  .longitude ||
-                                  formData.location.lng,
-                              )
-                                ? [
-                                    {
-                                      name:
-                                        formData.name ||
-                                        'Mi local',
-                                      location:
-                                        formData.location,
-                                    },
-                                  ]
-                                : [] // Empty if no valid location - don't show any venue until location is selected
-                            }
-                            onLocationSelect={(
-                              location,
-                            ) => {
-                              setFormData((prev) => ({
-                                ...prev,
-                                location: location,
-                              }))
-                            }}
-                          />
-                        </div>
-                      </div>
-                    )
+                  //       <div className='h-72 w-full rounded-lg overflow-hidden'>
+                  //         <MapComponent
+                  //           mapId={mapId}
+                  //           small={true}
+                  //           hideSearch={false}
+                  //           isEditable={true}
+                  //           center={
+                  //             hasLocation
+                  //               ? [
+                  //                   formData.location
+                  //                     .latitude ||
+                  //                     formData.location.lat,
+                  //                   formData.location
+                  //                     .longitude ||
+                  //                     formData.location.lng,
+                  //                 ]
+                  //               : [-17.389499, -66.156123] // Default center for Bolivia
+                  //           }
+                  //           venues={
+                  //             // Only include venue if BOTH latitude and longitude are valid numbers
+                  //             hasLocation &&
+                  //             typeof (
+                  //               formData.location
+                  //                 .latitude ||
+                  //               formData.location.lat
+                  //             ) === 'number' &&
+                  //             typeof (
+                  //               formData.location
+                  //                 .longitude ||
+                  //               formData.location.lng
+                  //             ) === 'number' &&
+                  //             !isNaN(
+                  //               formData.location
+                  //                 .latitude ||
+                  //                 formData.location.lat,
+                  //             ) &&
+                  //             !isNaN(
+                  //               formData.location
+                  //                 .longitude ||
+                  //                 formData.location.lng,
+                  //             )
+                  //               ? [
+                  //                   {
+                  //                     name:
+                  //                       formData.name ||
+                  //                       'Mi local',
+                  //                     location:
+                  //                       formData.location,
+                  //                   },
+                  //                 ]
+                  //               : [] // Empty if no valid location - don't show any venue until location is selected
+                  //           }
+                  //           onLocationSelect={(
+                  //             location,
+                  //           ) => {
+                  //             setFormData((prev) => ({
+                  //               ...prev,
+                  //               location: location,
+                  //             }))
+                  //           }}
+                  //         />
+                  //       </div>
+                  //     </div>
+                  //   )
 
                   case 'photoGallery':
                     return (
@@ -1112,9 +1114,14 @@ const EditModal = ({
               </button>
               <button
                 type='submit'
-                className='px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500'
+                className='px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 xl:min-w-36'
+                disabled={isLoading}
               >
-                {saveButtonText}
+                {isLoading ? (
+                  <div className='animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-teal-500 mx-auto'></div>
+                ) : (
+                  saveButtonText
+                )}
               </button>
             </div>
           </form>

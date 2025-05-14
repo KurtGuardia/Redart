@@ -103,7 +103,6 @@ export default function VenueList() {
     )
   }
 
-  // Add the check for denied permission
   if (
     permissionState === 'denied' ||
     (userLocationError && permissionState !== 'granted')

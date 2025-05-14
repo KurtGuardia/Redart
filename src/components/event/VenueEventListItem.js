@@ -9,7 +9,6 @@ import {
   hasEventPassed,
 } from '../../lib/utils'
 
-// Function to get category color classes
 const getCategoryColor = (category) => {
   switch (category) {
     case 'music':

@@ -37,7 +37,7 @@ import {
 } from '../../lib/utils'
 import { translateFirebaseAuthError } from '../../lib/firebaseErrors'
 
-const DESCRIPTION_MAX_LENGTH = 500
+const DESCRIPTION_MAX_LENGTH = 999
 const MAX_PHOTOS = 5
 
 const VenueRegistrationForm = ({}) => {

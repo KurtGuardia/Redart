@@ -170,8 +170,11 @@ export default function VenueDashboard({ venueId }) {
         onClose={() => setIsEditModalOpen(false)}
         onSave={async (updatedData) => {
           const success = await updateVenue(updatedData)
-          if (success) {
-            setIsEditModalOpen(false)
+          setIsEditModalOpen(false)
+          if (!success) {
+            console.error(
+              'Error al subir los datos actualizados. Verificar con Firebase',
+            )
             // Refresh handled internally by useVenueData via refreshVenue
             // if useVenueActions triggers it correctly.
           }
@@ -191,13 +194,13 @@ export default function VenueDashboard({ venueId }) {
         }}
         onSave={async (updatedData) => {
           if (!currentEvent || !currentEvent.id) return
+          setIsEventEditModalOpen(false)
           const success = await updateEvent(
             currentEvent.id,
             updatedData,
             currentEvent,
           )
           if (success) {
-            setIsEventEditModalOpen(false)
             setCurrentEvent(null)
           }
         }}

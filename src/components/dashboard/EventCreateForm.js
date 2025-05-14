@@ -89,11 +89,10 @@ export default function EventCreateForm({
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsSubmitting(true)
-    // Clear previous messages using setters from parent
+
     if (setEventFormError) setEventFormError('')
     if (setEventSuccess) setEventSuccess('')
 
-    // --- Client-Side Validation ---
     try {
       if (!title.trim())
         throw new Error(
@@ -108,7 +107,6 @@ export default function EventCreateForm({
           'La categoría del evento es obligatoria.',
         )
 
-      // Date validation
       if (!date)
         throw new Error(
           'La fecha y hora del evento son obligatorias.',
@@ -123,21 +121,18 @@ export default function EventCreateForm({
         )
       }
 
-      // Price validation (optional - ensure it's a number if provided)
       if (price && isNaN(Number(price))) {
         throw new Error(
           'El precio debe ser un número válido.',
         )
       }
 
-      // Ticket URL validation
       if (ticketUrl && !isValidUrl(ticketUrl.trim())) {
         throw new Error(
           'El formato de la URL de venta de entradas no es válido.',
         )
       }
 
-      // Image size validation (redundant check, primarily handled in handleImageChange, but good safeguard)
       if (image && image.size > MAX_IMAGE_SIZE_BYTES) {
         throw new Error(
           `La imagen no debe superar los ${MAX_IMAGE_SIZE_MB}MB.`,
@@ -152,14 +147,14 @@ export default function EventCreateForm({
       if (setEventFormError)
         setEventFormError(validationError.message)
       setIsSubmitting(false)
-      // Optional: Scroll to error
+
       document
         .querySelector('.error-message-selector')
         ?.scrollIntoView({
           behavior: 'smooth',
           block: 'center',
         })
-      return // Stop submission
+      return
     }
 
     const formData = {
@@ -173,11 +168,9 @@ export default function EventCreateForm({
       duration,
     }
 
-    // Call the handler passed from the parent component
     const success = await onAddEvent(formData, image)
 
     if (success) {
-      // Reset form fields locally upon successful submission
       setTitle('')
       setDate('')
       setDescription('')
@@ -186,9 +179,9 @@ export default function EventCreateForm({
       setCurrency('BOB')
       setTicketUrl('')
       setDuration('')
-      handleRemoveImage() // Clear image state and file input
+      handleRemoveImage()
     }
-    // Error/Success message display is handled by the parent based on the return value
+
     setIsSubmitting(false)
   }
 

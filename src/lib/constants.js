@@ -402,7 +402,7 @@ export const eventFormFields = {
     type: 'number',
     label: 'Precio',
     min: 0,
-    max: 9999,
+    max: 999999,
     step: '0.01',
     description: 'Deja en 0 si es gratis',
   },

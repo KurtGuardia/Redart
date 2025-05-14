@@ -700,7 +700,7 @@ export async function compressMultipleImages(
   const validImageFiles = imageFiles.filter(
     (file) => file instanceof File,
   )
-  if (validImageFiles.length === 0) return [] // Return empty if no valid files
+  if (validImageFiles.length === 0) return []
 
   try {
     const compressPromises = validImageFiles.map((file) =>
@@ -712,7 +712,7 @@ export async function compressMultipleImages(
       'Error compressing multiple images:',
       error,
     )
-    return validImageFiles // Return original valid files on error
+    return validImageFiles
   }
 }
 
