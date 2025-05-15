@@ -121,7 +121,6 @@ export default function VenueDashboard({ venueId }) {
       'Error in VenueDashboard (events or update):',
       eventError || venueUpdateError,
     )
-    // Display these errors via toast or inline messages within the rendered dashboard below.
   }
 
   return (
@@ -147,6 +146,7 @@ export default function VenueDashboard({ venueId }) {
           error={displayError}
         />
 
+        {/* Lot of prop drilling I know, the client kept changing things on the fly */}
         <EventManagementSection
           venueId={venueId}
           venue={venue}

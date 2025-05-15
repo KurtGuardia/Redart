@@ -21,25 +21,28 @@ export default function EventCreateForm({
   const [image, setImage] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [duration, setDuration] = useState('')
+  const [imgSizeError, setImgSizeError] = useState('')
 
   const MAX_IMAGE_SIZE_MB = 2
   const MAX_IMAGE_SIZE_BYTES =
     MAX_IMAGE_SIZE_MB * 1024 * 1024
 
   const handleImageChange = (e) => {
+    setImgSizeError('')
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
 
       if (file.size > MAX_IMAGE_SIZE_BYTES) {
         console.warn(
-          `Image too large: ${Math.round(
-            file.size / 1024,
-          )}KB > ${MAX_IMAGE_SIZE_MB}MB`,
+          `Image too large: ${(
+            Math.round(file.size / 1024) / 1000
+          ).toFixed(2)}MB > ${MAX_IMAGE_SIZE_MB}MB`,
         )
-        if (setEventFormError)
-          setEventFormError(
-            `La imagen no debe superar los ${MAX_IMAGE_SIZE_MB}MB.`,
-          )
+        setImgSizeError(
+          `Imagen muy grande: ${(
+            Math.round(file.size / 1024) / 1000
+          ).toFixed(2)}MB > ${MAX_IMAGE_SIZE_MB}MB`,
+        )
         setImage(null)
         e.target.value = ''
         return
@@ -56,7 +59,6 @@ export default function EventCreateForm({
         return
       }
 
-      // Ensure PNG is accepted
       const validImageTypes = [
         'image/jpeg',
         'image/jpg',
@@ -72,7 +74,6 @@ export default function EventCreateForm({
       }
 
       setImage(file)
-      if (setEventFormError) setEventFormError('') // Clear error on new valid image
     } else {
       setImage(null)
     }
@@ -189,7 +190,6 @@ export default function EventCreateForm({
     <form
       onSubmit={handleSubmit}
       className='my-6 bg-white rounded-lg shadow-sm text-sm md:text-base 2xl:text-lg'
-      noValidate
     >
       <h3 className='text-lg md:text-xl 2xl:text-2xl font-semibold w-fit text-gray-800 my-4 border-b pb-2'>
         Crear Nuevo Evento
@@ -255,8 +255,8 @@ export default function EventCreateForm({
                 id='eventPrice'
                 type='number'
                 min='0'
-                max='9999'
-                step='0.1'
+                max='999999'
+                step='1'
                 placeholder='0.00'
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
@@ -379,7 +379,10 @@ export default function EventCreateForm({
             htmlFor='eventImage'
             className='block text-sm font-medium text-gray-700 mb-1'
           >
-            Imagen (Max {MAX_IMAGE_SIZE_MB}MB)
+            Imagen (Max {MAX_IMAGE_SIZE_MB}MB){' '}
+            <small className='text-red-500'>
+              {imgSizeError}
+            </small>
           </label>
           <div className='flex items-center gap-4 text-sm md:text-base 2xl:text-lg'>
             <input
@@ -420,8 +423,17 @@ export default function EventCreateForm({
             )}
           </div>
           <p className='text-xs md:text-sm 2xl:text-base text-gray-500 mt-1'>
-            Recomendado: 16:9. Tipos comunes: JPG, PNG, GIF,
-            WEBP.
+            Recomendado: 4:3. Tipos comunes: JPG, PNG, GIF,
+            WEBP. Si necesitas reducir tamaño recomendamos
+            usar{' '}
+            <a
+              href='https://squoosh.app/'
+              rel='noreferrer'
+              target='_blank'
+              className='text-[var(--blue-800)] hover:text-[var(--teal-600)] hover:underline'
+            >
+              squoosh
+            </a>
           </p>
         </div>
       </div>
@@ -439,7 +451,7 @@ export default function EventCreateForm({
 
       {/* Success Message Display (using prop from parent) */}
       {eventSuccess && (
-        <div className='bg-green-50 border-l-4 border-green-500 p-4 mb-4 text-xs md:text-sm 2xl:text-base'>
+        <div className='bg-green-50 border-l-4 border-green-500 p-4 my-4 text-xs md:text-sm 2xl:text-base'>
           <p className='text-green-700 text-xs md:text-sm 2xl:text-base'>
             {eventSuccess}
           </p>
