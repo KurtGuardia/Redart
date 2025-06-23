@@ -8,11 +8,6 @@ import {
   limit,
 } from 'firebase/firestore'
 
-const DEFAULT_FILTER = {
-  city: 'Cochabamba',
-  country: 'BO',
-}
-
 export function useVenueLocations(
   filterParams = {},
   fetchAll = false,

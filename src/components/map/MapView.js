@@ -39,11 +39,12 @@ export default function MapView({ ...props }) {
     if (
       permissionState === 'granted' &&
       !loadingUserLocation &&
-      (userLocationDetails?.city ||
+      (userLocationDetails?.region ||
+        userLocationDetails?.city ||
         userLocationDetails?.country_code)
     ) {
       setVenueFilter({
-        city: userLocationDetails?.city,
+        city: userLocationDetails?.region,
         country: userLocationDetails?.country_code,
       })
     } else {

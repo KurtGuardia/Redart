@@ -3,21 +3,20 @@ import { useState, useEffect, useCallback } from 'react'
 async function fetchLocationDetails(lat, lng) {
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
   if (!mapboxToken || isNaN(lat) || isNaN(lng)) {
-    // Return specific details even on failure for consistent structure
-    return { city: null, country: null, country_code: null }
+    return {
+      city: null,
+      region: null,
+      country: null,
+      country_code: null,
+    }
   }
 
   try {
     const response = await fetch(
-      `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?types=country,place,locality&access_token=${mapboxToken}`,
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?types=country,region,place,locality,district&access_token=${mapboxToken}`,
     )
-    if (!response.ok) {
-      console.error(
-        'Mapbox API request failed:',
-        response.status,
-      )
+    if (!response.ok)
       throw new Error('Mapbox API request failed')
-    }
     const data = await response.json()
     const countryFeature = data.features.find((f) =>
       f.place_type.includes('country'),
@@ -25,17 +24,29 @@ async function fetchLocationDetails(lat, lng) {
     const cityFeature = data.features.find((f) =>
       f.place_type.includes('place'),
     )
+    const regionFeature =
+      data.features.find((f) =>
+        f.place_type.includes('region'),
+      ) ||
+      data.features[0]?.context?.find((c) =>
+        c.id.startsWith('region'),
+      )
+
     return {
       city: cityFeature?.text || null,
+      region: regionFeature?.text || null,
       country: countryFeature?.text || null,
       country_code:
         countryFeature?.properties?.short_code?.toUpperCase() ||
         null,
     }
   } catch (error) {
-    console.error('Error fetching location details:', error) // Log error
-    // Return specific details even on failure for consistent structure
-    return { city: null, country: null, country_code: null }
+    return {
+      city: null,
+      region: null,
+      country: null,
+      country_code: null,
+    }
   }
 }
 
@@ -43,14 +54,13 @@ export function useUserLocationDetection() {
   const [location, setLocation] = useState(null)
   const [locationDetails, setLocationDetails] =
     useState(null)
-  const [loading, setLoading] = useState(true) // Start loading until permission is checked
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [permissionState, setPermissionState] =
-    useState(null) // Initial state null until checked
+    useState(null)
 
   const detectLocation = useCallback(
     async (isInitialDetection = false) => {
-      // Prevent execution if permission is already known to be denied
       if (permissionState === 'denied') {
         setLoading(false) // Ensure loading stops if we somehow enter here while denied
         setError(
@@ -60,12 +70,11 @@ export function useUserLocationDetection() {
       }
 
       setLoading(true)
-      setError(null) // Clear previous errors on new attempt
+      setError(null)
       let locationFound = false
-      let browserDenied = false // Flag to track explicit browser denial
+      let browserDenied = false
 
       // --- 1. Try Browser Geolocation (Only if permission allows) ---
-      // Check permission *before* attempting geolocation
       if (
         navigator.geolocation &&
         (permissionState === 'granted' ||
@@ -93,7 +102,6 @@ export function useUserLocationDetection() {
             latitude,
             longitude,
           }
-          // Fetch details *only* if coords are valid
           if (!isNaN(latitude) && !isNaN(longitude)) {
             const details = await fetchLocationDetails(
               latitude,
@@ -101,8 +109,8 @@ export function useUserLocationDetection() {
             )
             setLocation(coords)
             setLocationDetails(details)
-            setPermissionState('granted') // Confirmed granted
-            setError(null) // Clear any previous errors
+            setPermissionState('granted')
+            setError(null)
             locationFound = true
           } else {
             // Should not happen with getCurrentPosition, but good practice
