@@ -6,9 +6,9 @@ import Spots from '../components/ui/Spots'
 
 export default function HomePage() {
   const heroImages = [
-    '/theater.jpg',
-    '/carnival.jpg',
-    '/guitarist.jpg',
+    '/hero1.jpg',
+    '/hero2.jpg',
+    '/hero3.jpg',
   ]
 
   return (
@@ -37,7 +37,9 @@ export default function HomePage() {
 
       <section
         className='about-us img relative mt-24'
-        style={{ backgroundImage: `url(${'/crowd.jpg'})` }}
+        style={{
+          backgroundImage: `url(${'/nosotrosBG.jpg'})`,
+        }}
       >
         <div className='w-full xl:w-[80%] relative min-h-[50vh] flex flex-col z-10 py-12 mx-auto px-4 text-center text-white'>
           <h2 className='text-3xl xl:text-5xl font-bold mb-12'>

@@ -5,9 +5,9 @@ import { useEffect, useRef } from 'react'
 const HeroBackgroundSlider = ({ images, children }) => {
   const heroRef = useRef(null)
   const imageSources = images || [
-    '/theater.jpg',
-    '/carnival.jpg',
-    '/guitarist.jpg',
+    '/hero1.jpg',
+    '/hero2.jpg',
+    '/hero3.jpg',
   ]
 
   useEffect(() => {
